@@ -277,3 +277,45 @@ bbq project/
 | 메뉴 추천 (menu) | 카드 JSON (프론트엔드에서 카드 UI 렌더링) |
 | CS 문의 (cs) | 자연어 텍스트 |
 | 모호한 쿼리 | 재질문 후 대기 |
+
+---
+
+## 실행 방법
+
+### 0. 환경 설정
+```bash
+# .env 파일에 API 키 추가
+echo "OPENAI_API_KEY=sk-..." > .env
+```
+
+### 1. 오프라인 인덱싱 (최초 1회)
+```bash
+python -m vectorstore.build_menu_index   # ChromaDB 생성
+python -m vectorstore.build_cs_index     # FAISS + BM25 생성
+```
+
+### 2. 서버 실행
+```bash
+uvicorn main:app --reload
+```
+
+### 3. API 호출 예시
+```bash
+# 메뉴 추천
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"user_input": "매운 순살 치킨 추천해줘", "session_id": "user1"}'
+
+# CS 문의
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"user_input": "주문한 치킨이 아직도 안 와요", "session_id": "user1"}'
+
+# 세션 초기화
+curl -X DELETE http://localhost:8000/session/user1
+```
+
+### 4. Swagger UI
+```
+http://localhost:8000/docs
+```
