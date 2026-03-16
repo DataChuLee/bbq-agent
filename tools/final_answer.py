@@ -17,6 +17,7 @@ load_dotenv()
 
 # ── Menu Agent용 ─────────────────────────────────────────────────────────────
 
+
 @tool
 def final_answer_menu(items: List[dict]) -> str:
     """메뉴 검색 결과를 카드 JSON 형태로 최종 응답합니다.
@@ -34,15 +35,17 @@ def final_answer_menu(items: List[dict]) -> str:
     """
     cards = []
     for item in items:
-        cards.append({
-            "name":        item.get("name", ""),
-            "category":    item.get("category", ""),
-            "price":       item.get("price", 0),
-            "description": item.get("description", ""),
-            "allergy":     item.get("allergy", ""),
-            "nutrition":   item.get("nutrition", ""),
-            "options":     item.get("options", ""),
-        })
+        cards.append(
+            {
+                "name": item.get("name", ""),
+                "category": item.get("category", ""),
+                "price": item.get("price", 0),
+                "description": item.get("description", ""),
+                "allergy": item.get("allergy", ""),
+                "nutrition": item.get("nutrition", ""),
+                "options": item.get("options", ""),
+            }
+        )
 
     return json.dumps(
         {"type": "menu_cards", "items": cards},
@@ -53,6 +56,7 @@ def final_answer_menu(items: List[dict]) -> str:
 # ── CS Agent용 ───────────────────────────────────────────────────────────────
 
 _cs_llm = None
+
 
 def _get_cs_llm() -> ChatOpenAI:
     global _cs_llm
