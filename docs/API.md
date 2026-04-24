@@ -72,6 +72,13 @@ This layer is intentionally out of scope for the current implementation, but the
 - API contracts should stay stable even when storage moves from memory to a database.
 - Sync and stream endpoints should share the same final assistant message shape.
 
+### 5. UX latency vs design purity
+
+- A two-step flow (`messages` then `responses`) is more purely resource-oriented.
+- A one-step hot path (`responses/stream` with inline input) reduces one HTTP round trip for the web client.
+- In this project, the absolute latency difference is small because LLM generation dominates total time, but the hot path still improves TTFT slightly and simplifies the live chat UX.
+- The chosen design is hybrid: keep `messages` as a pure storage resource, while using `responses/stream` as the main web execution path.
+
 ## Public Runtime API
 
 These endpoints are consumed by the web client.
@@ -80,11 +87,11 @@ These endpoints are consumed by the web client.
 | --- | --- | --- |
 | `POST` | `/sessions` | Create a new chat session |
 | `GET` | `/sessions/{id}` | Get session metadata |
-| `GET` | `/sessions/{id}/messages` | Get message history |
-| `POST` | `/sessions/{id}/messages` | Add a user message |
+| `GET` | `/sessions/{id}/messages` | Get paginated message history |
+| `POST` | `/sessions/{id}/messages` | Store or inject a message without triggering AI generation |
 | `DELETE` | `/sessions/{id}` | Clear or delete a session |
 | `POST` | `/sessions/{id}/responses` | Generate a full assistant response |
-| `POST` | `/sessions/{id}/responses/stream` | Generate a streaming assistant response over SSE |
+| `POST` | `/sessions/{id}/responses/stream` | Web hot path: persist input and stream an assistant response over SSE |
 | `GET` | `/health` | Health check |
 
 ## Internal Knowledge API
@@ -95,7 +102,6 @@ These endpoints support knowledge inspection and operations. They are internal-f
 | --- | --- | --- |
 | `GET` | `/knowledge/status` | Inspect knowledge/index readiness |
 | `GET` | `/knowledge/documents` | List known knowledge documents or logical records |
-| `GET` | `/knowledge/documents/{id}` | Inspect a single knowledge document |
 | `POST` | `/knowledge/indexes/rebuild` | Rebuild indexes after data changes |
 | `POST` | `/knowledge/retrieval/search-preview` | Preview retrieval results without full answer generation |
 
@@ -133,6 +139,30 @@ Message types for the current design:
 
 The client creates only user messages. Assistant messages are created by the server after response generation.
 In the current milestone, `POST /sessions/{id}/messages` accepts only `type: "text"` from the client.
+
+### Response request
+
+`POST /sessions/{id}/responses` and `POST /sessions/{id}/responses/stream` support two request modes:
+
+1. Inline input mode for the web hot path
+2. Stored message mode for replay or preloaded-history flows
+
+Exactly one of `input` or `source_message_id` must be provided.
+
+```json
+{
+  "input": {
+    "type": "text",
+    "content": "Recommend a spicy chicken menu"
+  }
+}
+```
+
+```json
+{
+  "source_message_id": "msg_123"
+}
+```
 
 ### Assistant response result
 
@@ -206,7 +236,14 @@ Return session metadata only, not the full history.
 
 ### `GET /sessions/{id}/messages`
 
-Return the message history for the session.
+Return paginated message history for the session.
+
+Query parameters for the current design:
+
+- `limit`
+- `offset`
+
+These should be exposed even if the in-memory implementation starts with simple defaults.
 
 Example response:
 
@@ -234,7 +271,14 @@ Example response:
 
 ### `POST /sessions/{id}/messages`
 
-Append a user message to an existing session.
+Append a message to an existing session without triggering AI generation.
+
+Primary uses:
+
+- preloading history into a session
+- future edit or retry flows
+- test setup
+- non-hot-path message persistence
 
 Validation rule for the current milestone:
 
@@ -281,15 +325,18 @@ This endpoint is secondary. It exists for:
 
 Source message resolution rule:
 
+- if `input` is provided, the service stores that user message first and then generates the response
 - if `source_message_id` is provided, it must belong to the session
-- if `source_message_id` is omitted, the service uses the latest user message in the session
-- the endpoint does not create a user message by itself
+- exactly one of `input` or `source_message_id` must be provided
 
 Example request:
 
 ```json
 {
-  "source_message_id": "msg_3"
+  "input": {
+    "type": "text",
+    "content": "Recommend a spicy chicken menu"
+  }
 }
 ```
 
@@ -324,6 +371,15 @@ Generate a streaming assistant response over SSE.
 
 This is the primary UX endpoint for the web client.
 
+Hot-path behavior:
+
+- store the incoming user message
+- run retrieval and generation
+- stream tokens to the client
+- persist the final assistant message on completion
+
+This endpoint exists to balance design purity with web UX latency. The extra round trip avoided here is small relative to total LLM latency, but it still improves TTFT and keeps the live chat flow simpler.
+
 Recommended event sequence:
 
 1. `start`
@@ -347,6 +403,17 @@ Example final `message` event:
 ```
 
 The final assistant message schema should match the synchronous endpoint.
+
+Example request:
+
+```json
+{
+  "input": {
+    "type": "text",
+    "content": "Recommend a spicy chicken menu"
+  }
+}
+```
 
 ### `GET /health`
 
@@ -383,13 +450,21 @@ Return a small operational summary of the knowledge layer.
 
 List logical knowledge records. This is intentionally read-oriented for the current scope because the current milestone imports Menu and CS knowledge from local source data rather than managing those records through public CRUD endpoints.
 
-### `GET /knowledge/documents/{id}`
-
-Inspect one logical record used by the knowledge layer.
-
 ### `POST /knowledge/indexes/rebuild`
 
 Trigger re-indexing after source data changes.
+
+This should return `202 Accepted` and run as a background task, because index rebuilds may take seconds or longer.
+
+Example response:
+
+```json
+{
+  "data": {
+    "status": "rebuilding"
+  }
+}
+```
 
 ### `POST /knowledge/retrieval/search-preview`
 
@@ -451,15 +526,24 @@ This layer contains LangGraph-specific logic. The public API should not depend o
 4. Message Service stores the user message.
 5. API returns the created user message.
 
+### Preloaded response flow
+
+1. Client or internal workflow stores a message through `POST /sessions/{id}/messages`.
+2. Client calls `POST /sessions/{id}/responses` or `POST /sessions/{id}/responses/stream` with `source_message_id`.
+3. Response Service loads session context from stored messages.
+4. Retrieval and generation run as usual.
+
 ### Streaming response flow
 
-1. Client calls `POST /sessions/{id}/responses/stream`.
+1. Client calls `POST /sessions/{id}/responses/stream` with inline input.
 2. API Layer validates the request.
-3. Response Service loads session context.
-4. Knowledge Service and Agent/Graph Layer perform retrieval and generation.
-5. Streaming Adapter emits SSE events.
-6. Message Service stores the final assistant message.
-7. Stream closes with a final `done` event.
+3. Session Service confirms the session exists.
+4. Message Service stores the user message.
+5. Response Service loads session context.
+6. Knowledge Service and Agent/Graph Layer perform retrieval and generation.
+7. Streaming Adapter emits SSE events.
+8. Message Service stores the final assistant message.
+9. Stream closes with a final `done` event.
 
 ## Error Handling Strategy
 
@@ -497,6 +581,21 @@ In those cases the assistant should produce either:
 ### Traceability
 
 Every error response should include a `trace_id` so logs and debugging artifacts can be correlated.
+
+## Known Limitations In The Current Milestone
+
+### In-memory concurrency
+
+- The current session store is an in-memory dictionary.
+- Concurrent requests against the same `session_id` can cause race conditions.
+- This is acceptable for the current single-process portfolio milestone, but it is not production-safe.
+
+### Stream failure after user message persistence
+
+- In the hot path, the user message is stored before generation begins.
+- If streaming fails after that point, the session may contain a user message without a matching assistant message.
+- In the current milestone, the expected recovery strategy is to retry with the same user input.
+- This limitation should be called out in README or code comments.
 
 ## Testing Strategy
 
@@ -566,6 +665,7 @@ It shows:
 
 - a resource model for sessions and messages
 - action endpoints for AI generation
+- an explicit tradeoff between design purity and UX latency
 - separation between knowledge retrieval and interaction state
 - streaming-first AI UX
 - service boundaries that support future persistence and personalization
