@@ -44,6 +44,8 @@ def final_answer_menu(items: List[dict]) -> str:
                 "allergy": item.get("allergy", ""),
                 "nutrition": item.get("nutrition", ""),
                 "options": item.get("options", ""),
+                "imageURL": item.get("imageURL", ""),
+                "product_family": item.get("product_family", ""),
             }
         )
 
