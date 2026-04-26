@@ -137,6 +137,22 @@ Message types for the current design:
 - `menu_cards`
 - `clarification`
 
+For `menu_cards`, each item may include backend taxonomy metadata:
+
+```json
+{
+  "name": "황금올리브치킨™핫크리스피",
+  "category": "후라이드",
+  "price": 24000,
+  "spiciness": "매움",
+  "texture": "바삭함",
+  "imageURL": "https://static.bbqorder.co.kr/menu/...",
+  "product_family": "main_chicken"
+}
+```
+
+`product_family` is backend taxonomy metadata used to keep recommendations within the requested product family, such as `main_chicken`, `burger_pizza`, `side`, `drink`, `sauce`, or `seasoning`.
+
 The client creates only user messages. Assistant messages are created by the server after response generation.
 In the current milestone, `POST /sessions/{id}/messages` accepts only `type: "text"` from the client.
 
