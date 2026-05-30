@@ -1,4 +1,11 @@
 .env
 /venv
+/.venv-integration-test
+/venv.broken-browser-use-20260427
+/browser/.venv
+/browser/.browser-use
+/browser/.config
 /Data
+/.worktrees
 **/__pycache__/
+/vectorstore
