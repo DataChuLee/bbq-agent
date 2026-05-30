@@ -8,12 +8,14 @@ import json
 import pickle
 from pathlib import Path
 from functools import lru_cache
+from typing import Annotated
 
 from dotenv import load_dotenv
 from langchain.retrievers import EnsembleRetriever
 from langchain_community.vectorstores import FAISS
 from langchain_core.tools import tool
 from langchain_openai import OpenAIEmbeddings
+from langgraph.prebuilt import InjectedState
 
 load_dotenv()
 
@@ -49,7 +51,7 @@ def _get_retriever() -> EnsembleRetriever:
 
 
 @tool
-def search_cs(query: str) -> str:
+def search_cs(query: str, state: Annotated[dict, InjectedState]) -> str:
     """BBQ 고객센터 Q&A에서 유사한 CS 사례를 검색합니다.
 
     BM25(키워드) + FAISS(의미론적) 하이브리드 검색으로 관련 대응 방법을 반환합니다.
@@ -60,6 +62,10 @@ def search_cs(query: str) -> str:
     Returns:
         관련 CS 사례 목록 (JSON 문자열)
     """
+    cache: dict = state.get("cs_results") or {}
+    if query in cache:
+        return json.dumps({"results": cache[query]}, ensure_ascii=False)
+
     retriever = _get_retriever()
     docs = retriever.invoke(query)
 
