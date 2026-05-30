@@ -1,155 +1,648 @@
 """
 BBQ Agent LangGraph StateGraph.
 
-흐름:
-  START → intent_classifier
-        → (menu)    menu_agent_node (create_react_agent wrapper) → END
-        → (cs)      cs_agent_node   (create_react_agent wrapper) → END
-        → (unknown) fallback                                      → END
+Flow:
+    START -> intent_classifier
+          -> menu_agent -> (order_browser_agent | END)
+          -> cs_agent   -> END
+          -> fallback   -> END
 """
 
+from __future__ import annotations
+
 import json
-from typing import Literal
+import re
+import asyncio
+from typing import Annotated, List, Literal, Optional, TypedDict
 
 from dotenv import load_dotenv
-from langchain_core.messages import ToolMessage
+from langchain_core.messages import (
+    AIMessage,
+    BaseMessage,
+    HumanMessage,
+    SystemMessage,
+    ToolMessage,
+)
 from langchain_openai import ChatOpenAI
 from langgraph.graph import END, START, StateGraph
+from langgraph.graph.message import add_messages
+from langgraph.managed import RemainingSteps
 from langgraph.prebuilt import create_react_agent
 
 from graph.state import AgentState
-from tools.ask_clarification import ask_clarification
-from tools.final_answer import final_answer_cs, final_answer_menu
+from tools.final_answer import final_answer_menu
+from tools.prepare_bbq_order import prepare_bbq_order
 from tools.search_cs import search_cs
-from tools.search_menu import search_menu
+from tools.search_menu import FOLLOWUP_TOP_K, search_menu, search_menu_results
+
 
 load_dotenv()
 
-# ── 시스템 프롬프트 ──────────────────────────────────────────────────────────
 
-MENU_SYSTEM_PROMPT = """당신은 BBQ 치킨 메뉴 추천 전문 AI입니다.
-사용자가 원하는 메뉴를 찾을 수 있도록 도와주세요.
+class _ReActState(TypedDict):
+    messages: Annotated[List[BaseMessage], add_messages]
+    remaining_steps: Annotated[int, RemainingSteps()]
+    menu_results: Optional[dict]
+    cs_results: Optional[dict]
+    selected_order: Optional[dict]
+    last_menu_query: Optional[str]
+    shown_menu_names: list[str]
 
-사용 가능한 도구:
-- search_menu: 자연어로 메뉴를 검색합니다. 가격, 카테고리, 알레르기 조건 포함 가능.
-- ask_clarification: 쿼리가 모호할 때 사용자에게 추가 정보를 요청합니다.
-- final_answer_menu: 검색 결과를 카드 형태로 최종 응답합니다.
 
-반드시 final_answer_menu 또는 ask_clarification으로 응답을 마무리하세요."""
+FOLLOWUP_DISPLAY_LIMIT = 3
 
-CS_SYSTEM_PROMPT = """당신은 BBQ 고객센터 AI 상담사입니다.
-고객의 문의에 친절하고 정확하게 답변해 주세요.
 
-사용 가능한 도구:
-- search_cs: 유사한 CS 사례를 검색합니다.
-- final_answer_cs: 검색 결과를 바탕으로 최종 답변을 생성합니다.
+MENU_SYSTEM_PROMPT = """You are a BBQ chicken menu recommendation assistant.
 
-반드시 final_answer_cs로 응답을 마무리하세요."""
+Always follow this order:
+1. Use search_menu(query) to search relevant menu items.
+2. If results exist, call final_answer_menu(items=results) to return menu cards.
+   - Pass the search_menu results array directly to final_answer_menu.
+   - Do not include menu items that were not returned by search_menu.
+3. If search_menu returns no results, briefly say that no matching menu was found.
 
-# ── create_react_agent 인스턴스 (모듈 로드 시 1회 생성) ─────────────────────
+Do not use browser automation or order placement tools. Your job is recommendation only."""
 
-_menu_tools = [search_menu, ask_clarification, final_answer_menu]
-_cs_tools   = [search_cs, final_answer_cs]
+CS_SYSTEM_PROMPT = """You are a BBQ customer service assistant.
+
+Always follow this order:
+1. Use search_cs(query) to search relevant customer-service cases.
+2. Answer the customer's question clearly and politely based on the retrieved cases.
+   - Do not invent information that was not found.
+   - Do not use browser automation or order placement tools."""
+
+ORDER_SYSTEM_PROMPT = """You are the BBQ order preparation assistant.
+
+You run only after the user has chosen a final chicken/menu item and options through
+the menu flow. Use prepare_bbq_order(menu_name, options, order_type) to open the BBQ
+website in a visible browser and prepare the chosen item/options in the cart.
+
+Rules:
+- Never ask for or handle the user's BBQ credentials.
+- Login, address selection, and payment must be done by the user directly in the browser.
+- If menu_name, options, or order_type is unclear, ask a short clarification question.
+- Do not use this tool for customer-service questions or general web browsing."""
+
+
+_menu_tools = [search_menu, final_answer_menu]
+_cs_tools = [search_cs]
+_order_tools = [prepare_bbq_order]
+
+_classifier_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+_fallback_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, streaming=True)
 
 _menu_agent = create_react_agent(
-    model=ChatOpenAI(model="gpt-4o-mini", temperature=0),
+    model=ChatOpenAI(model="gpt-4o-mini", temperature=0, streaming=True),
     tools=_menu_tools,
     prompt=MENU_SYSTEM_PROMPT,
+    state_schema=_ReActState,
 )
 
 _cs_agent = create_react_agent(
-    model=ChatOpenAI(model="gpt-4o-mini", temperature=0),
+    model=ChatOpenAI(model="gpt-4o-mini", temperature=0, streaming=True),
     tools=_cs_tools,
     prompt=CS_SYSTEM_PROMPT,
+    state_schema=_ReActState,
 )
 
-# ── 헬퍼 ─────────────────────────────────────────────────────────────────────
+_order_agent = create_react_agent(
+    model=ChatOpenAI(model="gpt-4o-mini", temperature=0, streaming=True),
+    tools=_order_tools,
+    prompt=ORDER_SYSTEM_PROMPT,
+    state_schema=_ReActState,
+)
+
 
 def _extract_response(messages: list) -> dict:
-    """messages를 역순 탐색해 final_answer / ask_clarification Tool 결과를 반환."""
     for msg in reversed(messages):
         if isinstance(msg, ToolMessage):
             try:
                 data = json.loads(msg.content)
-                if "type" in data:  # menu_cards / text / clarification
+                if "type" in data:
                     return data
             except Exception:
                 continue
-    return {"type": "text", "message": "응답을 생성하지 못했습니다."}
+    for msg in reversed(messages):
+        if isinstance(msg, AIMessage) and msg.content and not getattr(msg, "tool_calls", None):
+            return {"type": "text", "message": msg.content}
+    return {"type": "text", "message": "\uc751\ub2f5\uc744 \uc0dd\uc131\ud558\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4."}
 
 
-# ── Node 함수 ────────────────────────────────────────────────────────────────
-
-def intent_classifier_node(state: AgentState) -> dict:
-    """사용자 입력의 의도를 분류 → menu / cs / unknown"""
-    last_message = state["messages"][-1].content
-    prompt = f"""사용자 메시지를 보고 의도를 분류하세요.
-
-- menu: BBQ 메뉴 추천, 메뉴 검색, 어떤 메뉴가 있는지 등
-- cs: 배달 지연, 환불, 불만, 기프티콘, 주문 문의 등 고객 서비스 관련
-- unknown: 위 두 가지에 해당하지 않는 경우
-
-반드시 menu, cs, unknown 중 하나만 소문자로 답하세요.
-
-사용자 메시지: {last_message}
-의도:"""
-
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-    response = llm.invoke(prompt)
-    intent = response.content.strip().lower()
-    if intent not in ("menu", "cs"):
-        intent = "unknown"
-
-    return {"intent": intent}
+def _latest_user_message(state: dict) -> str:
+    for message in reversed(state.get("messages", [])):
+        if isinstance(message, HumanMessage):
+            return str(message.content)
+    return ""
 
 
-def menu_agent_node(state: AgentState) -> dict:
-    """Menu Agent — create_react_agent 기반 ReAct 루프"""
-    result = _menu_agent.invoke({"messages": state["messages"]})
+def _normalize_menu_text(value: str) -> str:
+    return re.sub(r"[^0-9a-zA-Z가-힣]+", "", value.replace("™", "")).lower()
+
+
+def _looks_like_order_request(message: str) -> bool:
+    normalized = message.replace(" ", "").lower()
+    order_markers = (
+        "\uc7a5\ubc14\uad6c\ub2c8",  # cart
+        "\ub2f4\uc544\uc918",
+        "\ub2f4\uc544",
+        "\uc8fc\ubb38\ud560\uac8c",
+        "\uc8fc\ubb38\ud574\uc918",
+        "\uc774\uac78\ub85c\uc8fc\ubb38",
+        "\uc774\uac78\ub85c\ud560\uac8c",
+        "\uacb0\uc81c\ud558\ub7ec",
+    )
+    return any(marker in normalized for marker in order_markers)
+
+
+def _looks_like_menu_followup(message: str, state: dict) -> bool:
+    if not str(state.get("last_menu_query") or "").strip():
+        return False
+
+    normalized = message.replace(" ", "").lower()
+    followup_markers = ("다른", "또", "더", "없어", "추가")
+    return any(marker in normalized for marker in followup_markers)
+
+
+def _append_shown_menu_names(
+    shown_menu_names: object,
+    items: list[dict],
+) -> list[str]:
+    names: list[str] = []
+    seen: set[str] = set()
+
+    if isinstance(shown_menu_names, list):
+        for value in shown_menu_names:
+            name = str(value or "").strip()
+            if not name or name in seen:
+                continue
+            names.append(name)
+            seen.add(name)
+
+    for item in items:
+        name = str(item.get("name") or "").strip()
+        if not name or name in seen:
+            continue
+        names.append(name)
+        seen.add(name)
+
+    return names
+
+
+def _unseen_menu_items(items: list[dict], shown_menu_names: object) -> list[dict]:
+    shown = {
+        str(name).strip()
+        for name in (shown_menu_names if isinstance(shown_menu_names, list) else [])
+        if str(name or "").strip()
+    }
+    unseen: list[dict] = []
+    seen = set(shown)
+
+    for item in items:
+        name = str(item.get("name") or "").strip()
+        if not name or name in seen:
+            continue
+        unseen.append(item)
+        seen.add(name)
+
+    return unseen
+
+
+def _menu_candidates_from_results(menu_results: dict | None) -> list[dict]:
+    if not isinstance(menu_results, dict):
+        return []
+
+    candidates: list[dict] = []
+    seen_names: set[str] = set()
+    for results in menu_results.values():
+        if not isinstance(results, list):
+            continue
+        for item in results:
+            if not isinstance(item, dict):
+                continue
+            name = str(item.get("name") or "").strip()
+            if not name or name in seen_names:
+                continue
+            candidates.append(item)
+            seen_names.add(name)
+    return candidates
+
+
+def _collect_option_names(value: object) -> list[str]:
+    if isinstance(value, str):
+        text = value.strip()
+        if not text:
+            return []
+        try:
+            return _collect_option_names(json.loads(text))
+        except json.JSONDecodeError:
+            return []
+
+    if isinstance(value, list):
+        names: list[str] = []
+        for item in value:
+            names.extend(_collect_option_names(item))
+        return names
+
+    if isinstance(value, dict):
+        names = []
+        name = str(value.get("name") or "").strip()
+        if name:
+            names.append(name)
+        for key in ("items", "required_select", "optional_select"):
+            names.extend(_collect_option_names(value.get(key)))
+        return names
+
+    return []
+
+
+def _extract_options_for_direct_order(message: str, menu_item: dict) -> list[str]:
+    normalized_message = _normalize_menu_text(message)
+    option_names = _collect_option_names(menu_item.get("options", ""))
+    if not option_names:
+        option_names = [
+            "한마리",
+            "반마리",
+            "순살 변경",
+            "닭다리 변경",
+            "윙&봉 변경",
+            "콤보 변경",
+            "콜라 1.25L",
+            "콜라1.25L",
+            "제로콜라1.25L",
+        ]
+
+    selected: list[str] = []
+    seen_normalized: set[str] = set()
+    for option_name in option_names:
+        normalized_option = _normalize_menu_text(option_name)
+        if not normalized_option or normalized_option not in normalized_message:
+            continue
+        if normalized_option in seen_normalized:
+            continue
+        selected.append(option_name)
+        seen_normalized.add(normalized_option)
+    return selected
+
+
+def _extract_order_type(message: str) -> Literal["delivery", "pickup"]:
+    normalized = message.replace(" ", "")
+    if "포장" in normalized or "픽업" in normalized:
+        return "pickup"
+    return "delivery"
+
+
+def _clarification_for_menu_candidates(candidates: list[dict]) -> dict:
+    names = [str(item.get("name")) for item in candidates[:3] if item.get("name")]
+    suffix = f" 후보: {', '.join(names)}" if names else ""
     return {
-        "messages": result["messages"],
-        "response": _extract_response(result["messages"]),
+        "type": "clarification",
+        "message": f"어떤 메뉴로 주문 준비할까요? 정확한 메뉴명을 선택해 주세요.{suffix}",
     }
 
 
-def cs_agent_node(state: AgentState) -> dict:
-    """CS Agent — create_react_agent 기반 ReAct 루프"""
-    result = _cs_agent.invoke({"messages": state["messages"]})
-    return {
-        "messages": result["messages"],
-        "response": _extract_response(result["messages"]),
-    }
+def _resolve_direct_order_from_menu_results(state: AgentState) -> dict | None:
+    message = _latest_user_message(state)
+    candidates = _menu_candidates_from_results(state.get("menu_results"))
+    if not candidates:
+        return {"clarification": _clarification_for_menu_candidates(candidates)}
 
+    normalized_message = _normalize_menu_text(message)
+    matches = [
+        item
+        for item in candidates
+        if _normalize_menu_text(str(item.get("name") or "")) in normalized_message
+    ]
+    if not matches:
+        return {"clarification": _clarification_for_menu_candidates(candidates)}
 
-def fallback_node(state: AgentState) -> dict:
-    """unknown 의도 — 안내 메시지 반환"""
+    matches.sort(
+        key=lambda item: len(_normalize_menu_text(str(item.get("name") or ""))),
+        reverse=True,
+    )
+    top_length = len(_normalize_menu_text(str(matches[0].get("name") or "")))
+    same_length_matches = [
+        item
+        for item in matches
+        if len(_normalize_menu_text(str(item.get("name") or ""))) == top_length
+    ]
+    if len(same_length_matches) > 1:
+        return {"clarification": _clarification_for_menu_candidates(same_length_matches)}
+
+    menu_item = matches[0]
     return {
-        "response": {
-            "type": "text",
-            "message": "안녕하세요! BBQ AI입니다.\n메뉴 추천이나 주문 관련 문의를 도와드릴 수 있습니다.\n예: '매운 치킨 추천해줘', '환불하고 싶어요'",
+        "order": {
+            "menu_name": str(menu_item["name"]),
+            "menu_category": str(menu_item.get("category") or ""),
+            "options": _extract_options_for_direct_order(message, menu_item),
+            "order_type": _extract_order_type(message),
         }
     }
 
 
-# ── 라우팅 함수 ──────────────────────────────────────────────────────────────
+def _extract_order_tool_response(content: str) -> dict:
+    try:
+        payload = json.loads(content)
+    except json.JSONDecodeError:
+        return {"type": "text", "message": content}
 
-def route_intent(state: AgentState) -> Literal["menu_agent", "cs_agent", "fallback"]:
+    if payload.get("type") == "order_status":
+        status = str(payload.get("status") or "cart_ready")
+        menu_name = str(payload.get("menu_name") or "").strip() or "선택한 메뉴"
+        return {
+            "type": "order_status",
+            "status": status,
+            "message": str(
+                payload.get("message")
+                or (
+                    f"{menu_name}의 옵션 확인이 필요해요."
+                    if status == "option_review"
+                    else f"{menu_name}이 장바구니에 담겼어요."
+                )
+            ),
+            "menu_name": menu_name,
+            "expected_options": payload.get("expected_options") or [],
+            "selected_options": payload.get("selected_options") or [],
+            "missing_options": payload.get("missing_options") or [],
+            "order_type": str(payload.get("order_type") or ""),
+            "current_url": str(payload.get("current_url") or ""),
+            "next_action": str(
+                payload.get("next_action")
+                or "BBQ 공식 사이트에서 장바구니와 결제를 확인해 주세요."
+            ),
+        }
+
+    if payload.get("ok"):
+        return {
+            "type": "text",
+            "message": str(payload.get("result") or "주문 준비를 시작했습니다."),
+        }
+
+    return {
+        "type": "text",
+        "message": str(payload.get("error") or "주문 준비 중 오류가 발생했습니다."),
+    }
+
+
+async def intent_classifier_node(state: AgentState) -> dict:
+    """Classify initial request only as menu, cs, or unknown."""
+    last_message = str(state["messages"][-1].content)
+    if _looks_like_order_request(last_message):
+        return {"intent": "menu"}
+    if _looks_like_menu_followup(last_message, state):
+        return {"intent": "menu_followup"}
+
+    prompt = f"""Classify the user's message into exactly one intent.
+
+- menu: BBQ menu recommendation, menu search, final menu selection, price/flavor/allergy/menu availability.
+- cs: delivery delay, refund, complaint, gift certificate, existing order issue, customer service.
+- unknown: anything else.
+
+Answer with only one lowercase label: menu, cs, or unknown.
+
+User message: {last_message}
+Intent:"""
+
+    response = await _classifier_llm.ainvoke(prompt)
+    intent = response.content.strip().lower()
+    if intent not in ("menu", "cs"):
+        intent = "unknown"
+    return {"intent": intent}
+
+
+def _extract_new_search_entry(messages: list, tool_name: str) -> tuple[str, list] | None:
+    query = None
+    for msg in messages:
+        if isinstance(msg, AIMessage) and getattr(msg, "tool_calls", None):
+            for tool_call in msg.tool_calls:
+                if tool_call.get("name") == tool_name:
+                    query = tool_call.get("args", {}).get("query")
+                    break
+        if query:
+            break
+
+    if not query:
+        return None
+
+    for msg in messages:
+        if isinstance(msg, ToolMessage) and getattr(msg, "name", "") == tool_name:
+            try:
+                data = json.loads(msg.content)
+                results = data.get("results")
+                if results:
+                    return query, results
+            except Exception:
+                continue
+    return None
+
+
+async def menu_agent_node(state: AgentState) -> dict:
+    original_count = len(state["messages"])
+    result = await _menu_agent.ainvoke(
+        {
+            "messages": state["messages"],
+            "menu_results": state.get("menu_results"),
+            "cs_results": state.get("cs_results"),
+            "selected_order": state.get("selected_order"),
+            "last_menu_query": state.get("last_menu_query"),
+            "shown_menu_names": state.get("shown_menu_names") or [],
+        }
+    )
+    new_messages = result["messages"][original_count:]
+
+    return_dict: dict = {
+        "messages": new_messages,
+        "response": _extract_response(result["messages"]),
+    }
+    entry = _extract_new_search_entry(new_messages, "search_menu")
+    if entry:
+        query, results = entry
+        cache = dict(state.get("menu_results") or {})
+        cache[query] = results
+        return_dict["menu_results"] = cache
+        return_dict["last_menu_query"] = query
+        return_dict["shown_menu_names"] = _append_shown_menu_names(
+            state.get("shown_menu_names") or [],
+            results,
+        )
+        return_dict["response"] = {"type": "menu_cards", "items": results}
+    return return_dict
+
+
+async def menu_followup_node(state: AgentState) -> dict:
+    query = str(state.get("last_menu_query") or "").strip()
+    shown_menu_names = state.get("shown_menu_names") or []
+    if not query:
+        message = "이전 추천 조건을 찾지 못했습니다. 원하는 메뉴 조건을 다시 알려주세요."
+        return {
+            "messages": [AIMessage(content=message)],
+            "response": {"type": "text", "message": message},
+            "shown_menu_names": shown_menu_names,
+        }
+
+    results = await asyncio.to_thread(
+        search_menu_results,
+        query,
+        dict(state),
+        k=FOLLOWUP_TOP_K,
+        use_cache=False,
+    )
+    items = _unseen_menu_items(results, shown_menu_names)[:FOLLOWUP_DISPLAY_LIMIT]
+    if not items:
+        message = "조건에 맞는 다른 메뉴를 찾지 못했습니다."
+        return {
+            "messages": [AIMessage(content=message)],
+            "response": {"type": "text", "message": message},
+            "last_menu_query": query,
+            "shown_menu_names": shown_menu_names,
+        }
+
+    return {
+        "messages": [
+            AIMessage(content=f"다른 추천 메뉴 {len(items)}가지를 골라봤어요.")
+        ],
+        "response": {"type": "menu_cards", "items": items},
+        "last_menu_query": query,
+        "shown_menu_names": _append_shown_menu_names(shown_menu_names, items),
+    }
+
+
+async def cs_agent_node(state: AgentState) -> dict:
+    original_count = len(state["messages"])
+    result = await _cs_agent.ainvoke(
+        {
+            "messages": state["messages"],
+            "menu_results": state.get("menu_results"),
+            "cs_results": state.get("cs_results"),
+            "selected_order": state.get("selected_order"),
+        }
+    )
+    new_messages = result["messages"][original_count:]
+
+    return_dict: dict = {
+        "messages": new_messages,
+        "response": _extract_response(result["messages"]),
+    }
+    entry = _extract_new_search_entry(new_messages, "search_cs")
+    if entry:
+        query, results = entry
+        cache = dict(state.get("cs_results") or {})
+        cache[query] = results
+        return_dict["cs_results"] = cache
+    return return_dict
+
+
+async def order_browser_agent_node(state: AgentState) -> dict:
+    selected_order = state.get("selected_order")
+    if selected_order:
+        tool_kwargs = {"menu_category": selected_order.get("menu_category", "")}
+        if selected_order.get("option_details"):
+            tool_kwargs["option_details"] = selected_order.get("option_details")
+        content = await asyncio.to_thread(
+            prepare_bbq_order.func,
+            selected_order["menu_name"],
+            selected_order.get("options", []),
+            selected_order["order_type"],
+            dict(state),
+            **tool_kwargs,
+        )
+        response = _extract_order_tool_response(content)
+        message = AIMessage(content=response["message"])
+        return {
+            "messages": [message],
+            "response": response,
+            "selected_order": None,
+        }
+
+    direct_resolution = _resolve_direct_order_from_menu_results(state)
+    if direct_resolution:
+        direct_order = direct_resolution.get("order")
+        if direct_order:
+            content = await asyncio.to_thread(
+                prepare_bbq_order.func,
+                direct_order["menu_name"],
+                direct_order.get("options", []),
+                direct_order["order_type"],
+                dict(state),
+                menu_category=direct_order.get("menu_category", ""),
+            )
+            response = _extract_order_tool_response(content)
+            message = AIMessage(content=response["message"])
+            return {
+                "messages": [message],
+                "response": response,
+                "selected_order": None,
+            }
+
+        clarification = direct_resolution["clarification"]
+        message = AIMessage(content=clarification["message"])
+        return {
+            "messages": [message],
+            "response": clarification,
+            "selected_order": None,
+        }
+
+    original_count = len(state["messages"])
+    result = await _order_agent.ainvoke(
+        {
+            "messages": state["messages"],
+            "menu_results": state.get("menu_results"),
+            "cs_results": state.get("cs_results"),
+            "selected_order": state.get("selected_order"),
+        }
+    )
+    new_messages = result["messages"][original_count:]
+
+    return {
+        "messages": new_messages,
+        "response": _extract_response(result["messages"]),
+    }
+
+
+async def fallback_node(state: AgentState) -> dict:
+    system = SystemMessage(
+        content=(
+            "\ub2f9\uc2e0\uc740 BBQ AI \uc5b4\uc2dc\uc2a4\ud134\ud2b8\uc785\ub2c8\ub2e4. "
+            "\uba54\ub274 \ucd94\ucc9c, \uace0\uac1d \uc11c\ube44\uc2a4 \ubb38\uc758, "
+            "\ub610\ub294 \ucd5c\uc885 \uc120\ud0dd \ud6c4 \uc8fc\ubb38 \uc900\ube44 \uc694\uccad\uc744 \ub3c4\uc640\ub4dc\ub9bd\ub2c8\ub2e4."
+        )
+    )
+    ai_response = await _fallback_llm.ainvoke([system] + list(state["messages"]))
+    ai_message = AIMessage(content=ai_response.content)
+    return {
+        "messages": [ai_message],
+        "response": {"type": "text", "message": ai_response.content},
+    }
+
+
+def route_intent(
+    state: AgentState,
+) -> Literal["menu_agent", "menu_followup", "cs_agent", "fallback"]:
     intent = state.get("intent", "unknown")
     if intent == "menu":
         return "menu_agent"
-    elif intent == "cs":
+    if intent == "menu_followup":
+        return "menu_followup"
+    if intent == "cs":
         return "cs_agent"
     return "fallback"
 
 
-# ── Graph 조립 ────────────────────────────────────────────────────────────────
+def route_after_menu(state: AgentState) -> Literal["order_browser_agent", "end"]:
+    if state.get("selected_order"):
+        return "order_browser_agent"
+    if _looks_like_order_request(_latest_user_message(state)):
+        return "order_browser_agent"
+    return "end"
+
 
 def build_graph():
     builder = StateGraph(AgentState)
 
     builder.add_node("intent_classifier", intent_classifier_node)
     builder.add_node("menu_agent", menu_agent_node)
+    builder.add_node("menu_followup", menu_followup_node)
     builder.add_node("cs_agent", cs_agent_node)
+    builder.add_node("order_browser_agent", order_browser_agent_node)
     builder.add_node("fallback", fallback_node)
 
     builder.add_edge(START, "intent_classifier")
@@ -158,16 +651,25 @@ def build_graph():
         route_intent,
         {
             "menu_agent": "menu_agent",
-            "cs_agent":   "cs_agent",
-            "fallback":   "fallback",
+            "menu_followup": "menu_followup",
+            "cs_agent": "cs_agent",
+            "fallback": "fallback",
         },
     )
-    builder.add_edge("menu_agent", END)
-    builder.add_edge("cs_agent",   END)
-    builder.add_edge("fallback",   END)
+    builder.add_conditional_edges(
+        "menu_agent",
+        route_after_menu,
+        {
+            "order_browser_agent": "order_browser_agent",
+            "end": END,
+        },
+    )
+    builder.add_edge("menu_followup", END)
+    builder.add_edge("cs_agent", END)
+    builder.add_edge("order_browser_agent", END)
+    builder.add_edge("fallback", END)
 
     return builder.compile()
 
 
-# 싱글턴 그래프 인스턴스
 graph = build_graph()
