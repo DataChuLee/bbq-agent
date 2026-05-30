@@ -22,12 +22,19 @@ from langchain_chroma import Chroma
 from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langgraph.prebuilt import InjectedState
+from tools.recommendation_criteria import (
+    build_criteria_retrieval_query,
+    detect_recommendation_criteria,
+    rerank_menu_items,
+)
 
 load_dotenv()
 
 CHROMA_PATH = Path(__file__).parent.parent / "vectorstore" / "chroma_db"
 COLLECTION_NAME = "bbq_menu"
 TOP_K = 5
+CRITERIA_TOP_K = 12
+FOLLOWUP_TOP_K = 12
 
 NO_MATCH_MESSAGE = "조건에 맞는 메뉴를 찾지 못했습니다."
 
@@ -210,26 +217,20 @@ def _get_retriever() -> SelfQueryRetriever:
     return retriever
 
 
-@tool
-def search_menu(query: str, state: Annotated[dict, InjectedState]) -> str:
-    """BBQ 메뉴를 자연어로 검색합니다.
-
-    가격 범위, 카테고리, 알레르기 제외, 식감, 맵기 등의 조건을 자연어로 포함할 수 있습니다.
-
-    Args:
-        query: 자연어 검색 쿼리. 예: "바삭한 치킨", "매운 순살 치킨", "땅콩 알레르기 없는 메뉴"
-
-    Returns:
-        검색된 메뉴 목록 (JSON 문자열)
-    """
-    cache: dict = state.get("menu_results") or {}
-    if query in cache:
-        return json.dumps({"results": cache[query]}, ensure_ascii=False)
-
-    requested_family = infer_requested_family(query)
+def _invoke_retriever(query: str, k: int):
     retriever = _get_retriever()
-    docs = retriever.invoke(query)
+    if not hasattr(retriever, "search_kwargs"):
+        return retriever.invoke(query)
 
+    original_search_kwargs = dict(getattr(retriever, "search_kwargs") or {})
+    retriever.search_kwargs = {**original_search_kwargs, "k": k}
+    try:
+        return retriever.invoke(query)
+    finally:
+        retriever.search_kwargs = original_search_kwargs
+
+
+def _documents_to_menu_items(docs) -> list[dict]:
     results = []
     for doc in docs:
         meta = doc.metadata
@@ -247,8 +248,45 @@ def search_menu(query: str, state: Annotated[dict, InjectedState]) -> str:
             "product_family": meta.get("product_family", "unknown") or "unknown",
         }
         results.append(item)
+    return results
 
+
+def search_menu_results(
+    query: str,
+    state: dict | None = None,
+    *,
+    k: int = TOP_K,
+    use_cache: bool = True,
+) -> list[dict]:
+    """Return menu result dicts for graph nodes and the search_menu tool."""
+    criteria = detect_recommendation_criteria(query)
+    cache: dict = (state or {}).get("menu_results") or {}
+    if use_cache and query in cache and not criteria:
+        return list(cache[query])
+
+    requested_family = infer_requested_family(query)
+    retrieval_query = build_criteria_retrieval_query(query)
+    search_k = max(k, CRITERIA_TOP_K) if criteria else k
+    docs = _invoke_retriever(retrieval_query, search_k)
+
+    results = _documents_to_menu_items(docs)
     results = _filter_by_requested_family(results, requested_family)
+    return rerank_menu_items(query, results)
+
+
+@tool
+def search_menu(query: str, state: Annotated[dict, InjectedState]) -> str:
+    """BBQ 메뉴를 자연어로 검색합니다.
+
+    가격 범위, 카테고리, 알레르기 제외, 식감, 맵기 등의 조건을 자연어로 포함할 수 있습니다.
+
+    Args:
+        query: 자연어 검색 쿼리. 예: "바삭한 치킨", "매운 순살 치킨", "땅콩 알레르기 없는 메뉴"
+
+    Returns:
+        검색된 메뉴 목록 (JSON 문자열)
+    """
+    results = search_menu_results(query, state)
 
     if not results:
         return json.dumps({"results": [], "message": NO_MATCH_MESSAGE}, ensure_ascii=False)
