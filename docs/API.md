@@ -137,7 +137,7 @@ Message types for the current design:
 - `menu_cards`
 - `clarification`
 
-For `menu_cards`, each item may include backend taxonomy metadata:
+For `menu_cards`, each item may include UI metadata such as `imageURL` and backend taxonomy metadata:
 
 ```json
 {
@@ -147,11 +147,22 @@ For `menu_cards`, each item may include backend taxonomy metadata:
   "spiciness": "매움",
   "texture": "바삭함",
   "imageURL": "https://static.bbqorder.co.kr/menu/...",
-  "product_family": "main_chicken"
+  "product_family": "main_chicken",
+  "recommendation_reason": "추천 기준상 맥주와 함께 먹을 때는 바삭하거나 매콤하고 짭짤한 치킨류가 잘 맞는 편입니다.",
+  "recommendation_score": 5,
+  "matched_criteria": "beer_pairing"
 }
 ```
 
 `product_family` is backend taxonomy metadata used to keep recommendations within the requested product family, such as `main_chicken`, `burger_pizza`, `side`, `drink`, `sauce`, or `seasoning`.
+
+For abstract recommendation requests, the menu cards may also include criteria-aware ranking metadata:
+
+- `matched_criteria`: the recommendation criteria record used for reranking, such as `beer_pairing`, `kids_friendly`, or `solo_meal`
+- `recommendation_score`: deterministic reranking score used to order candidates
+- `recommendation_reason`: user-facing explanation derived from the matched criteria and menu traits
+
+These fields are omitted or empty for direct menu-attribute searches that do not need the Recommendation Criteria KB.
 
 The client creates only user messages. Assistant messages are created by the server after response generation.
 In the current milestone, `POST /sessions/{id}/messages` accepts only `type: "text"` from the client.
@@ -191,7 +202,15 @@ Exactly one of `input` or `source_message_id` must be provided.
     "role": "assistant",
     "type": "menu_cards",
     "content": null,
-    "items": [],
+    "items": [
+      {
+        "name": "뿜치킹",
+        "category": "신메뉴",
+        "price": 25000,
+        "description": "한입 가득 뿜뿜!! 퍼지는 치즈의 폭풍...",
+        "imageURL": "https://static.bbqorder.co.kr/menu/be246fc85975bcc13819c8196_a0dad753-0d59-41eb-90c2-741cfb6b9907.png"
+      }
+    ],
     "created_at": "2026-04-24T10:00:08Z"
   },
   "sources": [
@@ -278,7 +297,15 @@ Example response:
       "role": "assistant",
       "type": "menu_cards",
       "content": null,
-      "items": [],
+      "items": [
+        {
+          "name": "뿜치킹",
+          "category": "신메뉴",
+          "price": 25000,
+          "description": "한입 가득 뿜뿜!! 퍼지는 치즈의 폭풍...",
+          "imageURL": "https://static.bbqorder.co.kr/menu/be246fc85975bcc13819c8196_a0dad753-0d59-41eb-90c2-741cfb6b9907.png"
+        }
+      ],
       "created_at": "2026-04-24T10:00:03Z"
     }
   ]
@@ -368,7 +395,15 @@ Example response:
       "role": "assistant",
       "type": "menu_cards",
       "content": null,
-      "items": [],
+      "items": [
+        {
+          "name": "뿜치킹",
+          "category": "신메뉴",
+          "price": 25000,
+          "description": "한입 가득 뿜뿜!! 퍼지는 치즈의 폭풍...",
+          "imageURL": "https://static.bbqorder.co.kr/menu/be246fc85975bcc13819c8196_a0dad753-0d59-41eb-90c2-741cfb6b9907.png"
+        }
+      ],
       "created_at": "2026-04-24T10:02:03Z"
     },
     "sources": [
