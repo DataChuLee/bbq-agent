@@ -1,0 +1,34 @@
+[
+  {
+    "query": "맥주랑 어울리는 치킨 추천해줘",
+    "expected_criteria": "beer_pairing",
+    "quality_checks": [
+      "Top results favor crispy, spicy, savory chicken items.",
+      "The answer includes a recommendation reason grounded in criteria and menu traits."
+    ]
+  },
+  {
+    "query": "아이랑 먹기 좋은 치킨 추천해줘",
+    "expected_criteria": "kids_friendly",
+    "quality_checks": [
+      "Top results avoid spicy items.",
+      "The answer explains that mild or easy-to-eat traits match the request."
+    ]
+  },
+  {
+    "query": "혼자 먹을 메뉴 추천해줘",
+    "expected_criteria": "solo_meal",
+    "quality_checks": [
+      "Top results favor 1-person, half-size, or portion-friendly menu items.",
+      "The answer does not invent menus outside the retrieved BBQ menu set."
+    ]
+  },
+  {
+    "query": "매운 치킨 추천해줘",
+    "expected_criteria": null,
+    "quality_checks": [
+      "The normal Menu RAG path still handles direct menu-attribute queries.",
+      "Recommendation criteria fields are not required for this query."
+    ]
+  }
+]
