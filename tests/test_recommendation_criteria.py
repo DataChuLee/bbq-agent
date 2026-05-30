@@ -206,25 +206,21 @@ class SearchMenuCriteriaIntegrationTests(unittest.TestCase):
         self.assertEqual(payload["results"][0]["matched_criteria"], "beer_pairing")
         self.assertTrue(payload["results"][0]["recommendation_reason"])
 
-    def test_final_answer_menu_preserves_recommendation_fields(self):
-        from tools.final_answer import final_answer_menu
+    def test_format_menu_cards_preserves_recommendation_fields(self):
+        from tools.final_answer import format_menu_cards
 
-        payload = json.loads(
-            final_answer_menu.invoke(
+        payload = format_menu_cards(
+            [
                 {
-                    "items": [
-                        {
-                            "name": "바삭 매운 치킨",
-                            "category": "후라이드",
-                            "price": 23000,
-                            "description": "설명",
-                            "recommendation_reason": "추천 기준상 잘 맞습니다.",
-                            "recommendation_score": 5,
-                            "matched_criteria": "beer_pairing",
-                        }
-                    ]
+                    "name": "바삭 매운 치킨",
+                    "category": "후라이드",
+                    "price": 23000,
+                    "description": "설명",
+                    "recommendation_reason": "추천 기준상 잘 맞습니다.",
+                    "recommendation_score": 5,
+                    "matched_criteria": "beer_pairing",
                 }
-            )
+            ]
         )
 
         card = payload["items"][0]

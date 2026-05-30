@@ -116,23 +116,19 @@ class SearchMenuTaxonomyFilterTests(unittest.TestCase):
 
 
 class FinalAnswerTaxonomyTests(unittest.TestCase):
-    def test_final_answer_menu_preserves_product_family(self):
-        from tools.final_answer import final_answer_menu
+    def test_format_menu_cards_preserves_product_family(self):
+        from tools.final_answer import format_menu_cards
 
-        payload = json.loads(
-            final_answer_menu.invoke(
+        payload = format_menu_cards(
+            [
                 {
-                    "items": [
-                        {
-                            "name": "황금올리브치킨™핫크리스피",
-                            "category": "후라이드",
-                            "price": 24000,
-                            "description": "매운 치킨",
-                            "product_family": "main_chicken",
-                        }
-                    ]
+                    "name": "황금올리브치킨™핫크리스피",
+                    "category": "후라이드",
+                    "price": 24000,
+                    "description": "매운 치킨",
+                    "product_family": "main_chicken",
                 }
-            )
+            ]
         )
 
         self.assertEqual(payload["items"][0]["product_family"], "main_chicken")

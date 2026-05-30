@@ -30,10 +30,10 @@ from langgraph.managed import RemainingSteps
 from langgraph.prebuilt import create_react_agent
 
 from graph.state import AgentState
-from tools.final_answer import final_answer_menu
+from tools.final_answer import format_menu_cards
 from tools.prepare_bbq_order import prepare_bbq_order
 from tools.search_cs import search_cs
-from tools.search_menu import FOLLOWUP_TOP_K, search_menu, search_menu_results
+from tools.search_menu import FOLLOWUP_TOP_K, NO_MATCH_MESSAGE, search_menu_results
 
 
 load_dotenv()
@@ -51,17 +51,6 @@ class _ReActState(TypedDict):
 
 FOLLOWUP_DISPLAY_LIMIT = 3
 
-
-MENU_SYSTEM_PROMPT = """You are a BBQ chicken menu recommendation assistant.
-
-Always follow this order:
-1. Use search_menu(query) to search relevant menu items.
-2. If results exist, call final_answer_menu(items=results) to return menu cards.
-   - Pass the search_menu results array directly to final_answer_menu.
-   - Do not include menu items that were not returned by search_menu.
-3. If search_menu returns no results, briefly say that no matching menu was found.
-
-Do not use browser automation or order placement tools. Your job is recommendation only."""
 
 CS_SYSTEM_PROMPT = """You are a BBQ customer service assistant.
 
@@ -84,19 +73,11 @@ Rules:
 - Do not use this tool for customer-service questions or general web browsing."""
 
 
-_menu_tools = [search_menu, final_answer_menu]
 _cs_tools = [search_cs]
 _order_tools = [prepare_bbq_order]
 
 _classifier_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 _fallback_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, streaming=True)
-
-_menu_agent = create_react_agent(
-    model=ChatOpenAI(model="gpt-4o-mini", temperature=0, streaming=True),
-    tools=_menu_tools,
-    prompt=MENU_SYSTEM_PROMPT,
-    state_schema=_ReActState,
-)
 
 _cs_agent = create_react_agent(
     model=ChatOpenAI(model="gpt-4o-mini", temperature=0, streaming=True),
@@ -436,36 +417,30 @@ def _extract_new_search_entry(messages: list, tool_name: str) -> tuple[str, list
 
 
 async def menu_agent_node(state: AgentState) -> dict:
-    original_count = len(state["messages"])
-    result = await _menu_agent.ainvoke(
-        {
-            "messages": state["messages"],
-            "menu_results": state.get("menu_results"),
-            "cs_results": state.get("cs_results"),
-            "selected_order": state.get("selected_order"),
-            "last_menu_query": state.get("last_menu_query"),
-            "shown_menu_names": state.get("shown_menu_names") or [],
-        }
-    )
-    new_messages = result["messages"][original_count:]
+    query = _latest_user_message(state).strip()
+    if _looks_like_order_request(query):
+        return {"messages": []}
 
-    return_dict: dict = {
-        "messages": new_messages,
-        "response": _extract_response(result["messages"]),
-    }
-    entry = _extract_new_search_entry(new_messages, "search_menu")
-    if entry:
-        query, results = entry
-        cache = dict(state.get("menu_results") or {})
-        cache[query] = results
-        return_dict["menu_results"] = cache
-        return_dict["last_menu_query"] = query
-        return_dict["shown_menu_names"] = _append_shown_menu_names(
+    results = await asyncio.to_thread(search_menu_results, query, dict(state))
+    if not results:
+        return {
+            "messages": [AIMessage(content=NO_MATCH_MESSAGE)],
+            "response": {"type": "text", "message": NO_MATCH_MESSAGE},
+        }
+
+    cache = dict(state.get("menu_results") or {})
+    cache[query] = results
+
+    return {
+        "messages": [AIMessage(content="메뉴 검색 결과를 카드로 준비했습니다.")],
+        "response": format_menu_cards(results),
+        "menu_results": cache,
+        "last_menu_query": query,
+        "shown_menu_names": _append_shown_menu_names(
             state.get("shown_menu_names") or [],
             results,
-        )
-        return_dict["response"] = {"type": "menu_cards", "items": results}
-    return return_dict
+        ),
+    }
 
 
 async def menu_followup_node(state: AgentState) -> dict:
@@ -500,7 +475,7 @@ async def menu_followup_node(state: AgentState) -> dict:
         "messages": [
             AIMessage(content=f"다른 추천 메뉴 {len(items)}가지를 골라봤어요.")
         ],
-        "response": {"type": "menu_cards", "items": items},
+        "response": format_menu_cards(items),
         "last_menu_query": query,
         "shown_menu_names": _append_shown_menu_names(shown_menu_names, items),
     }
