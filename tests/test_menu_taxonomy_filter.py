@@ -2,8 +2,6 @@ import json
 import unittest
 from unittest.mock import patch
 
-from tools.final_answer import final_answer_menu
-from tools.search_menu import infer_requested_family, search_menu
 from vectorstore.build_menu_index import build_metadata, derive_product_family
 
 
@@ -55,18 +53,26 @@ class ProductFamilyMetadataTests(unittest.TestCase):
 
 class QueryFamilyInferenceTests(unittest.TestCase):
     def test_infer_requested_family_treats_chicken_as_chicken(self):
+        from tools.search_menu import infer_requested_family
+
         self.assertEqual(infer_requested_family("매운 치킨 추천해줘"), "chicken")
 
     def test_infer_requested_family_treats_chicken_burger_as_burger_pizza(self):
+        from tools.search_menu import infer_requested_family
+
         self.assertEqual(infer_requested_family("치킨버거 추천해줘"), "burger_pizza")
 
     def test_infer_requested_family_returns_none_for_generic_recommendation(self):
+        from tools.search_menu import infer_requested_family
+
         self.assertIsNone(infer_requested_family("맛있는 메뉴 추천해줘"))
 
 
 class SearchMenuTaxonomyFilterTests(unittest.TestCase):
     @patch("tools.search_menu._get_retriever")
     def test_chicken_query_excludes_burger_pizza_results(self, mock_get_retriever):
+        from tools.search_menu import search_menu
+
         mock_get_retriever.return_value.invoke.return_value = [
             make_doc("BBQ 썬더 치킨버거 스파이시", "피자&버거", "burger_pizza"),
             make_doc("황금올리브치킨™핫크리스피", "후라이드", "main_chicken"),
@@ -80,6 +86,8 @@ class SearchMenuTaxonomyFilterTests(unittest.TestCase):
 
     @patch("tools.search_menu._get_retriever")
     def test_burger_query_keeps_burger_pizza_results(self, mock_get_retriever):
+        from tools.search_menu import search_menu
+
         mock_get_retriever.return_value.invoke.return_value = [
             make_doc("BBQ 썬더 치킨버거 스파이시", "피자&버거", "burger_pizza"),
             make_doc("황금올리브치킨™핫크리스피", "후라이드", "main_chicken"),
@@ -96,6 +104,8 @@ class SearchMenuTaxonomyFilterTests(unittest.TestCase):
     def test_missing_product_family_defaults_to_unknown_without_crashing(
         self, mock_get_retriever
     ):
+        from tools.search_menu import search_menu
+
         doc = make_doc("임시 치킨", "신메뉴", "main_chicken")
         del doc.metadata["product_family"]
         mock_get_retriever.return_value.invoke.return_value = [doc]
@@ -107,6 +117,8 @@ class SearchMenuTaxonomyFilterTests(unittest.TestCase):
 
 class FinalAnswerTaxonomyTests(unittest.TestCase):
     def test_final_answer_menu_preserves_product_family(self):
+        from tools.final_answer import final_answer_menu
+
         payload = json.loads(
             final_answer_menu.invoke(
                 {
