@@ -5,17 +5,35 @@ BBQ Menu & CS Agent — FastAPI 엔트리포인트.
     uvicorn main:app --reload
 """
 
-from typing import Optional
-from collections import defaultdict
+from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from langchain_core.messages import HumanMessage
 
-from graph.graph import graph
+from api.exceptions import AppError, app_error_handler, validation_error_handler
+from api.routers import knowledge as knowledge_router
+from api.routers import sessions as sessions_router
+from api.services.knowledge import KnowledgeService
+from api.services.message import MessageService
+from api.services.response import ResponseService
+from api.services.session import SessionService
 
-app = FastAPI(title="BBQ Menu & CS Agent", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.session_svc = SessionService()
+    app.state.message_svc = MessageService()
+    app.state.response_svc = ResponseService()
+    app.state.knowledge_svc = KnowledgeService()
+    yield
+
+
+app = FastAPI(
+    title="BBQ Menu & CS Agent",
+    version="2.0.0",
+    lifespan=lifespan,
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,57 +42,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 세션별 대화 이력 (서버 메모리 — 프로덕션에서는 Redis 등으로 교체)
-_session_store: dict[str, list] = defaultdict(list)
+app.add_exception_handler(AppError, app_error_handler)
+app.add_exception_handler(RequestValidationError, validation_error_handler)
+
+app.include_router(sessions_router.router)
+app.include_router(knowledge_router.router)
 
 
-# ── 요청 / 응답 모델 ──────────────────────────────────────────────────────────
-
-class ChatRequest(BaseModel):
-    user_input: str
-    session_id: Optional[str] = "default"
-
-
-class ChatResponse(BaseModel):
-    session_id: str
-    response: dict   # {"type": "menu_cards"|"text"|"clarification", ...}
-
-
-# ── 엔드포인트 ────────────────────────────────────────────────────────────────
-
-@app.post("/chat", response_model=ChatResponse)
-async def chat(req: ChatRequest) -> ChatResponse:
-    """사용자 자연어 입력을 받아 메뉴 추천 또는 CS 답변을 반환합니다."""
-    if not req.user_input.strip():
-        raise HTTPException(status_code=400, detail="user_input이 비어 있습니다.")
-
-    # 세션 이력에 새 메시지 추가
-    history = _session_store[req.session_id]
-    history.append(HumanMessage(content=req.user_input))
-
-    # LangGraph 실행
-    result = graph.invoke({
-        "messages": history,
-        "intent":   None,
-        "response": {},
-    })
-
-    # 그래프가 업데이트한 messages로 이력 갱신
-    _session_store[req.session_id] = list(result["messages"])
-
-    return ChatResponse(
-        session_id=req.session_id,
-        response=result["response"],
-    )
-
-
-@app.delete("/session/{session_id}")
-async def clear_session(session_id: str) -> dict:
-    """세션 대화 이력을 초기화합니다."""
-    _session_store.pop(session_id, None)
-    return {"message": f"세션 '{session_id}' 초기화 완료"}
-
-
-@app.get("/health")
+@app.get("/health", tags=["health"])
 async def health() -> dict:
-    return {"status": "ok"}
+    return {"data": {"status": "ok"}}
