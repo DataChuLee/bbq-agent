@@ -1,100 +1,37 @@
-# graph/ — 작업 내역
+# graph/
 
-## 파일 목록
+## 폴더 목적
+- LangGraph 상태와 노드 구성을 관리한다.
+- 사용자 입력을 `menu`, `cs`, `fallback` 경로로 라우팅한다.
+- 세션 캐시(`menu_results`, `cs_results`)를 tool 호출과 연결한다.
+- 검색 구현이나 UI 포맷 로직은 이 폴더에 넣지 않는다.
 
+## 주요 엔트리포인트
 | 파일 | 역할 |
 |---|---|
-| `__init__.py` | 패키지 초기화 |
-| `state.py` | LangGraph 공유 상태 (`AgentState`) 정의 |
-| `graph.py` | LangGraph StateGraph 구성 (Intent Classifier → Menu/CS/Fallback Node + ReAct 루프) |
+| `state.py` | 그래프 전체가 공유하는 `AgentState` 정의 |
+| `graph.py` | classifier, agent node, fallback node, routing, compiled graph |
 
----
+## 로컬 계약
+- `AgentState`는 최소 `messages`, `intent`, `response`, `menu_results`, `cs_results`를 유지한다.
+- `messages`는 LangChain `BaseMessage` 목록으로 유지한다. 문자열이나 임의 dict로 바꾸지 않는다.
+- `menu_results`, `cs_results`는 `{query: results}` 형태의 세션 캐시다.
+- 각 노드는 최종적으로 `response: dict`를 남겨야 하며, 최종 타입은 `text`, `clarification`, `menu_cards` 중 하나여야 한다.
+- `_extract_response()`는 우선 `ToolMessage`의 typed JSON을 읽고, 없으면 마지막 일반 `AIMessage`를 `text` 응답으로 변환한다.
+- `route_intent()`는 `menu_agent`, `cs_agent`, `fallback`만 반환한다.
 
-## state.py
+## 수정 원칙
+- `graph/`는 orchestration 전용이다. 검색 규칙, 데이터 가공, 카드 포맷팅을 이 폴더로 끌어오지 않는다.
+- 새 tool을 연결하거나 응답 타입을 추가하면 `main.py`, `frontend/src/app/api/chat/route.ts`, `frontend/src/types/chat.ts`까지 같이 본다.
+- `AgentState` 키를 바꾸면 `main.py`의 세션 저장 구조와 `test_graph.py`를 함께 수정한다.
+- classifier 기준이나 fallback 정책을 바꿀 때는 `menu`와 `cs`가 아닌 입력이 어떻게 처리되는지까지 검증한다.
 
-```python
-class AgentState(TypedDict):
-    messages: List[BaseMessage]   # 전체 대화 이력 (Human + AI + Tool)
-    intent: Optional[str]         # "menu" | "cs" | "unknown"
-    response: dict                # 최종 응답
-```
+## 변경 영향
+- `response` 구조 변경: `main.py`, 프론트 Route Handler, 프론트 타입/렌더러 영향
+- 캐시 구조 변경: `main.py`, `tools/search_menu.py`, `tools/search_cs.py` 영향
+- 노드 추가/삭제: 라우팅 함수, 테스트 흐름, 스트리밍 이벤트 해석 영향
 
-### 필드 설명
-
-| 필드 | 타입 | 역할 |
-|---|---|---|
-| `messages` | `List[BaseMessage]` | Human / AI / ToolMessage 전체 이력. 모든 Node가 읽고 씀 |
-| `intent` | `Optional[str]` | Intent Classifier Node가 설정. `"menu"` / `"cs"` / `"unknown"` |
-| `response` | `dict` | 최종 응답. 메뉴 카드 JSON 또는 `{"type": "text", "message": "..."}` |
-
----
-
-## graph.py
-
-### 그래프 구조
-```
-START
-  └─► intent_classifier (LLM 의도 분류)
-        ├─► menu_agent  (create_react_agent wrapper)  ─► END
-        ├─► cs_agent    (create_react_agent wrapper)  ─► END
-        └─► fallback    (안내 메시지)                  ─► END
-```
-
-### Node 역할
-
-| Node | 역할 | 사용 Tool |
-|---|---|---|
-| `intent_classifier` | LLM 프롬프트로 menu/cs/unknown 분류 | 없음 (직접 LLM 호출) |
-| `menu_agent` | `create_react_agent` 호출 후 response 추출 | search_menu, ask_clarification, final_answer_menu |
-| `cs_agent` | `create_react_agent` 호출 후 response 추출 | search_cs, final_answer_cs |
-| `fallback` | unknown 의도 → 안내 문구 반환 | 없음 |
-
-### ReAct 루프 구현 방식 (리팩토링)
-
-**변경 전**: `for _ in range(MAX_ITERATIONS)` 수동 루프 + 직접 tool 실행 (~50줄/노드)
-
-**변경 후**: `langgraph.prebuilt.create_react_agent` 사용 (~5줄/노드)
-
-```python
-from langgraph.prebuilt import create_react_agent
-
-_menu_agent = create_react_agent(
-    model=ChatOpenAI(model="gpt-4o-mini", temperature=0),
-    tools=_menu_tools,
-    prompt=MENU_SYSTEM_PROMPT,
-)
-
-def menu_agent_node(state):
-    result = _menu_agent.invoke({"messages": state["messages"]})
-    return {"messages": result["messages"], "response": _extract_response(result["messages"])}
-```
-
-### ReAct 루프 종료 조건 (create_react_agent 내장)
-- LLM이 tool_calls 없는 AIMessage 반환 시 → 자동 종료
-- `final_answer_*` / `ask_clarification` 실행 후 LLM은 자연스럽게 tool_calls 없이 종료
-
-### response 추출 방식
-messages를 역순 탐색 → `ToolMessage.content`에서 `"type"` 키가 있는 JSON 반환
-```python
-def _extract_response(messages):
-    for msg in reversed(messages):
-        if isinstance(msg, ToolMessage):
-            data = json.loads(msg.content)
-            if "type" in data:   # menu_cards / text / clarification
-                return data
-```
-
-### 싱글턴 인스턴스
-```python
-# FastAPI에서 바로 import해서 사용
-from graph.graph import graph
-result = graph.invoke({"messages": [...], "intent": None, "response": {}})
-```
-
----
-
-### state.py 설계 결정
-
-- `messages`를 LangChain `BaseMessage` 타입으로 유지 → `create_react_agent`와 자연스럽게 연결
-- `intent`는 Optional로 선언 → 초기 State 생성 시 None으로 시작 가능
-- `response`는 dict → 메뉴(카드 JSON)와 CS(텍스트) 두 형태를 하나의 필드로 처리
+## 검증 방법
+- `python test_graph.py`
+- 메뉴 질의 1건과 CS 질의 1건을 실제로 호출해 응답 타입이 기대와 맞는지 확인
+- 스트리밍이나 fallback을 건드렸다면 `/chat/stream`과 unknown 입력도 함께 확인
