@@ -1,0 +1,1 @@
+- [Frontend Architecture](project_frontend_architecture.md) — Component tree, API layer (mockApi → real API swap point), type system, BBQ brand design tokens
