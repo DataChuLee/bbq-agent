@@ -29,6 +29,13 @@ from langgraph.graph.message import add_messages
 from langgraph.managed import RemainingSteps
 from langgraph.prebuilt import create_react_agent
 
+from graph.intent import (
+    build_intent_prompt,
+    has_new_menu_constraints,
+    heuristic_classify,
+    looks_like_menu_followup,
+    looks_like_order_request,
+)
 from graph.state import AgentState
 from tools.final_answer import format_menu_cards
 from tools.prepare_bbq_order import prepare_bbq_order
@@ -121,27 +128,11 @@ def _normalize_menu_text(value: str) -> str:
 
 
 def _looks_like_order_request(message: str) -> bool:
-    normalized = message.replace(" ", "").lower()
-    order_markers = (
-        "\uc7a5\ubc14\uad6c\ub2c8",  # cart
-        "\ub2f4\uc544\uc918",
-        "\ub2f4\uc544",
-        "\uc8fc\ubb38\ud560\uac8c",
-        "\uc8fc\ubb38\ud574\uc918",
-        "\uc774\uac78\ub85c\uc8fc\ubb38",
-        "\uc774\uac78\ub85c\ud560\uac8c",
-        "\uacb0\uc81c\ud558\ub7ec",
-    )
-    return any(marker in normalized for marker in order_markers)
+    return looks_like_order_request(message)
 
 
 def _looks_like_menu_followup(message: str, state: dict) -> bool:
-    if not str(state.get("last_menu_query") or "").strip():
-        return False
-
-    normalized = message.replace(" ", "").lower()
-    followup_markers = ("다른", "또", "더", "없어", "추가")
-    return any(marker in normalized for marker in followup_markers)
+    return looks_like_menu_followup(message, state.get("last_menu_query"))
 
 
 def _append_shown_menu_names(
@@ -367,23 +358,14 @@ def _extract_order_tool_response(content: str) -> dict:
 async def intent_classifier_node(state: AgentState) -> dict:
     """Classify initial request only as menu, cs, or unknown."""
     last_message = str(state["messages"][-1].content)
-    if _looks_like_order_request(last_message):
-        return {"intent": "menu"}
-    if _looks_like_menu_followup(last_message, state):
-        return {"intent": "menu_followup"}
+    heuristic_intent = heuristic_classify(
+        last_message,
+        last_menu_query=state.get("last_menu_query"),
+    )
+    if heuristic_intent:
+        return {"intent": heuristic_intent}
 
-    prompt = f"""Classify the user's message into exactly one intent.
-
-- menu: BBQ menu recommendation, menu search, final menu selection, price/flavor/allergy/menu availability.
-- cs: delivery delay, refund, complaint, gift certificate, existing order issue, customer service.
-- unknown: anything else.
-
-Answer with only one lowercase label: menu, cs, or unknown.
-
-User message: {last_message}
-Intent:"""
-
-    response = await _classifier_llm.ainvoke(prompt)
+    response = await _classifier_llm.ainvoke(build_intent_prompt(last_message))
     intent = response.content.strip().lower()
     if intent not in ("menu", "cs"):
         intent = "unknown"
@@ -444,8 +426,13 @@ async def menu_agent_node(state: AgentState) -> dict:
 
 
 async def menu_followup_node(state: AgentState) -> dict:
-    query = str(state.get("last_menu_query") or "").strip()
+    last_query = str(state.get("last_menu_query") or "").strip()
     shown_menu_names = state.get("shown_menu_names") or []
+
+    # 새로운 조건(식감·맵기·카테고리 등)이 있으면 현재 메시지로 검색한다
+    current_message = _latest_user_message(state)
+    query = current_message if has_new_menu_constraints(current_message) else last_query
+
     if not query:
         message = "이전 추천 조건을 찾지 못했습니다. 원하는 메뉴 조건을 다시 알려주세요."
         return {
@@ -463,7 +450,7 @@ async def menu_followup_node(state: AgentState) -> dict:
     )
     items = _unseen_menu_items(results, shown_menu_names)[:FOLLOWUP_DISPLAY_LIMIT]
     if not items:
-        message = "조건에 맞는 다른 메뉴를 찾지 못했습니다."
+        message = "조건에 맞는 다른 메뉴를 더 찾지 못했습니다. 조건을 바꿔서 다시 말씀해주세요."
         return {
             "messages": [AIMessage(content=message)],
             "response": {"type": "text", "message": message},
@@ -503,6 +490,7 @@ async def cs_agent_node(state: AgentState) -> dict:
         cache = dict(state.get("cs_results") or {})
         cache[query] = results
         return_dict["cs_results"] = cache
+        return_dict["last_cs_query"] = query
     return return_dict
 
 

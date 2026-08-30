@@ -21,4 +21,5 @@ class AgentState(TypedDict):
     cs_results: Optional[dict]
     selected_order: Optional[SelectedOrder]
     last_menu_query: Optional[str]
+    last_cs_query: Optional[str]
     shown_menu_names: list[str]

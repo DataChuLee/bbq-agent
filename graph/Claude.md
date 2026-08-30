@@ -11,6 +11,7 @@
 |---|---|
 | `state.py` | 그래프 전체가 공유하는 `AgentState` 정의 |
 | `graph.py` | classifier, agent node, fallback node, routing, compiled graph |
+| `intent.py` | 휴리스틱 intent 분류, 주문/메뉴 follow-up 감지, LLM 분류 prompt 생성 |
 
 ## 로컬 계약
 - `AgentState`는 최소 `messages`, `intent`, `response`, `menu_results`, `cs_results`를 유지한다.
@@ -18,13 +19,19 @@
 - `menu_results`, `cs_results`는 `{query: results}` 형태의 세션 캐시다.
 - 각 노드는 최종적으로 `response: dict`를 남겨야 하며, 최종 타입은 `text`, `clarification`, `menu_cards` 중 하나여야 한다.
 - `_extract_response()`는 우선 `ToolMessage`의 typed JSON을 읽고, 없으면 마지막 일반 `AIMessage`를 `text` 응답으로 변환한다.
-- `route_intent()`는 `menu_agent`, `cs_agent`, `fallback`만 반환한다.
+- `route_intent()`는 `menu_agent`, `menu_followup`, `cs_agent`, `fallback`만 반환한다.
+
+## 객체 지향 로컬 계약
+- 그래프 노드 자체는 LangGraph 계약에 맞춰 함수형 인터페이스를 유지한다.
+- 여러 노드가 공유하는 정책, 포맷팅, 분기 조건은 작은 클래스로 분리할 수 있다.
+- 클래스가 `AgentState` 전체를 장기간 보관하지 않도록 한다. 필요한 값만 메서드 인자로 받는다.
+- 그래프 클래스가 검색 실행, 인덱스 로딩, UI 응답 포맷팅까지 직접 책임지지 않게 한다.
 
 ## 수정 원칙
 - `graph/`는 orchestration 전용이다. 검색 규칙, 데이터 가공, 카드 포맷팅을 이 폴더로 끌어오지 않는다.
 - 새 tool을 연결하거나 응답 타입을 추가하면 `main.py`, `frontend/src/app/api/chat/route.ts`, `frontend/src/types/chat.ts`까지 같이 본다.
 - `AgentState` 키를 바꾸면 `main.py`의 세션 저장 구조와 `test_graph.py`를 함께 수정한다.
-- classifier 기준이나 fallback 정책을 바꿀 때는 `menu`와 `cs`가 아닌 입력이 어떻게 처리되는지까지 검증한다.
+- classifier 기준이나 fallback 정책을 바꿀 때는 `menu`, `menu_followup`, `cs`가 아닌 입력이 어떻게 처리되는지까지 검증한다.
 
 ## 변경 영향
 - `response` 구조 변경: `main.py`, 프론트 Route Handler, 프론트 타입/렌더러 영향
