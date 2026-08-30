@@ -1,11 +1,19 @@
 export type MessageRole = "user" | "assistant";
 
+export type Source = {
+  sourceType: "menu" | "cs";
+  content: string;
+  score: number | null;
+  metadata: Record<string, unknown>;
+};
+
 export type TextMessage = {
   id: string;
   role: MessageRole;
   type: "text";
   content: string;
   timestamp: Date;
+  sources?: Source[];
 };
 
 export type MenuCard = {
@@ -45,6 +53,7 @@ export type MenuCardsMessage = {
   type: "menu_cards";
   cards: MenuCard[];
   timestamp: Date;
+  sources?: Source[];
 };
 
 export type ClarificationMessage = {

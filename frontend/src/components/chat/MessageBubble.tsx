@@ -1,6 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ClarificationMessage, TextMessage } from "@/types/chat";
+import { SourceList } from "./SourceList";
 
 interface MessageBubbleProps {
   message: TextMessage | ClarificationMessage;
@@ -25,7 +26,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent)] text-sm font-black text-white shadow-[0_4px_12px_rgba(232,25,44,0.24)]">
         B
       </div>
-      <div className="max-w-[82%]">
+      <div className="max-w-[82%] min-w-0">
         {isClarification && (
           <div className="mb-2 flex items-center gap-2">
             <span
@@ -74,6 +75,13 @@ export function MessageBubble({ message }: MessageBubbleProps) {
             {message.content}
           </ReactMarkdown>
         </div>
+
+        {message.type === "text" &&
+          message.role === "assistant" &&
+          message.sources &&
+          message.sources.length > 0 && (
+            <SourceList sources={message.sources} />
+          )}
       </div>
     </div>
   );
