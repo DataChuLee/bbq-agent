@@ -15,6 +15,7 @@ class SessionRecord:
     cs_results: dict = field(default_factory=dict)
     selected_order: dict | None = None
     last_menu_query: str | None = None
+    last_cs_query: str | None = None
     shown_menu_names: list[str] = field(default_factory=list)
 
     @property

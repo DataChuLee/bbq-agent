@@ -13,6 +13,7 @@ from api.schemas import (
     MessageOut,
     ResponseRequest,
     SessionOut,
+    SourceRef,
 )
 from api.streaming import sse_stream
 
@@ -132,7 +133,7 @@ async def generate_response(
                 404,
             )
 
-    response, intent = await response_svc.generate(record)
+    response, intent, sources = await response_svc.generate(record)
     assistant_msg = message_svc.store_assistant_response(record, response, intent)
 
     resp_id = f"resp_{uuid.uuid4().hex[:8]}"
@@ -141,7 +142,7 @@ async def generate_response(
             response_id=resp_id,
             intent=intent,
             message=MessageOut(**assistant_msg),
-            sources=[],
+            sources=[SourceRef(**s) for s in sources],
         )
     )
 

@@ -20,7 +20,19 @@ class FakeResponseService:
                 "message": "Complete login in the browser.",
             },
         )
-        yield ("done", {"type": "text", "message": "finished"}, "menu")
+        yield (
+            "done",
+            {"type": "text", "message": "finished"},
+            "menu",
+            [
+                {
+                    "source_type": "menu",
+                    "content": "메뉴 설명",
+                    "score": None,
+                    "metadata": {"name": "황금올리브치킨"},
+                }
+            ],
+        )
 
 
 class FakeMessageService:
@@ -49,6 +61,10 @@ class StreamingManualCheckpointTests(unittest.IsolatedAsyncioTestCase):
             if chunk.startswith("data: ")
         ]
 
+        self.assertEqual(
+            [payload["event"] for payload in payloads],
+            ["start", "manual_checkpoint", "message", "done"],
+        )
         self.assertIn(
             {
                 "event": "manual_checkpoint",
@@ -58,6 +74,20 @@ class StreamingManualCheckpointTests(unittest.IsolatedAsyncioTestCase):
                 },
             },
             payloads,
+        )
+        message_event = next(
+            payload for payload in payloads if payload["event"] == "message"
+        )
+        self.assertEqual(
+            message_event["sources"],
+            [
+                {
+                    "source_type": "menu",
+                    "content": "메뉴 설명",
+                    "score": None,
+                    "metadata": {"name": "황금올리브치킨"},
+                }
+            ],
         )
 
 

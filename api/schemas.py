@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Any, Generic, Literal, TypeVar
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 # ── 공통 리터럴 타입 ──────────────────────────────────────────────────────────
 
@@ -57,8 +57,8 @@ class SelectedOptionDetailIn(BaseModel):
 class SelectedOrderIn(BaseModel):
     menu_name: str
     menu_category: str = ""
-    options: list[str] = []
-    option_details: list[SelectedOptionDetailIn] = []
+    options: list[str] = Field(default_factory=list)
+    option_details: list[SelectedOptionDetailIn] = Field(default_factory=list)
     order_type: Literal["delivery", "pickup"]
 
 
@@ -88,14 +88,16 @@ class ResponseRequest(BaseModel):
 
 class SourceRef(BaseModel):
     source_type: Literal["menu", "cs"]
-    source_id: str
+    content: str
+    score: float | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class AssistantResponseOut(BaseModel):
     response_id: str
     intent: str
     message: MessageOut
-    sources: list[SourceRef] = []
+    sources: list[SourceRef] = Field(default_factory=list)
 
 
 # ── Knowledge ─────────────────────────────────────────────────────────────────
