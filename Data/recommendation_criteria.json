@@ -1,0 +1,55 @@
+[
+  {
+    "intent": "beer_pairing",
+    "label": "맥주 페어링",
+    "user_expressions": ["맥주", "치맥", "술안주", "안주"],
+    "retrieval_query": "바삭한 매운 치킨",
+    "default_filters": {
+      "product_type": ["main_menu", "set_menu"],
+      "product_family": ["chicken"]
+    },
+    "preferred_traits": ["바삭함", "매움", "보통", "짭짤함", "고소함", "후라이드", "fried", "chicken"],
+    "avoid_traits": ["너무 달다", "느끼함", "순함", "sauce", "drink"],
+    "reason": "추천 기준상 맥주와 함께 먹을 때는 바삭하거나 매콤하고 짭짤한 치킨류가 잘 맞는 편입니다.",
+    "weights": {
+      "preferred": 2,
+      "avoid": -2,
+      "family": 1
+    }
+  },
+  {
+    "intent": "kids_friendly",
+    "label": "아이와 함께",
+    "user_expressions": ["아이", "어린이", "애들", "가족"],
+    "retrieval_query": "순한 부드러운 치킨",
+    "default_filters": {
+      "product_type": ["main_menu", "set_menu"],
+      "spiciness": ["순함"]
+    },
+    "preferred_traits": ["순함", "부드러움", "촉촉함", "순살", "chicken"],
+    "avoid_traits": ["매움", "매콤", "핫", "자극", "spicy_sauce", "sauce", "drink"],
+    "reason": "추천 기준상 아이와 함께 먹을 때는 맵거나 자극적인 메뉴보다 순하고 먹기 쉬운 메뉴가 적합합니다.",
+    "weights": {
+      "preferred": 2,
+      "avoid": -3,
+      "family": 1
+    }
+  },
+  {
+    "intent": "solo_meal",
+    "label": "혼밥/1인",
+    "user_expressions": ["혼밥", "혼자", "일인", "1인용", "혼자먹"],
+    "retrieval_query": "1인분 반마리 치킨",
+    "default_filters": {
+      "product_type": ["main_menu", "set_menu"]
+    },
+    "preferred_traits": ["1인분", "반마리", "순살", "chicken"],
+    "avoid_traits": ["세트메뉴", "단체"],
+    "reason": "추천 기준상 혼자 먹을 때는 1인분, 반마리, 또는 양 조절이 쉬운 메뉴가 적합합니다.",
+    "weights": {
+      "preferred": 2,
+      "avoid": -2,
+      "family": 1
+    }
+  }
+]
