@@ -6,21 +6,57 @@ from typing import Literal, Union
 from api.services.manual_checkpoint import manual_checkpoint_broker
 from api.services.session import SessionRecord
 
-# 스트림 이벤트 타입: ("token", 토큰문자열) 또는 ("done", 응답dict, 의도문자열)
 StreamEvent = Union[
     tuple[Literal["token"], str],
+    tuple[Literal["intent"], str],
     tuple[Literal["manual_checkpoint"], dict],
-    tuple[Literal["done"], dict, str],
+    tuple[Literal["done"], dict, str, list[dict]],
 ]
 
 
-class ResponseService:
-    async def generate(self, session: SessionRecord) -> tuple[dict, str]:
-        """그래프를 동기 방식으로 실행하고 (response, intent)를 반환한다.
+def _extract_sources(result: dict) -> list[dict]:
+    """그래프 최종 state에서 현재 턴의 retrieval 근거를 추출한다."""
+    intent = result.get("intent") or "unknown"
 
-        호출 전에 사용자 메시지가 session.lc_messages에 추가돼 있어야 한다.
-        완료 후 session.lc_messages를 그래프 출력으로 교체한다.
-        """
+    if intent in ("menu", "menu_followup"):
+        last_query = result.get("last_menu_query") or ""
+        items = (result.get("menu_results") or {}).get(last_query, [])
+        return [
+            {
+                "source_type": "menu",
+                "content": item.get("description", ""),
+                "score": None,
+                "metadata": {
+                    "name": item.get("name", ""),
+                    "category": item.get("category", ""),
+                    "price": item.get("price", 0),
+                },
+            }
+            for item in items
+        ]
+
+    if intent == "cs":
+        last_query = result.get("last_cs_query") or ""
+        items = (result.get("cs_results") or {}).get(last_query, [])
+        return [
+            {
+                "source_type": "cs",
+                "content": item.get("content", ""),
+                "score": None,
+                "metadata": {
+                    "cs_category": item.get("cs_category", ""),
+                    "claim_category": item.get("claim_category", ""),
+                },
+            }
+            for item in items
+        ]
+
+    return []
+
+
+class ResponseService:
+    async def generate(self, session: SessionRecord) -> tuple[dict, str, list[dict]]:
+        """그래프를 동기 방식으로 실행하고 (response, intent, sources)를 반환한다."""
         from graph.graph import graph
 
         result = await graph.ainvoke(
@@ -33,6 +69,7 @@ class ResponseService:
                 "cs_results": session.cs_results,
                 "selected_order": session.selected_order,
                 "last_menu_query": session.last_menu_query,
+                "last_cs_query": session.last_cs_query,
                 "shown_menu_names": session.shown_menu_names,
             }
         )
@@ -41,6 +78,7 @@ class ResponseService:
         session.menu_results = result.get("menu_results") or session.menu_results
         session.cs_results = result.get("cs_results") or session.cs_results
         session.last_menu_query = result.get("last_menu_query") or session.last_menu_query
+        session.last_cs_query = result.get("last_cs_query") or session.last_cs_query
         session.shown_menu_names = (
             result.get("shown_menu_names") or session.shown_menu_names
         )
@@ -48,7 +86,8 @@ class ResponseService:
 
         response = result.get("response", {"type": "text", "message": ""})
         intent: str = result.get("intent") or "unknown"
-        return response, intent
+        sources = _extract_sources(result)
+        return response, intent, sources
 
     async def generate_stream(
         self, session: SessionRecord
@@ -56,8 +95,8 @@ class ResponseService:
         """그래프 스트리밍 이벤트를 yield한다.
 
         yields:
-            ("token", token_text)           — 생성 중인 LLM 토큰
-            ("done", response_dict, intent) — 완료 시 최종 응답과 의도
+            ("token", token_text)                       — 생성 중인 LLM 토큰
+            ("done", response_dict, intent, sources)    — 완료 시 최종 응답·의도·출처
         """
         from graph.graph import graph
 
@@ -70,6 +109,7 @@ class ResponseService:
             "cs_results": session.cs_results,
             "selected_order": session.selected_order,
             "last_menu_query": session.last_menu_query,
+            "last_cs_query": session.last_cs_query,
             "shown_menu_names": session.shown_menu_names,
         }
 
@@ -79,6 +119,7 @@ class ResponseService:
         final_menu_results = session.menu_results
         final_cs_results = session.cs_results
         final_last_menu_query = session.last_menu_query
+        final_last_cs_query = session.last_cs_query
         final_shown_menu_names = session.shown_menu_names
 
         graph_events: asyncio.Queue = asyncio.Queue()
@@ -126,9 +167,15 @@ class ResponseService:
                 if kind == "__graph_error__":
                     raise event["error"]
 
-                if kind == "on_chat_model_stream":
+                if kind == "on_chain_end" and event.get("name") == "intent_classifier":
+                    output = event.get("data", {}).get("output", {})
+                    intent_value = output.get("intent")
+                    if intent_value:
+                        yield ("intent", intent_value)
+
+                elif kind == "on_chat_model_stream":
                     node = event.get("metadata", {}).get("langgraph_node", "")
-                    if node in ("menu_agent", "cs_agent", "fallback"):
+                    if node in ("agent", "cs_agent", "fallback"):
                         chunk = event["data"]["chunk"]
                         if chunk.content:
                             yield ("token", chunk.content)
@@ -142,6 +189,9 @@ class ResponseService:
                     final_cs_results = output.get("cs_results", final_cs_results)
                     final_last_menu_query = output.get(
                         "last_menu_query", final_last_menu_query
+                    )
+                    final_last_cs_query = output.get(
+                        "last_cs_query", final_last_cs_query
                     )
                     final_shown_menu_names = output.get(
                         "shown_menu_names", final_shown_menu_names
@@ -158,7 +208,17 @@ class ResponseService:
         session.menu_results = final_menu_results
         session.cs_results = final_cs_results
         session.last_menu_query = final_last_menu_query
+        session.last_cs_query = final_last_cs_query
         session.shown_menu_names = final_shown_menu_names
         session.selected_order = None
 
-        yield ("done", final_response, final_intent)
+        final_sources = _extract_sources(
+            {
+                "intent": final_intent,
+                "menu_results": final_menu_results,
+                "cs_results": final_cs_results,
+                "last_menu_query": final_last_menu_query,
+                "last_cs_query": final_last_cs_query,
+            }
+        )
+        yield ("done", final_response, final_intent, final_sources)

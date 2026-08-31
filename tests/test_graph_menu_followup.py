@@ -109,6 +109,45 @@ class MenuFollowupNodeTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("다른 메뉴", result["response"]["message"])
         self.assertEqual(result["shown_menu_names"], ["뿜치킹"])
 
+    async def test_followup_with_new_constraints_searches_current_message(self) -> None:
+        from graph import graph as graph_module
+
+        current_message = "그럼 안 매운 다른 메뉴 추천해줘"
+        selected_order = {
+            "menu_name": "뿜치킹",
+            "options": [],
+            "order_type": "delivery",
+        }
+        state = {
+            "messages": [HumanMessage(content=current_message)],
+            "last_menu_query": "매운 치킨 추천해줘",
+            "shown_menu_names": ["뿜치킹"],
+            "menu_results": {},
+            "cs_results": {},
+            "selected_order": selected_order,
+        }
+        search_results = [
+            {"name": "황금올리브치킨™", "category": "후라이드", "price": 23000}
+        ]
+
+        with patch.object(
+            graph_module,
+            "search_menu_results",
+            return_value=search_results,
+        ) as mock_search:
+            result = await graph_module.menu_followup_node(state)
+
+        mock_search.assert_called_once_with(
+            current_message,
+            state,
+            k=graph_module.FOLLOWUP_TOP_K,
+            use_cache=False,
+        )
+        self.assertEqual(result["last_menu_query"], current_message)
+        self.assertEqual(result["response"]["type"], "menu_cards")
+        self.assertNotIn("selected_order", result)
+        self.assertEqual(state["selected_order"], selected_order)
+
 
 if __name__ == "__main__":
     unittest.main()

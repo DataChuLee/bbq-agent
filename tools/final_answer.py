@@ -1,53 +1,37 @@
-"""
-final_answer Tool — 최종 응답 포맷팅.
+"""Menu response formatting helpers."""
 
-Menu Agent: 검색 결과를 카드 JSON으로 포맷팅.
-"""
-
-import json
-from typing import List
-
-from langchain_core.tools import tool
+from __future__ import annotations
 
 
-# ── Menu Agent용 ─────────────────────────────────────────────────────────────
+MENU_CARD_FIELDS = (
+    ("name", ""),
+    ("category", ""),
+    ("price", 0),
+    ("description", ""),
+    ("allergy", ""),
+    ("texture", ""),
+    ("spiciness", ""),
+    ("nutrition", ""),
+    ("options", ""),
+    ("imageURL", ""),
+    ("product_type", ""),
+    ("product_family", ""),
+    ("primary_texture", ""),
+    ("cooking_method", ""),
+    ("sauce_style", ""),
+    ("option_tags", ""),
+    ("recommendation_reason", ""),
+    ("recommendation_score", 0),
+    ("matched_criteria", ""),
+)
 
 
-@tool
-def final_answer_menu(items: List[dict]) -> str:
-    """메뉴 검색 결과를 카드 JSON 형태로 최종 응답합니다.
-
-    search_menu 결과를 받아 프론트엔드에서 렌더링할 수 있는
-    카드 형태의 JSON으로 포맷팅합니다.
-
-    Args:
-        items: search_menu에서 반환된 메뉴 항목 리스트.
-               각 항목은 name, category, price, description, allergy,
-               nutrition, options 필드를 포함합니다.
-
-    Returns:
-        카드 JSON 문자열. type="menu_cards"
-    """
+def format_menu_cards(items: list[dict]) -> dict:
+    """Format retrieved menu items as the frontend menu card payload."""
     cards = []
     for item in items:
         cards.append(
-            {
-                "name": item.get("name", ""),
-                "category": item.get("category", ""),
-                "price": item.get("price", 0),
-                "description": item.get("description", ""),
-                "allergy": item.get("allergy", ""),
-                "nutrition": item.get("nutrition", ""),
-                "options": item.get("options", ""),
-                "imageURL": item.get("imageURL", ""),
-                "product_family": item.get("product_family", ""),
-                "recommendation_reason": item.get("recommendation_reason", ""),
-                "recommendation_score": item.get("recommendation_score", 0),
-                "matched_criteria": item.get("matched_criteria", ""),
-            }
+            {field: item.get(field, default) for field, default in MENU_CARD_FIELDS}
         )
 
-    return json.dumps(
-        {"type": "menu_cards", "items": cards},
-        ensure_ascii=False,
-    )
+    return {"type": "menu_cards", "items": cards}

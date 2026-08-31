@@ -15,6 +15,7 @@ export function ChatContainer() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [streamingContent, setStreamingContent] = useState<string | null>(null);
+  const [currentIntent, setCurrentIntent] = useState<string | null>(null);
   const [manualCheckpoint, setManualCheckpoint] = useState<ManualCheckpoint | null>(null);
   const [isResumingCheckpoint, setIsResumingCheckpoint] = useState(false);
   const [sessionError, setSessionError] = useState(false);
@@ -54,8 +55,12 @@ export function ChatContainer() {
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
     setStreamingContent("");
+    setCurrentIntent(null);
 
     await streamMessage(sessionIdRef.current, query, selectedOrder, {
+      onIntent: (intent) => {
+        setCurrentIntent(intent);
+      },
       onToken: (token) => {
         setStreamingContent((prev) => (prev ?? "") + token);
       },
@@ -72,6 +77,7 @@ export function ChatContainer() {
       onDone: () => {
         setIsLoading(false);
         setStreamingContent(null);
+        setCurrentIntent(null);
         setManualCheckpoint(null);
         setIsResumingCheckpoint(false);
       },
@@ -89,6 +95,7 @@ export function ChatContainer() {
           },
         ]);
         setIsLoading(false);
+        setCurrentIntent(null);
         setManualCheckpoint(null);
         setIsResumingCheckpoint(false);
       },
@@ -177,6 +184,7 @@ export function ChatContainer() {
           isResumingCheckpoint={isResumingCheckpoint}
           onResumeCheckpoint={handleResumeCheckpoint}
           streamingContent={streamingContent}
+          currentIntent={currentIntent}
         />
         <InputBar onSend={handleSend} isLoading={isLoading} />
       </div>

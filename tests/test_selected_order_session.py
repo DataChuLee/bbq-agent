@@ -1,5 +1,6 @@
 import unittest
 from datetime import datetime, timezone
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from langchain_core.messages import HumanMessage
@@ -107,7 +108,7 @@ class SelectedOrderSessionTests(unittest.IsolatedAsyncioTestCase):
         fake_graph = FakeGraph()
 
         with patch("graph.graph.graph", fake_graph):
-            response, intent = await ResponseService().generate(session)
+            response, intent, sources = await ResponseService().generate(session)
 
         self.assertEqual(fake_graph.state["selected_order"], selected_order)
         self.assertEqual(fake_graph.state["last_menu_query"], "매운 치킨 추천해줘")
@@ -117,6 +118,88 @@ class SelectedOrderSessionTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(session.selected_order)
         self.assertEqual(response["message"], "ok")
         self.assertEqual(intent, "menu")
+        self.assertEqual(sources, [])
+
+    async def test_response_service_returns_cs_sources(self) -> None:
+        from api.services.response import ResponseService
+
+        session = make_session()
+        session.lc_messages.append(HumanMessage(content="환불 문의"))
+
+        class FakeGraph:
+            async def ainvoke(self, state):
+                return {
+                    "messages": state["messages"],
+                    "intent": "cs",
+                    "response": {"type": "text", "message": "고객센터 안내"},
+                    "menu_results": {},
+                    "cs_results": {
+                        "환불 문의": [
+                            {
+                                "content": "환불 접수 방법",
+                                "cs_category": "환불",
+                                "claim_category": "결제",
+                            }
+                        ]
+                    },
+                    "last_cs_query": "환불 문의",
+                }
+
+        with patch("graph.graph.graph", FakeGraph()):
+            response, intent, sources = await ResponseService().generate(session)
+
+        self.assertEqual(response["message"], "고객센터 안내")
+        self.assertEqual(intent, "cs")
+        self.assertEqual(
+            sources,
+            [
+                {
+                    "source_type": "cs",
+                    "content": "환불 접수 방법",
+                    "score": None,
+                    "metadata": {
+                        "cs_category": "환불",
+                        "claim_category": "결제",
+                    },
+                }
+            ],
+        )
+
+    async def test_response_service_does_not_stream_menu_agent_internal_tokens(
+        self,
+    ) -> None:
+        from api.services.response import ResponseService
+
+        session = make_session()
+        session.lc_messages.append(HumanMessage(content="매운 치킨을 추천해줘"))
+
+        class FakeGraph:
+            async def astream_events(self, state, version):
+                yield {
+                    "event": "on_chat_model_stream",
+                    "metadata": {"langgraph_node": "menu_agent"},
+                    "data": {"chunk": SimpleNamespace(content='{"query": "치킨"}')},
+                }
+                yield {
+                    "event": "on_chain_end",
+                    "name": "LangGraph",
+                    "data": {
+                        "output": {
+                            "messages": state["messages"],
+                            "intent": "menu",
+                            "response": {"type": "menu_cards", "items": []},
+                        }
+                    },
+                }
+
+        with patch("graph.graph.graph", FakeGraph()):
+            events = [item async for item in ResponseService().generate_stream(session)]
+
+        self.assertNotIn(("token", '{"query": "치킨"}'), events)
+        self.assertEqual(
+            events[-1],
+            ("done", {"type": "menu_cards", "items": []}, "menu", []),
+        )
 
 
 if __name__ == "__main__":

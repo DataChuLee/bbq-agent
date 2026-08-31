@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -47,14 +48,53 @@ def build_criteria_retrieval_query(query: str) -> str:
     return retrieval_query or query
 
 
+def _canonical_product_family(value: object) -> str:
+    family = str(value or "")
+    if family in {"main_chicken", "single_chicken", "combo_chicken"}:
+        return "chicken"
+    return family
+
+
+def _canonical_product_type(item: dict[str, Any]) -> str:
+    product_type = str(item.get("product_type") or "")
+    if product_type:
+        return product_type
+
+    family = str(item.get("product_family") or "")
+    if family in {"main_chicken", "single_chicken", "chicken"}:
+        return "main_menu"
+    if family == "combo_chicken":
+        return "set_menu"
+    if family in {"side", "sauce", "drink"}:
+        return family
+
+    category = str(item.get("category") or "")
+    if category == "세트메뉴":
+        return "set_menu"
+    if category in {"후라이드", "양념", "구이", "1인분 메뉴", "반반", "시즈닝", "피자&버거"}:
+        return "main_menu"
+    if category == "사이드메뉴":
+        return "side"
+    if category == "소스&시즈닝&무":
+        return "sauce"
+    if category == "음료":
+        return "drink"
+    return ""
+
+
 def _item_text(item: dict[str, Any]) -> str:
     fields = (
         item.get("name", ""),
         item.get("category", ""),
         item.get("texture", ""),
+        item.get("primary_texture", ""),
         item.get("spiciness", ""),
         item.get("description", ""),
-        item.get("product_family", ""),
+        _canonical_product_family(item.get("product_family", "")),
+        _canonical_product_type(item),
+        item.get("cooking_method", ""),
+        item.get("sauce_style", ""),
+        item.get("option_tags", ""),
     )
     return _normalize(" ".join(str(field) for field in fields))
 
@@ -66,14 +106,53 @@ def _matches_trait(item: dict[str, Any], trait: str) -> bool:
 
     direct_fields = (
         item.get("texture", ""),
+        item.get("primary_texture", ""),
         item.get("spiciness", ""),
         item.get("category", ""),
-        item.get("product_family", ""),
+        _canonical_product_family(item.get("product_family", "")),
+        _canonical_product_type(item),
+        item.get("cooking_method", ""),
+        item.get("sauce_style", ""),
     )
     if any(_normalize(field) == normalized_trait for field in direct_fields):
         return True
 
     return normalized_trait in _item_text(item)
+
+
+def _matches_profile_filters(item: dict[str, Any], filters: dict[str, Any]) -> bool:
+    for field, allowed_values in filters.items():
+        if isinstance(allowed_values, str):
+            allowed = {_normalize(allowed_values)}
+        else:
+            allowed = {_normalize(value) for value in allowed_values or []}
+        if not allowed:
+            continue
+
+        if field == "product_family":
+            value = _canonical_product_family(item.get("product_family", ""))
+        elif field == "product_type":
+            value = _canonical_product_type(item)
+        else:
+            value = str(item.get(field) or "")
+
+        if _normalize(value) not in allowed:
+            return False
+    return True
+
+
+def filter_items_by_recommendation_profile(
+    query: str, items: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    criteria = detect_recommendation_criteria(query)
+    if not criteria:
+        return items
+
+    filters = criteria.get("default_filters") or {}
+    if not isinstance(filters, dict) or not filters:
+        return items
+
+    return [item for item in items if _matches_profile_filters(item, filters)]
 
 
 def _score_item(item: dict[str, Any], criteria: dict[str, Any]) -> tuple[int, list[str]]:
@@ -94,11 +173,9 @@ def _score_item(item: dict[str, Any], criteria: dict[str, Any]) -> tuple[int, li
         if _matches_trait(item, str(trait)):
             score += avoid_weight
 
-    if str(item.get("product_family") or "") in {
-        "main_chicken",
-        "single_chicken",
-        "combo_chicken",
-    }:
+    if _canonical_product_family(item.get("product_family")) == "chicken" or _canonical_product_type(
+        item
+    ) in {"main_menu", "set_menu"}:
         score += family_weight
 
     return score, matched_traits
@@ -106,7 +183,11 @@ def _score_item(item: dict[str, Any], criteria: dict[str, Any]) -> tuple[int, li
 
 def _build_reason(criteria: dict[str, Any], matched_traits: list[str]) -> str:
     base_reason = str(criteria.get("reason") or "").strip()
-    display_traits = [trait for trait in matched_traits if "_" not in trait]
+    display_traits = [
+        trait
+        for trait in matched_traits
+        if "_" not in trait and re.search(r"[가-힣]", trait)
+    ]
     if not display_traits:
         return base_reason
 

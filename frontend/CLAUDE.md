@@ -18,7 +18,7 @@
 ## 로컬 계약
 - 세션은 `ChatContainer` 마운트 시 `createSession()`으로 생성한다. 생성된 ID는 `sessionIdRef`에 보관한다.
 - 메시지 전송은 `streamMessage(sessionId, content, callbacks)`로 처리한다. 응답-응답이 아니라 SSE 스트림이다.
-- SSE 이벤트 순서: `start → token(반복) → message → done`. `onToken`으로 토큰을 누적하고, `onMessage`에서 최종 `Message`로 대체한다.
+- SSE 이벤트 순서: `start → intent? → token*/manual_checkpoint* → message → done`. `message`의 `sources`를 최종 `Message`에 보존하고, `done`과 `error`에서 로딩·진행 상태를 종료한다.
 - 백엔드 `message` 이벤트 페이로드는 `src/lib/api.ts`의 `toMessage()`에서 `Message` 유니온 타입으로 변환한다. `menu_cards` → `cards`, `content` 정규화 포함.
 - `MessageList`는 `streamingContent: string | null` prop을 받아 스트리밍 중 토큰을 말풍선으로 표시한다.
 - 새 응답 타입을 추가하면 `api.ts:toMessage`, `src/types/chat.ts`, 렌더러 순서로 확장한다.

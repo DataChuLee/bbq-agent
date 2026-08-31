@@ -6,6 +6,7 @@ import { ManualCheckpointCard } from "./ManualCheckpointCard";
 import { MessageBubble } from "./MessageBubble";
 import { MenuCardList } from "./MenuCardList";
 import { OrderStatusCard } from "./OrderStatusCard";
+import { SourceList } from "./SourceList";
 import { TypingIndicator } from "./TypingIndicator";
 
 interface MessageListProps {
@@ -17,6 +18,7 @@ interface MessageListProps {
   onResumeCheckpoint: () => void;
   /** 스트리밍 중 누적 토큰. null이면 스트리밍 없음 */
   streamingContent: string | null;
+  currentIntent: string | null;
 }
 
 export function MessageList({
@@ -27,6 +29,7 @@ export function MessageList({
   isResumingCheckpoint,
   onResumeCheckpoint,
   streamingContent,
+  currentIntent,
 }: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -90,12 +93,18 @@ export function MessageList({
         {messages.map((message) => {
           if (message.type === "menu_cards") {
             return (
-              <MenuCardList
-                key={message.id}
-                isLoading={isLoading}
-                message={message}
-                onOrderSelected={onOrderSelected}
-              />
+              <div key={message.id}>
+                <MenuCardList
+                  isLoading={isLoading}
+                  message={message}
+                  onOrderSelected={onOrderSelected}
+                />
+                {message.sources && message.sources.length > 0 ? (
+                  <div className="ml-12">
+                    <SourceList sources={message.sources} />
+                  </div>
+                ) : null}
+              </div>
             );
           }
           if (message.type === "order_status") {
@@ -124,7 +133,7 @@ export function MessageList({
             }}
           />
         ) : isLoading ? (
-          <TypingIndicator />
+          <TypingIndicator key={currentIntent ?? "pending"} intent={currentIntent} />
         ) : null}
       </div>
 

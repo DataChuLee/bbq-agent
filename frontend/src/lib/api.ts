@@ -49,9 +49,87 @@ interface BackendManualCheckpoint {
   created_at?: string;
 }
 
+interface BackendSource {
+  source_type: "menu" | "cs";
+  content: string;
+  score?: number | null;
+  metadata?: Record<string, unknown> | null;
+}
+
+interface BackendSseEvent {
+  event: string;
+  token?: string;
+  intent?: string;
+  checkpoint?: BackendManualCheckpoint;
+  message?: BackendMessage | string;
+  sources?: BackendSource[];
+}
+
 // ── 변환 헬퍼 ────────────────────────────────────────────────────────────────
 
-function toMessage(msg: BackendMessage): Message {
+function toSources(raw: BackendSource[] = []) {
+  return raw.map((s) => ({
+    sourceType: s.source_type,
+    content: s.content,
+    score: s.score ?? null,
+    metadata: s.metadata ?? {},
+  }));
+}
+
+function parseSseFrame(frame: string): BackendSseEvent | null {
+  const data = frame
+    .split(/\r?\n/)
+    .filter((line) => line.startsWith("data:"))
+    .map((line) => line.slice(5).trimStart())
+    .join("\n");
+
+  if (!data) return null;
+
+  try {
+    return JSON.parse(data) as BackendSseEvent;
+  } catch {
+    return null;
+  }
+}
+
+function dispatchSseEvent(
+  event: BackendSseEvent,
+  callbacks: StreamCallbacks
+): boolean {
+  if (event.event === "intent" && event.intent) {
+    callbacks.onIntent(event.intent);
+  } else if (event.event === "token" && typeof event.token === "string") {
+    callbacks.onToken(event.token);
+  } else if (event.event === "manual_checkpoint" && event.checkpoint) {
+    callbacks.onManualCheckpoint({
+      runId: event.checkpoint.run_id ?? "",
+      message: event.checkpoint.message ?? "",
+      createdAt: event.checkpoint.created_at
+        ? new Date(event.checkpoint.created_at)
+        : undefined,
+    });
+  } else if (
+    event.event === "message" &&
+    event.message &&
+    typeof event.message !== "string"
+  ) {
+    callbacks.onMessage(toMessage(event.message, event.sources ?? []));
+  } else if (event.event === "done") {
+    callbacks.onDone();
+    return true;
+  } else if (event.event === "error") {
+    const message =
+      typeof event.message === "string"
+        ? event.message
+        : "서버 오류가 발생했습니다.";
+    callbacks.onError(new Error(message));
+    return true;
+  }
+
+  return false;
+}
+
+function toMessage(msg: BackendMessage, sources: BackendSource[] = []): Message {
   const timestamp = new Date(msg.created_at);
 
   if (msg.type === "menu_cards") {
@@ -68,7 +146,14 @@ function toMessage(msg: BackendMessage): Message {
       recommendationScore: item.recommendation_score,
       matchedCriteria: item.matched_criteria,
     }));
-    return { id: msg.id, role: "assistant", type: "menu_cards", cards, timestamp };
+    return {
+      id: msg.id,
+      role: "assistant",
+      type: "menu_cards",
+      cards,
+      timestamp,
+      sources: toSources(sources),
+    };
   }
 
   if (msg.type === "clarification") {
@@ -104,6 +189,7 @@ function toMessage(msg: BackendMessage): Message {
     type: "text",
     content: msg.content ?? "",
     timestamp,
+    sources: toSources(sources),
   };
 }
 
@@ -117,6 +203,7 @@ export async function createSession(): Promise<string> {
 }
 
 export interface StreamCallbacks {
+  onIntent: (intent: string) => void;
   onToken: (token: string) => void;
   onManualCheckpoint: (checkpoint: ManualCheckpoint) => void;
   onMessage: (message: Message) => void;
@@ -155,54 +242,46 @@ export async function streamMessage(
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
+  let terminalEventReceived = false;
 
   try {
     while (true) {
       const { done, value } = await reader.read();
-      if (done) break;
+      if (value) buffer += decoder.decode(value, { stream: !done });
+      if (done) buffer += decoder.decode();
 
-      buffer += decoder.decode(value, { stream: true });
-
-      // SSE 이벤트는 "\n\n"으로 구분됨
-      const parts = buffer.split("\n\n");
+      const parts = buffer.split(/\r?\n\r?\n/);
       buffer = parts.pop() ?? "";
 
       for (const part of parts) {
-        const line = part.trim();
-        if (!line.startsWith("data: ")) continue;
-        const raw = line.slice(6);
-        if (!raw) continue;
-
-        try {
-          const event = JSON.parse(raw) as {
-            event: string;
-            token?: string;
-            checkpoint?: BackendManualCheckpoint;
-            message?: BackendMessage;
-          };
-
-          if (event.event === "token" && event.token) {
-            callbacks.onToken(event.token);
-          } else if (event.event === "manual_checkpoint" && event.checkpoint) {
-            callbacks.onManualCheckpoint({
-              runId: event.checkpoint.run_id ?? "",
-              message: event.checkpoint.message ?? "",
-              createdAt: event.checkpoint.created_at
-                ? new Date(event.checkpoint.created_at)
-                : undefined,
-            });
-          } else if (event.event === "message" && event.message) {
-            callbacks.onMessage(toMessage(event.message));
-          } else if (event.event === "done") {
-            callbacks.onDone();
-          }
-        } catch {
-          // JSON parse 실패는 무시
+        const event = parseSseFrame(part);
+        if (event && dispatchSseEvent(event, callbacks)) {
+          terminalEventReceived = true;
+          return;
         }
       }
+
+      if (done) break;
     }
+
+    const finalEvent = parseSseFrame(buffer);
+    if (finalEvent && dispatchSseEvent(finalEvent, callbacks)) {
+      terminalEventReceived = true;
+      return;
+    }
+  } catch (error) {
+    terminalEventReceived = true;
+    callbacks.onError(
+      error instanceof Error
+        ? error
+        : new Error("스트림 처리 중 오류가 발생했습니다.")
+    );
   } finally {
     reader.releaseLock();
+  }
+
+  if (!terminalEventReceived) {
+    callbacks.onError(new Error("스트림이 완료 이벤트 없이 종료되었습니다."));
   }
 }
 

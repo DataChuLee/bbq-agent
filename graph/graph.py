@@ -29,11 +29,18 @@ from langgraph.graph.message import add_messages
 from langgraph.managed import RemainingSteps
 from langgraph.prebuilt import create_react_agent
 
+from graph.intent import (
+    build_intent_prompt,
+    has_new_menu_constraints,
+    heuristic_classify,
+    looks_like_menu_followup,
+    looks_like_order_request,
+)
 from graph.state import AgentState
-from tools.final_answer import final_answer_menu
+from tools.final_answer import format_menu_cards
 from tools.prepare_bbq_order import prepare_bbq_order
 from tools.search_cs import search_cs
-from tools.search_menu import FOLLOWUP_TOP_K, search_menu, search_menu_results
+from tools.search_menu import FOLLOWUP_TOP_K, NO_MATCH_MESSAGE, search_menu_results
 
 
 load_dotenv()
@@ -51,17 +58,6 @@ class _ReActState(TypedDict):
 
 FOLLOWUP_DISPLAY_LIMIT = 3
 
-
-MENU_SYSTEM_PROMPT = """You are a BBQ chicken menu recommendation assistant.
-
-Always follow this order:
-1. Use search_menu(query) to search relevant menu items.
-2. If results exist, call final_answer_menu(items=results) to return menu cards.
-   - Pass the search_menu results array directly to final_answer_menu.
-   - Do not include menu items that were not returned by search_menu.
-3. If search_menu returns no results, briefly say that no matching menu was found.
-
-Do not use browser automation or order placement tools. Your job is recommendation only."""
 
 CS_SYSTEM_PROMPT = """You are a BBQ customer service assistant.
 
@@ -84,19 +80,11 @@ Rules:
 - Do not use this tool for customer-service questions or general web browsing."""
 
 
-_menu_tools = [search_menu, final_answer_menu]
 _cs_tools = [search_cs]
 _order_tools = [prepare_bbq_order]
 
 _classifier_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 _fallback_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, streaming=True)
-
-_menu_agent = create_react_agent(
-    model=ChatOpenAI(model="gpt-4o-mini", temperature=0, streaming=True),
-    tools=_menu_tools,
-    prompt=MENU_SYSTEM_PROMPT,
-    state_schema=_ReActState,
-)
 
 _cs_agent = create_react_agent(
     model=ChatOpenAI(model="gpt-4o-mini", temperature=0, streaming=True),
@@ -140,27 +128,11 @@ def _normalize_menu_text(value: str) -> str:
 
 
 def _looks_like_order_request(message: str) -> bool:
-    normalized = message.replace(" ", "").lower()
-    order_markers = (
-        "\uc7a5\ubc14\uad6c\ub2c8",  # cart
-        "\ub2f4\uc544\uc918",
-        "\ub2f4\uc544",
-        "\uc8fc\ubb38\ud560\uac8c",
-        "\uc8fc\ubb38\ud574\uc918",
-        "\uc774\uac78\ub85c\uc8fc\ubb38",
-        "\uc774\uac78\ub85c\ud560\uac8c",
-        "\uacb0\uc81c\ud558\ub7ec",
-    )
-    return any(marker in normalized for marker in order_markers)
+    return looks_like_order_request(message)
 
 
 def _looks_like_menu_followup(message: str, state: dict) -> bool:
-    if not str(state.get("last_menu_query") or "").strip():
-        return False
-
-    normalized = message.replace(" ", "").lower()
-    followup_markers = ("다른", "또", "더", "없어", "추가")
-    return any(marker in normalized for marker in followup_markers)
+    return looks_like_menu_followup(message, state.get("last_menu_query"))
 
 
 def _append_shown_menu_names(
@@ -386,23 +358,14 @@ def _extract_order_tool_response(content: str) -> dict:
 async def intent_classifier_node(state: AgentState) -> dict:
     """Classify initial request only as menu, cs, or unknown."""
     last_message = str(state["messages"][-1].content)
-    if _looks_like_order_request(last_message):
-        return {"intent": "menu"}
-    if _looks_like_menu_followup(last_message, state):
-        return {"intent": "menu_followup"}
+    heuristic_intent = heuristic_classify(
+        last_message,
+        last_menu_query=state.get("last_menu_query"),
+    )
+    if heuristic_intent:
+        return {"intent": heuristic_intent}
 
-    prompt = f"""Classify the user's message into exactly one intent.
-
-- menu: BBQ menu recommendation, menu search, final menu selection, price/flavor/allergy/menu availability.
-- cs: delivery delay, refund, complaint, gift certificate, existing order issue, customer service.
-- unknown: anything else.
-
-Answer with only one lowercase label: menu, cs, or unknown.
-
-User message: {last_message}
-Intent:"""
-
-    response = await _classifier_llm.ainvoke(prompt)
+    response = await _classifier_llm.ainvoke(build_intent_prompt(last_message))
     intent = response.content.strip().lower()
     if intent not in ("menu", "cs"):
         intent = "unknown"
@@ -436,41 +399,40 @@ def _extract_new_search_entry(messages: list, tool_name: str) -> tuple[str, list
 
 
 async def menu_agent_node(state: AgentState) -> dict:
-    original_count = len(state["messages"])
-    result = await _menu_agent.ainvoke(
-        {
-            "messages": state["messages"],
-            "menu_results": state.get("menu_results"),
-            "cs_results": state.get("cs_results"),
-            "selected_order": state.get("selected_order"),
-            "last_menu_query": state.get("last_menu_query"),
-            "shown_menu_names": state.get("shown_menu_names") or [],
-        }
-    )
-    new_messages = result["messages"][original_count:]
+    query = _latest_user_message(state).strip()
+    if _looks_like_order_request(query):
+        return {"messages": []}
 
-    return_dict: dict = {
-        "messages": new_messages,
-        "response": _extract_response(result["messages"]),
-    }
-    entry = _extract_new_search_entry(new_messages, "search_menu")
-    if entry:
-        query, results = entry
-        cache = dict(state.get("menu_results") or {})
-        cache[query] = results
-        return_dict["menu_results"] = cache
-        return_dict["last_menu_query"] = query
-        return_dict["shown_menu_names"] = _append_shown_menu_names(
+    results = await asyncio.to_thread(search_menu_results, query, dict(state))
+    if not results:
+        return {
+            "messages": [AIMessage(content=NO_MATCH_MESSAGE)],
+            "response": {"type": "text", "message": NO_MATCH_MESSAGE},
+        }
+
+    cache = dict(state.get("menu_results") or {})
+    cache[query] = results
+
+    return {
+        "messages": [AIMessage(content="메뉴 검색 결과를 카드로 준비했습니다.")],
+        "response": format_menu_cards(results),
+        "menu_results": cache,
+        "last_menu_query": query,
+        "shown_menu_names": _append_shown_menu_names(
             state.get("shown_menu_names") or [],
             results,
-        )
-        return_dict["response"] = {"type": "menu_cards", "items": results}
-    return return_dict
+        ),
+    }
 
 
 async def menu_followup_node(state: AgentState) -> dict:
-    query = str(state.get("last_menu_query") or "").strip()
+    last_query = str(state.get("last_menu_query") or "").strip()
     shown_menu_names = state.get("shown_menu_names") or []
+
+    # 새로운 조건(식감·맵기·카테고리 등)이 있으면 현재 메시지로 검색한다
+    current_message = _latest_user_message(state)
+    query = current_message if has_new_menu_constraints(current_message) else last_query
+
     if not query:
         message = "이전 추천 조건을 찾지 못했습니다. 원하는 메뉴 조건을 다시 알려주세요."
         return {
@@ -488,7 +450,7 @@ async def menu_followup_node(state: AgentState) -> dict:
     )
     items = _unseen_menu_items(results, shown_menu_names)[:FOLLOWUP_DISPLAY_LIMIT]
     if not items:
-        message = "조건에 맞는 다른 메뉴를 찾지 못했습니다."
+        message = "조건에 맞는 다른 메뉴를 더 찾지 못했습니다. 조건을 바꿔서 다시 말씀해주세요."
         return {
             "messages": [AIMessage(content=message)],
             "response": {"type": "text", "message": message},
@@ -500,7 +462,7 @@ async def menu_followup_node(state: AgentState) -> dict:
         "messages": [
             AIMessage(content=f"다른 추천 메뉴 {len(items)}가지를 골라봤어요.")
         ],
-        "response": {"type": "menu_cards", "items": items},
+        "response": format_menu_cards(items),
         "last_menu_query": query,
         "shown_menu_names": _append_shown_menu_names(shown_menu_names, items),
     }
@@ -528,6 +490,7 @@ async def cs_agent_node(state: AgentState) -> dict:
         cache = dict(state.get("cs_results") or {})
         cache[query] = results
         return_dict["cs_results"] = cache
+        return_dict["last_cs_query"] = query
     return return_dict
 
 
