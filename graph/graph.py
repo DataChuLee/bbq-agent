@@ -33,7 +33,6 @@ from graph.intent import (
     build_intent_prompt,
     has_new_menu_constraints,
     heuristic_classify,
-    looks_like_menu_followup,
     looks_like_order_request,
 )
 from graph.state import AgentState
@@ -131,14 +130,6 @@ def _latest_user_message(state: dict) -> str:
 
 def _normalize_menu_text(value: str) -> str:
     return re.sub(r"[^0-9a-zA-Z가-힣]+", "", value.replace("™", "")).lower()
-
-
-def _looks_like_order_request(message: str) -> bool:
-    return looks_like_order_request(message)
-
-
-def _looks_like_menu_followup(message: str, state: dict) -> bool:
-    return looks_like_menu_followup(message, state.get("last_menu_query"))
 
 
 def _append_shown_menu_names(
@@ -406,7 +397,7 @@ def _extract_new_search_entry(messages: list, tool_name: str) -> tuple[str, list
 
 async def menu_agent_node(state: AgentState) -> dict:
     query = _latest_user_message(state).strip()
-    if _looks_like_order_request(query):
+    if looks_like_order_request(query):
         return {"messages": []}
 
     results = await asyncio.to_thread(search_menu_results, query, dict(state))
@@ -599,7 +590,7 @@ def route_intent(
 def route_after_menu(state: AgentState) -> Literal["order_browser_agent", "end"]:
     if state.get("selected_order"):
         return "order_browser_agent"
-    if _looks_like_order_request(_latest_user_message(state)):
+    if looks_like_order_request(_latest_user_message(state)):
         return "order_browser_agent"
     return "end"
 
