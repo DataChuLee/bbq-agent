@@ -1,0 +1,14 @@
+[
+  {
+    "id": "cost-menu",
+    "query": "치킨 메뉴 알려줘"
+  },
+  {
+    "id": "cost-cs",
+    "query": "배달이 너무 늦어서 고객이 화났어"
+  },
+  {
+    "id": "cost-unknown",
+    "query": "오늘 날씨 어때?"
+  }
+]
