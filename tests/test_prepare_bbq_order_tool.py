@@ -51,6 +51,13 @@ class PrepareBbqOrderToolTests(unittest.TestCase):
         )
 
         command = mock_run.call_args.args[0]
+        self.assertIn("--order-json", command)
+        order_json = json.loads(command[command.index("--order-json") + 1])
+        self.assertEqual(order_json["menu_name"], "Golden Olive Chicken")
+        self.assertEqual(order_json["menu_category"], "Fried")
+        self.assertEqual(order_json["options"], ["Half chicken", "Coke 1.25L"])
+        self.assertEqual(order_json["order_type"], "delivery")
+        self.assertEqual(order_json["option_details"], [])
         self.assertIn("--headed", command)
         self.assertIn("--keep-open-on-completion", command)
         self.assertIn("--manual-checkpoint", command)
