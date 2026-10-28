@@ -285,10 +285,6 @@ def _build_exact_menu_warning(menu_name: str) -> str:
     )
 
 
-def _build_order_task(menu_name: str, options: list[str], order_type: str) -> str:
-    return _build_order_task_with_category(menu_name, options, order_type, "")
-
-
 def _build_order_task_with_category(
     menu_name: str, options: list[str], order_type: str, menu_category: str
 ) -> str:
@@ -312,12 +308,6 @@ Process:
 6. Stop once the user needs to manually log in, enter/select address, or confirm location.
 7. Return a short Korean message telling the user to complete that step in the open browser.
 """.strip()
-
-
-def _build_order_resume_task(
-    menu_name: str, options: list[str], order_type: str
-) -> str:
-    return _build_order_resume_task_with_category(menu_name, options, order_type, "")
 
 
 def _build_order_resume_task_with_category(
