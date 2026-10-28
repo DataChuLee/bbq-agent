@@ -8,6 +8,11 @@ import os
 import sys
 from pathlib import Path
 
+from browser.bbq_deterministic_order import (
+    DeterministicOrderError,
+    run_deterministic_order,
+)
+
 
 ROOT = Path(__file__).resolve().parent
 PROJECT_ROOT = ROOT.parent
@@ -243,6 +248,7 @@ async def run_browser_task(
     resume_task: str | None = None,
     manual_checkpoint: str | None = None,
     keep_open_on_completion: bool = False,
+    order_payload: dict | None = None,
 ) -> dict:
     from browser_use import ActionResult, Agent, BrowserSession, ChatOpenAI, Tools
 
@@ -255,6 +261,21 @@ async def run_browser_task(
 
     browser = BrowserSession(headless=headless, keep_alive=True)
     try:
+        if order_payload:
+            try:
+                return await run_deterministic_order(
+                    browser_session=browser,
+                    order=order_payload,
+                    manual_checkpoint=manual_checkpoint,
+                )
+            except DeterministicOrderError as exc:
+                if not exc.allow_fallback:
+                    return exc.to_payload()
+                if getattr(exc, "fallback_stage", "full") == "resume" and resume_task:
+                    task = resume_task
+                    resume_task = None
+                    manual_checkpoint = None
+
         llm = ChatOpenAI(model=model)
         tools = _build_bbq_order_tools(Tools, ActionResult, BrowserSession, llm)
         agent = Agent(
@@ -327,6 +348,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--keep-open-on-completion", action="store_true")
     parser.add_argument("--resume-task")
     parser.add_argument("--manual-checkpoint")
+    parser.add_argument("--order-json")
     return parser.parse_args()
 
 
@@ -344,6 +366,9 @@ def main() -> int:
                 resume_task=args.resume_task,
                 manual_checkpoint=args.manual_checkpoint,
                 keep_open_on_completion=args.keep_open_on_completion,
+                order_payload=(
+                    json.loads(args.order_json) if args.order_json else None
+                ),
             )
         )
         print(json.dumps(payload, ensure_ascii=False))
