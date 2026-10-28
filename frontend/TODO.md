@@ -23,6 +23,7 @@
 - [x] `frontend/CLAUDE.md`에 객체 지향 로컬 계약 추가
 - [x] ReadableStream/SSE 응답과 분할 프레임 파싱 지원
 - [x] intent 진행 상태와 menu/CS source 표시 통합
+- [x] 사용하지 않는 `src/lib/mockApi.ts` 제거
 
 ## 미완료
 - [ ] 대화 히스토리 백엔드 전송
