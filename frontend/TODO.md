@@ -20,9 +20,11 @@
 - [x] `frontend/CLAUDE.md`를 폴더 전용 작업 지침으로 재구성
 - [x] 프론트 전용 규칙을 `frontend/CLAUDE.md`로 통합
 - [x] 프론트 중복 지침 파일 정리
+- [x] `frontend/CLAUDE.md`에 객체 지향 로컬 계약 추가
+- [x] ReadableStream/SSE 응답과 분할 프레임 파싱 지원
+- [x] intent 진행 상태와 menu/CS source 표시 통합
 
 ## 미완료
-- [ ] 스트리밍 응답 지원 (ReadableStream / SSE)
 - [ ] 대화 히스토리 백엔드 전송
 - [ ] 에러 바운더리 컴포넌트 추가
 - [ ] 접근성 개선: 새 메시지용 `aria-live`
