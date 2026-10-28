@@ -103,13 +103,6 @@ class AssistantResponseOut(BaseModel):
 # ── Knowledge ─────────────────────────────────────────────────────────────────
 
 
-class KnowledgeStatusOut(BaseModel):
-    menu_documents: int
-    cs_documents: int
-    vector_index_status: Literal["ready", "not_loaded", "rebuilding"]
-    last_rebuilt_at: datetime | None = None
-
-
 class SearchPreviewRequest(BaseModel):
     query: str
     knowledge_type: Literal["menu", "cs"] = "menu"
@@ -129,14 +122,3 @@ T = TypeVar("T")
 
 class DataResponse(BaseModel, Generic[T]):
     data: T
-
-
-class ErrorDetail(BaseModel):
-    code: str
-    message: str
-    details: Any | None = None
-    trace_id: str | None = None
-
-
-class ErrorResponse(BaseModel):
-    error: ErrorDetail
