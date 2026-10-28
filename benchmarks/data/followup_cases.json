@@ -1,0 +1,20 @@
+[
+  {
+    "id": "followup-001",
+    "initial_query": "매운 치킨 추천해줘",
+    "followup_query": "다른 메뉴도 보여줘",
+    "initial_display_count": 3
+  },
+  {
+    "id": "followup-002",
+    "initial_query": "바삭한 치킨 추천해줘",
+    "followup_query": "다른 메뉴 추천해줘",
+    "initial_display_count": 3
+  },
+  {
+    "id": "followup-003",
+    "initial_query": "치킨 메뉴 추천해줘",
+    "followup_query": "다른 메뉴도 보여줘",
+    "initial_display_count": 3
+  }
+]
