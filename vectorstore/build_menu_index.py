@@ -44,7 +44,6 @@ SIDE_NAME_TERMS = (
     "볼",
 )
 DRINK_NAME_TERMS = ("콜라", "스프라이트", "레몬보이")
-SAUCE_NAME_TERMS = ("소스", "치킨무", "무")
 SEASONING_NAME_TERMS = ("시즈닝",)
 CHICKEN_NAME_TERMS = ("치킨", "닭", "윙", "봉", "순살", "반마리", "통다리")
 PIZZA_NAME_TERMS = ("피자",)
