@@ -1,0 +1,90 @@
+[
+  {
+    "id": "menu-filter-001",
+    "query": "매운 바삭한 치킨 메뉴 추천해줘",
+    "expected_ids": ["TOP3세트메뉴 Set2", "황금올리브치킨™핫크리스피", "황금올리브치킨™핫크리스피 반마리"],
+    "case_type": "filter_spicy_texture",
+    "expected_keywords": ["매움", "바삭함", "치킨"]
+  },
+  {
+    "id": "menu-filter-002",
+    "query": "순하고 바삭한 치킨 중에서 추천해줘",
+    "expected_ids": ["TOP3세트메뉴 Set1", "BBQ 황올 반마리 세트", "BBQ 황올 미니 콤보 세트", "황금올리브치킨™", "크런치 순살크래커", "파더's치킨", "크런치버터치킨", "황금올리브치킨™반마리"],
+    "case_type": "filter_mild_texture",
+    "expected_keywords": ["순함", "바삭함", "치킨"]
+  },
+  {
+    "id": "menu-filter-003",
+    "query": "촉촉한 구이 치킨 메뉴 찾아줘",
+    "expected_ids": ["TOP3세트메뉴 Set3", "자메이카 통다리구이", "핫베이크 윙", "자메이카 통다리구이 반마리"],
+    "case_type": "filter_grilled_texture",
+    "expected_keywords": ["촉촉함", "구이", "치킨"]
+  },
+  {
+    "id": "menu-filter-004",
+    "query": "매운 양념 치킨 메뉴 추천해줘",
+    "expected_ids": ["맵소디", "땡쇼크", "빠리치킨", "황금올리브치킨™매운양념", "마라핫", "황금올리브치킨™매운양념 반마리"],
+    "case_type": "filter_spicy_sauce",
+    "expected_keywords": ["매움", "양념", "치킨"]
+  },
+  {
+    "id": "menu-filter-005",
+    "query": "15000원 이하 반마리 치킨 메뉴 찾아줘",
+    "expected_ids": ["BBQ 황올 반마리 세트", "황금올리브치킨™반마리", "황금올리브치킨™양념 반마리", "황금올리브치킨™핫크리스피 반마리", "자메이카 통다리구이 반마리", "스모크치킨 반마리(3조각)", "황금올리브치킨™블랙페퍼 반마리", "황금올리브치킨™매운양념 반마리"],
+    "case_type": "filter_price_half",
+    "expected_keywords": ["반마리", "15000"]
+  },
+  {
+    "id": "menu-filter-006",
+    "query": "5000원 이하 사이드 메뉴 추천해줘",
+    "expected_ids": ["뿜치킹 콘립(4개)", "뿜치킹 감자튀김", "롱김말이(1개)", "BBQ볼(5개)", "BBQ 소떡", "BBQ 닭껍데기", "롱치즈스틱(1개)", "BBQ 감자튀김", "오징어튀김(3개)", "BBQ 카레고로케(3개)", "BBQ 맛탕"],
+    "case_type": "filter_price_side",
+    "expected_keywords": ["사이드", "5000"]
+  },
+  {
+    "id": "menu-filter-007",
+    "query": "1000원 이하 소스나 시즈닝 메뉴 있어?",
+    "expected_ids": ["BBQ양념치킨컵소스(40g)", "BBQ 소스", "BBQ 치밥소스", "BBQ 시즈닝", "치킨무"],
+    "case_type": "filter_price_sauce",
+    "expected_keywords": ["소스", "시즈닝", "1000"]
+  },
+  {
+    "id": "menu-filter-008",
+    "query": "2500원 이하 음료 메뉴 알려줘",
+    "expected_ids": ["스파클링 레몬보이245ml", "스파클링 레몬보이500ml", "콜라500ml", "콜라245ml", "콜라355ml", "콜라1.25L", "제로콜라245ml", "제로콜라355ml", "제로콜라500ml", "제로콜라1.25L", "스프라이트355ml", "스프라이트500ml", "스프라이트1.5L"],
+    "case_type": "filter_price_drink",
+    "expected_keywords": ["음료", "2500"]
+  },
+  {
+    "id": "menu-exact-001",
+    "query": "뿜치킹 가격과 알레르기 알려줘",
+    "expected_ids": ["뿜치킹"],
+    "case_type": "exact_new_menu",
+    "expected_price": 25000,
+    "expected_keywords": ["우유", "땅콩", "대두", "밀", "쇠고기"]
+  },
+  {
+    "id": "menu-exact-002",
+    "query": "뿜치킹 BBQ볼 알레르기 정보가 뭐야?",
+    "expected_ids": ["뿜치킹 BBQ볼"],
+    "case_type": "exact_new_menu",
+    "expected_price": 6000,
+    "expected_keywords": ["우유", "대두", "밀"]
+  },
+  {
+    "id": "menu-exact-003",
+    "query": "제로콜라 1.25리터 메뉴 가격 알려줘",
+    "expected_ids": ["제로콜라1.25L"],
+    "case_type": "exact_drink",
+    "expected_price": 2500,
+    "expected_keywords": ["제로콜라", "1.25L", "2500"]
+  },
+  {
+    "id": "menu-exact-004",
+    "query": "BBQ 소스 알레르기 정보 알려줘",
+    "expected_ids": ["BBQ 소스"],
+    "case_type": "exact_sauce",
+    "expected_price": 500,
+    "expected_keywords": ["우유", "대두", "밀", "계란"]
+  }
+]
