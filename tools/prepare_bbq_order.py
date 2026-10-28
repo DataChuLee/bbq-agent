@@ -413,6 +413,17 @@ def prepare_bbq_order(
     command = [
         str(BROWSER_PYTHON),
         str(BROWSER_RUNNER),
+        "--order-json",
+        json.dumps(
+            {
+                "menu_name": menu_name,
+                "menu_category": menu_category,
+                "options": options,
+                "order_type": order_type,
+                "option_details": option_details or [],
+            },
+            ensure_ascii=False,
+        ),
         "--task",
         _build_order_task_with_category(menu_name, options, order_type, menu_category),
         "--model",
