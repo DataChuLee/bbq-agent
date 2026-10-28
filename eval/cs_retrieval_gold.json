@@ -1,0 +1,93 @@
+[
+  {
+    "id": "cs-exact-001",
+    "query": "기프티콘을 매장에서 거부당했어 어떻게 해야 해?",
+    "expected_ids": ["기프티콘 거부"],
+    "case_type": "exact_coupon_refusal",
+    "expected_keywords": ["기프티콘", "주문 경로", "주문 매장"]
+  },
+  {
+    "id": "cs-exact-002",
+    "query": "문화상품권을 안 받아준다고 하는데 뭐라고 안내해야 해?",
+    "expected_ids": ["상품권 거부"],
+    "case_type": "exact_gift_certificate",
+    "expected_keywords": ["문화상품권", "비비큐 상품권", "오프라인"]
+  },
+  {
+    "id": "cs-exact-003",
+    "query": "결제 오류나 포스기 오류가 생기면 어떻게 처리해?",
+    "expected_ids": ["전산오류"],
+    "case_type": "exact_system_error",
+    "expected_keywords": ["결제오류", "포스기 오류", "취소 처리"]
+  },
+  {
+    "id": "cs-exact-004",
+    "query": "배달이 너무 늦어서 고객이 화났어",
+    "expected_ids": ["배달 지연"],
+    "case_type": "exact_delivery_delay",
+    "expected_keywords": ["배달 지연", "주문시간", "재안내"]
+  },
+  {
+    "id": "cs-exact-005",
+    "query": "치킨에서 머리카락 같은 이물질이 나왔다고 해",
+    "expected_ids": ["이물질(패밀리)"],
+    "case_type": "exact_foreign_object",
+    "expected_keywords": ["머리카락", "사진 요청", "위생"]
+  },
+  {
+    "id": "cs-exact-006",
+    "query": "바사칸 윙 뼈가 검게 보여서 덜 익은 것 같다고 해",
+    "expected_ids": ["흑골화(핫윙,바사칸)"],
+    "case_type": "exact_black_bone",
+    "expected_keywords": ["흑골화", "혈색소", "냉동육"]
+  },
+  {
+    "id": "cs-typo-001",
+    "query": "기프티곤 오류가 나서 주문이 안 된대",
+    "expected_ids": ["전산오류"],
+    "case_type": "typo_system_error",
+    "expected_keywords": ["기프티콘", "오류", "주문경로"]
+  },
+  {
+    "id": "cs-typo-002",
+    "query": "배딜이 너무 늦어서 고객이 화났어",
+    "expected_ids": ["배달 지연"],
+    "case_type": "typo_delivery_delay",
+    "expected_keywords": ["배달 지연", "주문시간", "재안내"]
+  },
+  {
+    "id": "cs-typo-003",
+    "query": "치킨에서 이물직이 나왔다고 클레입이 들어왔어",
+    "expected_ids": ["이물질(패밀리)", "이물질(본사)"],
+    "case_type": "typo_foreign_object",
+    "expected_keywords": ["이물질", "사진 요청", "보상"]
+  },
+  {
+    "id": "cs-typo-004",
+    "query": "환뷸 받아야 한다고 하는데 추가금 문제 같아",
+    "expected_ids": ["추가 금액 부여"],
+    "case_type": "typo_refund_extra_charge",
+    "expected_keywords": ["추가금", "환불", "계좌번호"]
+  },
+  {
+    "id": "cs-typo-005",
+    "query": "위상 문제로 매장이 너무 지저분하대",
+    "expected_ids": ["매장 청결"],
+    "case_type": "typo_hygiene",
+    "expected_keywords": ["청결", "사진", "계도"]
+  },
+  {
+    "id": "cs-domain-001",
+    "query": "치킨 조각 수가 적다고 고객이 문의했어",
+    "expected_ids": ["치킨 조각 수"],
+    "case_type": "domain_piece_count",
+    "expected_keywords": ["황금올리브치킨", "8조각", "16조각"]
+  },
+  {
+    "id": "cs-domain-002",
+    "query": "닭이 덜 익은 것처럼 피고임이 보인다고 해",
+    "expected_ids": ["방혈 피고임", "핑킹 현상"],
+    "case_type": "domain_blood_or_pinking",
+    "expected_keywords": ["방혈", "혈색소", "사진"]
+  }
+]
