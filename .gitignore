@@ -16,6 +16,7 @@
 /resume-portfolio-ai.md
 /check_chroma.py
 /check_price.py
+*.ipynb
 
 # 테스트·평가 실행 산출물
 /.pytest_cache/
