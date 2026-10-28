@@ -23,6 +23,253 @@ class FakeActionResult:
 
 
 class BrowserRunnerTests(unittest.IsolatedAsyncioTestCase):
+    async def test_run_browser_task_uses_deterministic_order_when_order_payload_present(
+        self,
+    ) -> None:
+        from browser import run_browser_task
+
+        created_sessions = []
+        created_agents = []
+
+        class FakeBrowserSession:
+            def __init__(self, **kwargs):
+                self.kwargs = kwargs
+                created_sessions.append(self)
+
+            async def stop(self):
+                return None
+
+        class FakeAgent:
+            def __init__(self, **kwargs):
+                created_agents.append(self)
+
+            async def run(self, max_steps):
+                raise AssertionError("browser-use Agent should not run")
+
+        fake_browser_use = types.SimpleNamespace(
+            ActionResult=FakeActionResult,
+            Agent=FakeAgent,
+            BrowserSession=FakeBrowserSession,
+            ChatOpenAI=lambda model: object(),
+            Tools=FakeTools,
+        )
+        order_payload = {
+            "menu_name": "Golden Olive Chicken",
+            "menu_category": "Fried",
+            "options": ["Coke 1.25L"],
+            "order_type": "delivery",
+            "option_details": [],
+        }
+
+        with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}), patch.dict(
+            sys.modules, {"browser_use": fake_browser_use}
+        ), patch(
+            "browser.run_browser_task.run_deterministic_order"
+        ) as mock_deterministic:
+            mock_deterministic.return_value = {
+                "ok": True,
+                "result": "Cart is ready",
+                "done": True,
+                "current_url": "https://www.bbq.co.kr/order/cart",
+            }
+
+            result = await run_browser_task.run_browser_task(
+                task="open bbq",
+                model="gpt-test",
+                max_steps=1,
+                headless=False,
+                order_payload=order_payload,
+            )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["current_url"], "https://www.bbq.co.kr/order/cart")
+        mock_deterministic.assert_awaited_once_with(
+            browser_session=created_sessions[0],
+            order=order_payload,
+            manual_checkpoint=None,
+        )
+        self.assertEqual(created_agents, [])
+
+    async def test_run_browser_task_does_not_fallback_on_selection_error(self) -> None:
+        from browser import run_browser_task
+        from browser.bbq_deterministic_order import DeterministicSelectionError
+
+        created_agents = []
+
+        class FakeBrowserSession:
+            def __init__(self, **kwargs):
+                self.kwargs = kwargs
+
+            async def stop(self):
+                return None
+
+        class FakeAgent:
+            def __init__(self, **kwargs):
+                created_agents.append(self)
+
+            async def run(self, max_steps):
+                raise AssertionError("selection errors must not use Agent fallback")
+
+        fake_browser_use = types.SimpleNamespace(
+            ActionResult=FakeActionResult,
+            Agent=FakeAgent,
+            BrowserSession=FakeBrowserSession,
+            ChatOpenAI=lambda model: object(),
+            Tools=FakeTools,
+        )
+
+        with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}), patch.dict(
+            sys.modules, {"browser_use": fake_browser_use}
+        ), patch(
+            "browser.run_browser_task.run_deterministic_order"
+        ) as mock_deterministic:
+            mock_deterministic.side_effect = DeterministicSelectionError(
+                "exact visible text was not found: Golden Olive Chicken",
+                current_url="https://www.bbq.co.kr/categories/1",
+            )
+
+            result = await run_browser_task.run_browser_task(
+                task="open bbq",
+                model="gpt-test",
+                max_steps=1,
+                headless=False,
+                order_payload={"menu_name": "Golden Olive Chicken"},
+                resume_task="continue order",
+            )
+
+        self.assertFalse(result["ok"])
+        self.assertIn("Golden Olive Chicken", result["error"])
+        self.assertEqual(result["current_url"], "https://www.bbq.co.kr/categories/1")
+        self.assertEqual(created_agents, [])
+
+    async def test_run_browser_task_falls_back_on_navigation_error_same_session(
+        self,
+    ) -> None:
+        from browser import run_browser_task
+        from browser.bbq_deterministic_order import DeterministicNavigationError
+
+        created_sessions = []
+        created_agents = []
+
+        class FakeBrowserSession:
+            def __init__(self, **kwargs):
+                self.kwargs = kwargs
+                created_sessions.append(self)
+
+            async def stop(self):
+                return None
+
+        class FakeHistory:
+            def is_done(self):
+                return True
+
+            def final_result(self):
+                return "fallback ready"
+
+            def urls(self):
+                return ["https://www.bbq.co.kr/order/cart"]
+
+        class FakeAgent:
+            def __init__(self, **kwargs):
+                self.kwargs = kwargs
+                created_agents.append(self)
+
+            async def run(self, max_steps):
+                return FakeHistory()
+
+        fake_browser_use = types.SimpleNamespace(
+            ActionResult=FakeActionResult,
+            Agent=FakeAgent,
+            BrowserSession=FakeBrowserSession,
+            ChatOpenAI=lambda model: object(),
+            Tools=FakeTools,
+        )
+
+        with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}), patch.dict(
+            sys.modules, {"browser_use": fake_browser_use}
+        ), patch(
+            "browser.run_browser_task.run_deterministic_order"
+        ) as mock_deterministic:
+            mock_deterministic.side_effect = DeterministicNavigationError(
+                "menu page navigation failed"
+            )
+
+            result = await run_browser_task.run_browser_task(
+                task="open bbq",
+                model="gpt-test",
+                max_steps=1,
+                headless=False,
+                order_payload={"menu_name": "Golden Olive Chicken"},
+            )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["result"], "fallback ready")
+        self.assertEqual(result["current_url"], "https://www.bbq.co.kr/order/cart")
+        self.assertEqual(created_agents[0].kwargs["browser_session"], created_sessions[0])
+
+    async def test_resume_stage_navigation_fallback_skips_initial_agent(self) -> None:
+        from browser import run_browser_task
+        from browser.bbq_deterministic_order import DeterministicNavigationError
+
+        created_agents = []
+
+        class FakeBrowserSession:
+            def __init__(self, **kwargs):
+                self.kwargs = kwargs
+
+            async def stop(self):
+                return None
+
+        class FakeHistory:
+            def is_done(self):
+                return True
+
+            def final_result(self):
+                return "resume fallback ready"
+
+            def urls(self):
+                return ["https://www.bbq.co.kr/order/cart"]
+
+        class FakeAgent:
+            def __init__(self, **kwargs):
+                self.kwargs = kwargs
+                created_agents.append(self)
+
+            async def run(self, max_steps):
+                return FakeHistory()
+
+        fake_browser_use = types.SimpleNamespace(
+            ActionResult=FakeActionResult,
+            Agent=FakeAgent,
+            BrowserSession=FakeBrowserSession,
+            ChatOpenAI=lambda model: object(),
+            Tools=FakeTools,
+        )
+
+        with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}), patch.dict(
+            sys.modules, {"browser_use": fake_browser_use}
+        ), patch(
+            "browser.run_browser_task.run_deterministic_order"
+        ) as mock_deterministic:
+            mock_deterministic.side_effect = DeterministicNavigationError(
+                "menu page navigation failed",
+                fallback_stage="resume",
+            )
+
+            result = await run_browser_task.run_browser_task(
+                task="open bbq",
+                model="gpt-test",
+                max_steps=1,
+                headless=False,
+                order_payload={"menu_name": "Golden Olive Chicken"},
+                resume_task="continue order",
+            )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["result"], "resume fallback ready")
+        self.assertEqual(len(created_agents), 1)
+        self.assertEqual(created_agents[0].kwargs["task"], "continue order")
+
     async def test_run_browser_task_keeps_browser_alive_for_manual_resume(self) -> None:
         from browser import run_browser_task
 
