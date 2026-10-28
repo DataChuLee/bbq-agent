@@ -1,0 +1,62 @@
+[
+  {
+    "id": "menu-constraint-001",
+    "query": "매운 바삭한 치킨 메뉴 추천해줘",
+    "constraints": {
+      "product_family": "chicken",
+      "spiciness": "매움",
+      "primary_texture": "바삭함"
+    }
+  },
+  {
+    "id": "menu-constraint-002",
+    "query": "순하고 바삭한 치킨 중에서 추천해줘",
+    "constraints": {
+      "product_family": "chicken",
+      "spiciness": "순함",
+      "primary_texture": "바삭함"
+    }
+  },
+  {
+    "id": "menu-constraint-003",
+    "query": "촉촉한 구이 치킨 메뉴 찾아줘",
+    "constraints": {
+      "product_family": "chicken",
+      "cooking_method": "grilled",
+      "primary_texture": "촉촉함"
+    }
+  },
+  {
+    "id": "menu-constraint-004",
+    "query": "매운 양념 치킨 메뉴 추천해줘",
+    "constraints": {
+      "product_family": "chicken",
+      "spiciness": "매움",
+      "sauce_style": "spicy_sauce"
+    }
+  },
+  {
+    "id": "menu-constraint-005",
+    "query": "5000원 이하 사이드 메뉴 추천해줘",
+    "constraints": {
+      "product_family": "side",
+      "max_price": 5000
+    }
+  },
+  {
+    "id": "menu-constraint-006",
+    "query": "1000원 이하 소스나 시즈닝 메뉴 있어?",
+    "constraints": {
+      "product_family": ["sauce", "seasoning"],
+      "max_price": 1000
+    }
+  },
+  {
+    "id": "menu-constraint-007",
+    "query": "2500원 이하 음료 메뉴 알려줘",
+    "constraints": {
+      "product_family": "drink",
+      "max_price": 2500
+    }
+  }
+]
