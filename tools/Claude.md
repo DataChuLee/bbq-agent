@@ -15,7 +15,7 @@
 | `cs_retrieval.py` | 사용 중 | FAISS + BM25 EnsembleRetriever 기반 CS 검색 서비스 |
 | `retrieval_cache.py` | 사용 중 | Redis 기반 retriever 결과 캐시 |
 | `ask_clarification.py` | 보류 | 재질문용 typed 응답 helper |
-| `final_answer.py` | 보류 | 메뉴 카드 응답 포맷 helper |
+| `final_answer.py` | 사용 중 | 메뉴 카드 응답 포맷 helper (`graph/graph.py`에서 사용) |
 
 ## 로컬 계약
 - 활성 tool은 모두 JSON 문자열을 반환한다. Python dict를 직접 반환하지 않는다.
@@ -26,7 +26,7 @@
 - 두 검색 tool 모두 `state`에서 세션 캐시를 읽는다. 캐시 키는 원문 `query` 그대로다.
 - Redis 캐시는 retriever 문서 결과만 저장하는 성능 최적화 계층이다. Redis 조회/쓰기 실패 시 검색 결과 생성은 계속 진행해야 한다.
 - 기본 Redis TTL은 메뉴 `86400`초, CS `3600`초다. `REDIS_CACHE_ENABLED=false`면 Redis 캐시를 사용하지 않는다.
-- `ask_clarification.py`, `final_answer.py`는 현재 그래프에 연결되어 있지 않다. 재사용할 때는 `graph/graph.py` wiring까지 같이 수정한다.
+- `ask_clarification.py`는 현재 그래프에 연결되어 있지 않다. 재사용할 때는 `graph/graph.py` wiring까지 같이 수정한다.
 
 ## 객체 지향 로컬 계약
 - retriever 초기화, 검색 실행, 결과 정규화가 함께 움직이는 로직은 서비스 클래스로 묶는다.
