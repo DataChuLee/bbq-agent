@@ -11,5 +11,6 @@
 - [x] 사용하지 않는 `_build_order_task`, `_build_order_resume_task`, `search_cs_results` 제거
 - [x] Self-Query `cooking_method` 값에 `baked` 추가
 - [x] 메뉴 검색: 부정·제외 조건, 사이드·국물 규칙어, 명시 속성 우선, 제품군 보존 완화 추가 (골든셋 dev 실패 분석)
+- [x] 상황 추천 질의에서 Self-Query가 0건이면 LLM 없이 벡터 검색으로 폴백
 
 ## 미완료
