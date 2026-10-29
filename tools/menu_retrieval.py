@@ -19,6 +19,7 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
 from tools.menu_query_rules import (
     build_relaxed_filter_candidates,
+    extract_excluded_terms,
     extract_rule_based_filters,
 )
 from tools.retrieval_cache import RedisRetrieverCache
@@ -334,6 +335,12 @@ def _filter_generic_menu_scope(
     ]
 
 
+def _has_explicit_attribute(query: str) -> bool:
+    strict_filter = extract_rule_based_filters(query)
+    parts = strict_filter.get("$and", [strict_filter] if strict_filter else [])
+    return any(next(iter(part)) != "product_family" for part in parts)
+
+
 def _apply_post_retrieval_filters(
     query: str,
     items: list[dict],
@@ -342,7 +349,8 @@ def _apply_post_retrieval_filters(
     has_criteria: bool,
 ) -> list[dict]:
     filtered = _filter_by_requested_family(items, requested_family)
-    filtered = filter_items_by_recommendation_profile(query, filtered)
+    if has_criteria:
+        filtered = filter_items_by_recommendation_profile(query, filtered)
     return _filter_generic_menu_scope(
         query,
         filtered,
@@ -397,17 +405,23 @@ class MenuSearchService:
         use_cache: bool = True,
     ) -> list[dict]:
         criteria = detect_recommendation_criteria(query)
+        # "술안주로 국물 있는 거"처럼 속성을 직접 말하면 상황 기준보다 그 조건을 따른다.
+        if criteria and _has_explicit_attribute(query):
+            criteria = None
         cache = cache or {}
         if use_cache and query in cache and not criteria:
             return list(cache[query])
 
         requested_family = infer_requested_family(query)
-        cache_key = {"query": query, "k": k}
+        excluded = extract_excluded_terms(query)
+        # 제외 조건으로 결과가 줄어드므로 넉넉히 가져온 뒤 k개로 자른다.
+        fetch_k = k * 3 if excluded else k
+        cache_key = {"query": query, "k": fetch_k}
         docs = None
         if use_cache and self._redis_cache:
             docs = self._redis_cache.get_documents(cache_key)
         if docs is None:
-            docs = self._retrieve(query, k=k, has_criteria=bool(criteria))
+            docs = self._retrieve(query, k=fetch_k, has_criteria=bool(criteria))
             if use_cache and self._redis_cache and docs:
                 self._redis_cache.set_documents(cache_key, list(docs))
 
@@ -420,7 +434,7 @@ class MenuSearchService:
         )
 
         if not results and not criteria:
-            docs = self._invoke_retriever(query, k)
+            docs = self._invoke_retriever(query, fetch_k)
             if use_cache and self._redis_cache and docs:
                 self._redis_cache.set_documents(cache_key, list(docs))
             results = self._documents_to_menu_items(docs)
@@ -431,7 +445,17 @@ class MenuSearchService:
                 has_criteria=False,
             )
 
-        return rerank_menu_items(query, results)
+        if not excluded:
+            return rerank_menu_items(query, results)
+        results = [
+            item
+            for item in results
+            if not any(
+                term in f"{item.get('name', '')} {item.get('description', '')} {item.get('allergy', '')}"
+                for term in excluded
+            )
+        ]
+        return rerank_menu_items(query, results)[:k]
 
     def _retrieve(self, query: str, *, k: int, has_criteria: bool) -> Sequence[Any]:
         if has_criteria:
@@ -449,7 +473,11 @@ class MenuSearchService:
         k: int,
         strict_filter: dict[str, Any],
     ) -> Sequence[Any]:
-        for candidate in build_relaxed_filter_candidates(strict_filter):
+        candidates = build_relaxed_filter_candidates(strict_filter)
+        if infer_requested_family(query):
+            # 사용자가 말한 제품군이 빠진 후보는 뒤의 제품군 필터에서 다 지워지므로 건너뛴다.
+            candidates = [c for c in candidates if not c or "product_family" in str(c)]
+        for candidate in candidates:
             docs = self._similarity_search(query, k, candidate)
             if docs:
                 return docs
