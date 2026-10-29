@@ -21,7 +21,9 @@
 - 활성 tool은 모두 JSON 문자열을 반환한다. Python dict를 직접 반환하지 않는다.
 - `search_menu(query, state)`는 `{"results": [...]}`를 기본으로 반환한다.
 - `search_menu` 결과 각 항목은 최소 `name`, `category`, `price`, `allergy`, `texture`, `spiciness`, `nutrition`, `options`, `description` 키를 유지한다.
-- 메뉴 조건 질의는 `menu_query_rules.py`의 규칙 기반 metadata filter를 먼저 사용하고, 결과가 없으면 완화된 filter와 fallback 검색을 순서대로 사용한다.
+- 메뉴 조건 질의는 `menu_query_rules.py`의 규칙 기반 metadata filter를 먼저 사용하고, 결과가 없으면 완화된 filter와 fallback 검색을 순서대로 사용한다. 질의에 제품군이 있으면 제품군이 빠진 완화 후보는 건너뛴다.
+- "X 말고/빼고"와 "X 알레르기/안 들어간"은 제외 조건이다. 3배수로 가져온 뒤 메뉴명·설명·알레르기에 X가 있는 항목을 빼고 k개로 자른다.
+- 질의에 맵기·식감·조리 방식 같은 속성이 직접 있으면 상황 추천 기준(`recommendation_criteria`)보다 그 조건을 우선한다.
 - `search_cs(query, state)`는 `{"results": [{"content", "cs_category", "claim_category"}]}` 형태를 유지한다.
 - 두 검색 tool 모두 `state`에서 세션 캐시를 읽는다. 캐시 키는 원문 `query` 그대로다.
 - Redis 캐시는 retriever 문서 결과만 저장하는 성능 최적화 계층이다. Redis 조회/쓰기 실패 시 검색 결과 생성은 계속 진행해야 한다.
