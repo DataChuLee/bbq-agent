@@ -142,7 +142,7 @@ METADATA_FIELD_INFO = [
     ),
     AttributeInfo(
         name="cooking_method",
-        description="조리 방식. 가능한 값: fried, grilled, smoked, soup",
+        description="조리 방식. 가능한 값: fried, grilled, smoked, soup, baked",
         type="string",
     ),
     AttributeInfo(
