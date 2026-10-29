@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from collections.abc import Iterable, Mapping, Sequence
 from typing import Any
 
@@ -72,6 +73,29 @@ def reciprocal_rank(
         if result_id in expected:
             return 1 / index
     return 0.0
+
+
+def ndcg_at_k(
+    retrieved_ids: Sequence[object],
+    grades: Mapping[object, int],
+    k: int,
+) -> float:
+    """등급 라벨로 상위 k개의 순위 품질을 0~1로 계산한다. 라벨에 없는 결과는 0점이다."""
+    _require_positive_k(k)
+    graded = {_normalize_id(key): value for key, value in grades.items()}
+    ideal = sorted(graded.values(), reverse=True)[:k]
+    ideal_dcg = sum((2**g - 1) / math.log2(i + 2) for i, g in enumerate(ideal))
+    if not ideal_dcg:
+        return 0.0
+
+    seen: set[str] = set()
+    dcg = 0.0
+    for index, result_id in enumerate(_normalize_ids(retrieved_ids[:k])):
+        if result_id in seen:
+            continue
+        seen.add(result_id)
+        dcg += (2 ** graded.get(result_id, 0) - 1) / math.log2(index + 2)
+    return dcg / ideal_dcg
 
 
 def keyword_recall(
