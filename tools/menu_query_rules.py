@@ -31,7 +31,7 @@ CATEGORY_RULES = [
 PRODUCT_FAMILY_RULES = [
     (("버거",), "burger"),
     (("피자",), "pizza"),
-    (("감자튀김", "치즈볼", "콘립", "고추킹", "멘보샤"), "side"),
+    (("사이드", "감자튀김", "치즈볼", "콘립", "고추킹", "멘보샤"), "side"),
     (("음료", "콜라", "사이다", "스프라이트", "레몬보이"), "drink"),
     (("소스", "치킨무"), "sauce"),
     (("치킨", "닭", "윙", "봉", "순살", "반마리", "통다리"), "chicken"),
@@ -40,12 +40,26 @@ COOKING_METHOD_RULES = [
     (("구운", "구워", "그릴"), "grilled"),
     (("훈제",), "smoked"),
     (("튀긴", "튀겨"), "fried"),
+    # "탕"은 맛탕까지 잡아서 쓰지 않는다.
+    (("국물",), "soup"),
 ]
 SAUCE_STYLE_RULES = [
     (("간장",), "soy_sauce"),
     (("스파이시소스", "매운소스", "매운양념"), "spicy_sauce"),
     (("양념",), "sauced"),
 ]
+# "양념 말고 후라이드"처럼 빼달라는 대상은 조건으로 읽지 않도록 지운다.
+EXCLUDED_TERM_PATTERN = re.compile(r"\S+\s*(말고|빼고|대신)")
+# "매운 거 못 먹는"은 매운 단어가 있어도 순한 메뉴를 원하는 질의다.
+SPICY_AVOID_TERMS = ("못먹", "싫어", "약해", "약한")
+# 메뉴 데이터의 알레르기 표기에 쓰이는 재료명이다. "게"는 어미와 헷갈려 뺐다.
+ALLERGEN_TERMS = (
+    "우유", "땅콩", "대두", "밀", "새우", "돼지고기", "쇠고기", "닭고기",
+    "토마토", "조개류", "오징어", "계란", "알류", "고등어", "아황산류",
+)
+ALLERGEN_PATTERN = re.compile(
+    rf"({'|'.join(ALLERGEN_TERMS)})\s*(알레르기|알러지|안\s*들어간|없는|빼고|못\s*먹)"
+)
 RISKY_FILTER_KEYS = ("sauce_style", "product_family")
 # 사용자가 명시적으로 요청한 조건이므로 {} 폴백 직전에 단독 필터로 한 번 더 시도한다.
 NON_NEGOTIABLE_FILTER_KEYS = frozenset({"spiciness"})
@@ -66,7 +80,17 @@ def infer_sauce_style_filter(normalized: str) -> str | None:
     return _match_rule(normalized, SAUCE_STYLE_RULES)
 
 
+def extract_excluded_terms(query: str) -> list[str]:
+    """빼달라고 한 재료나 메뉴 이름을 돌려준다. 메뉴명·설명·알레르기에 있으면 결과에서 뺀다."""
+    terms = [m.group(1) for m in ALLERGEN_PATTERN.finditer(query)]
+    terms += [m.group(0).split()[0].removesuffix(m.group(1)) for m in EXCLUDED_TERM_PATTERN.finditer(query)]
+    if "계란" in terms:
+        terms.append("알류")
+    return [term for term in dict.fromkeys(terms) if term]
+
+
 def extract_rule_based_filters(query: str) -> dict[str, Any]:
+    query = EXCLUDED_TERM_PATTERN.sub("", query)
     normalized = query.replace(" ", "")
     filters: list[dict[str, Any]] = []
 
@@ -77,6 +101,8 @@ def extract_rule_based_filters(query: str) -> dict[str, Any]:
         filters.append({"price": {op: price}})
 
     if value := _match_rule(normalized, SPICINESS_RULES):
+        if value == "매움" and any(term in normalized for term in SPICY_AVOID_TERMS):
+            value = "순함"
         filters.append({"spiciness": {"$eq": value}})
     if value := _match_rule(normalized, TEXTURE_RULES):
         filters.append({"primary_texture": {"$eq": value}})
