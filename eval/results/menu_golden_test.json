@@ -1,0 +1,867 @@
+[
+ {
+  "system": "baseline",
+  "id": "golden-002",
+  "case_type": "attr_single",
+  "query": "바삭바삭한 거 추천해줘",
+  "retrieved": [
+   "뿜치킹 감자튀김",
+   "뿜치킹 오감볼",
+   "BBQ 떡볶이",
+   "황올한 닭발튀김",
+   "뿜치킹 BBQ볼"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.7429498456882974
+ },
+ {
+  "system": "baseline",
+  "id": "golden-004",
+  "case_type": "attr_single",
+  "query": "훈제 치킨 있어?",
+  "retrieved": [
+   "극한왕갈비치킨",
+   "스모크치킨(5조각)",
+   "마라핫",
+   "크런치버터치킨",
+   "바사칸 윙"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.35098520806348704
+ },
+ {
+  "system": "baseline",
+  "id": "golden-005",
+  "case_type": "attr_single",
+  "query": "구운 치킨 메뉴 알려줘",
+  "retrieved": [
+   "극한왕갈비치킨",
+   "빠리치킨",
+   "크런치버터치킨",
+   "황금올리브치킨™",
+   "황금올리브치킨™양념"
+  ],
+  "hit@5": 0.0,
+  "ndcg@5": 0.0
+ },
+ {
+  "system": "baseline",
+  "id": "golden-007",
+  "case_type": "attr_single",
+  "query": "양념 묻은 치킨 추천",
+  "retrieved": [
+   "황금올리브치킨™양념",
+   "극한왕갈비치킨",
+   "맵소디",
+   "황금올리브치킨™매운양념",
+   "황금올리브치킨™양념 반마리"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "baseline",
+  "id": "golden-009",
+  "case_type": "attr_single",
+  "query": "쫄깃한 사이드 먹고 싶어",
+  "retrieved": [
+   "롱김말이(1개)",
+   "BBQ 닭껍데기",
+   "뿜치킹 오감볼",
+   "BBQ 소떡",
+   "BBQ 떡볶이"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.8869465982421278
+ },
+ {
+  "system": "baseline",
+  "id": "golden-012",
+  "case_type": "attr_combo",
+  "query": "안 맵고 촉촉한 구이 치킨",
+  "retrieved": [
+   "마라핫",
+   "맵소디",
+   "극한왕갈비치킨",
+   "빠리치킨",
+   "자메이카 소떡만나치킨"
+  ],
+  "hit@5": 0.0,
+  "ndcg@5": 0.0
+ },
+ {
+  "system": "baseline",
+  "id": "golden-013",
+  "case_type": "attr_combo",
+  "query": "바삭하고 매운 윙 있어?",
+  "retrieved": [
+   "바사칸 윙",
+   "핫베이크 윙",
+   "뿜치킹 오감볼",
+   "뿜치킹 감자튀김",
+   "황금올리브치킨™핫윙(VAP)"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.8884990574692628
+ },
+ {
+  "system": "baseline",
+  "id": "golden-017",
+  "case_type": "attr_combo",
+  "query": "매운 버거 있어?",
+  "retrieved": [
+   "BBQ 썬더 치킨버거 마일드",
+   "BBQ 썬더 치킨버거 스파이시",
+   "황금올리브치킨™매운양념",
+   "마라핫",
+   "뿜치킹"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.7967075809905066
+ },
+ {
+  "system": "baseline",
+  "id": "golden-018",
+  "case_type": "attr_combo",
+  "query": "바삭한 새우 사이드",
+  "retrieved": [
+   "새우스틱(2개)",
+   "BBQ 고추킹(2개)",
+   "뿜치킹 오감볼",
+   "뿜치킹 통새우 멘보샤(5개)",
+   "BBQ 소떡"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.6099058020499597
+ },
+ {
+  "system": "baseline",
+  "id": "golden-020",
+  "case_type": "price_family",
+  "query": "2만원 안쪽 치킨 추천해줘",
+  "retrieved": [
+   "극한왕갈비치킨",
+   "황금올리브치킨™속안심",
+   "황금올리브치킨™핫크리스피 반마리",
+   "빠리치킨",
+   "황금올리브치킨™핫윙(VAP)"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.3835663673713356
+ },
+ {
+  "system": "baseline",
+  "id": "golden-022",
+  "case_type": "price_family",
+  "query": "제일 싼 음료 뭐야?",
+  "retrieved": [
+   "제로콜라1.25L",
+   "콜라1.25L",
+   "콜라500ml",
+   "제로콜라500ml",
+   "제로콜라355ml"
+  ],
+  "hit@5": 0.0,
+  "ndcg@5": 0.053652664646244
+ },
+ {
+  "system": "baseline",
+  "id": "golden-025",
+  "case_type": "price_family",
+  "query": "5천원짜리 버거",
+  "retrieved": [
+   "BBQ 썬더 치킨버거 마일드",
+   "BBQ 썬더 치킨버거 스파이시",
+   "뿜치킹",
+   "BBQ 떡볶이+뿜치킹 BBQ볼+롱김말이(1개)+레몬보이 245ml",
+   "브라운비프피자"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "baseline",
+  "id": "golden-026",
+  "case_type": "price_family",
+  "query": "2만원 넘는 사이드 있어?",
+  "retrieved": [
+   "BBQ 떡볶이",
+   "BBQ 닭볶음탕",
+   "BBQ 고추킹(2개)",
+   "롱김말이(1개)",
+   "롱치즈스틱(1개)"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.6309297535714574
+ },
+ {
+  "system": "baseline",
+  "id": "golden-027",
+  "case_type": "situation",
+  "query": "맥주 안주로 좋은 치킨",
+  "retrieved": [
+   "자메이카 소떡만나치킨",
+   "극한왕갈비치킨",
+   "마라핫",
+   "빠리치킨",
+   "맵소디"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.5181822849033655
+ },
+ {
+  "system": "baseline",
+  "id": "golden-028",
+  "case_type": "situation",
+  "query": "애들이랑 같이 먹을 치킨 추천해줘",
+  "retrieved": [
+   "극한왕갈비치킨",
+   "황금올리브치킨™양념 반마리",
+   "자메이카 소떡만나치킨",
+   "황금올리브치킨™속안심",
+   "빠리치킨"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.473108016335106
+ },
+ {
+  "system": "baseline",
+  "id": "golden-029",
+  "case_type": "situation",
+  "query": "혼자 먹기 좋은 메뉴",
+  "retrieved": [
+   "황금올리브치킨™반마리",
+   "황금올리브치킨™핫크리스피 반마리",
+   "황금올리브치킨™양념 반마리",
+   "TOP3세트메뉴 Set1",
+   "황금올리브치킨™매운양념 반마리"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.8539316501572934
+ },
+ {
+  "system": "baseline",
+  "id": "golden-034",
+  "case_type": "situation",
+  "query": "영화 보면서 먹을 간식",
+  "retrieved": [
+   "뿜치킹 오감볼",
+   "뿜치킹 감자튀김",
+   "오감볼",
+   "뿜치킹 모둠감자튀김",
+   "BBQ 맛탕"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "baseline",
+  "id": "golden-036",
+  "case_type": "situation",
+  "query": "느끼한 거 먹고 나서 입가심할 음료",
+  "retrieved": [
+   "콜라500ml",
+   "스프라이트1.5L",
+   "제로콜라500ml",
+   "제로콜라245ml",
+   "콜라245ml"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.4759908431563516
+ },
+ {
+  "system": "baseline",
+  "id": "golden-039",
+  "case_type": "name_exact",
+  "query": "쉬림프고르곤졸라피자 있어?",
+  "retrieved": [
+   "쉬림프고르곤졸라피자",
+   "제로콜라1.25L",
+   "제로콜라355ml",
+   "제로콜라245ml",
+   "제로콜라500ml"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "baseline",
+  "id": "golden-040",
+  "case_type": "name_exact",
+  "query": "치킨무 따로 살 수 있어?",
+  "retrieved": [
+   "치킨무",
+   "황금올리브치킨™핫크리스피 반마리",
+   "황금올리브치킨™블랙페퍼 반마리",
+   "스모크치킨(5조각)",
+   "BBQ 황올 반마리 세트"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "baseline",
+  "id": "golden-043",
+  "case_type": "name_variant",
+  "query": "뿜치깅 시키고 싶어",
+  "retrieved": [
+   "뿜치킹",
+   "뿜치킹 오감볼",
+   "뿜치킹 BBQ볼",
+   "뿜치킹 콘립(4개)",
+   "뿜치킹 감자튀김"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "baseline",
+  "id": "golden-045",
+  "case_type": "name_variant",
+  "query": "크런치 버터 치킨",
+  "retrieved": [
+   "크런치버터치킨",
+   "크런치 순살크래커",
+   "BBQ 썬더 치킨버거 스파이시",
+   "BBQ 썬더 치킨버거 마일드",
+   "뿜치킹"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "baseline",
+  "id": "golden-046",
+  "case_type": "name_variant",
+  "query": "스모그 치킨 있어?",
+  "retrieved": [
+   "스모크치킨(5조각)",
+   "스모크치킨 반마리(3조각)",
+   "자메이카 소떡만나치킨",
+   "땡쇼크",
+   "BBQ 썬더 치킨버거 스파이시"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "baseline",
+  "id": "golden-047",
+  "case_type": "negation",
+  "query": "안 매운 치킨만 보여줘",
+  "retrieved": [
+   "극한왕갈비치킨",
+   "마라핫",
+   "황금올리브치킨™매운양념 반마리",
+   "황금올리브치킨™양념 반마리",
+   "황금올리브치킨™속안심"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.6164336326286644
+ },
+ {
+  "system": "baseline",
+  "id": "golden-051",
+  "case_type": "negation",
+  "query": "우유 안 들어간 치킨",
+  "retrieved": [
+   "극한왕갈비치킨",
+   "자메이카 소떡만나치킨",
+   "바사칸 윙",
+   "황금올리브치킨™반마리",
+   "황금올리브치킨™속안심"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.5087403079104241
+ },
+ {
+  "system": "baseline",
+  "id": "golden-052",
+  "case_type": "negation",
+  "query": "양념 말고 후라이드로 추천해줘",
+  "retrieved": [
+   "황금올리브치킨™양념",
+   "황올한 닭발튀김",
+   "[황·양·반] 황올 반+양념 반",
+   "황금올리브치킨™매운양념",
+   "황금올리브치킨™"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.13120507751234178
+ },
+ {
+  "system": "baseline",
+  "id": "golden-054",
+  "case_type": "negation",
+  "query": "새우 안 들어간 피자",
+  "retrieved": [
+   "쉬림프고르곤졸라피자",
+   "페퍼로니 씬피자",
+   "새우스틱(2개)",
+   "콤비네이션피자",
+   "브라운비프피자"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.49125969208957576
+ },
+ {
+  "system": "baseline",
+  "id": "golden-055",
+  "case_type": "family_browse",
+  "query": "피자 메뉴 다 보여줘",
+  "retrieved": [
+   "콤비네이션피자",
+   "페퍼로니 씬피자",
+   "쉬림프고르곤졸라피자",
+   "브라운비프피자",
+   "고구마퐁듀피자"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "baseline",
+  "id": "golden-059",
+  "case_type": "family_browse",
+  "query": "세트 메뉴 추천해줘",
+  "retrieved": [
+   "TOP3세트메뉴 Set3",
+   "TOP3세트메뉴 Set1",
+   "TOP3세트메뉴 Set2",
+   "[황.양.반]황올반+양념반+뿜치킹 BBQ볼",
+   "BBQ 떡볶이+뿜치킹 BBQ볼+롱김말이(1개)+레몬보이 245ml"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "baseline",
+  "id": "golden-060",
+  "case_type": "family_browse",
+  "query": "사이드 메뉴 뭐 있어?",
+  "retrieved": [
+   "TOP3세트메뉴 Set3",
+   "오감볼",
+   "TOP3세트메뉴 Set2",
+   "TOP3세트메뉴 Set1",
+   "통새우 멘보샤(5개)"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.3451913422468693
+ },
+ {
+  "system": "current",
+  "id": "golden-002",
+  "case_type": "attr_single",
+  "query": "바삭바삭한 거 추천해줘",
+  "retrieved": [
+   "뿜치킹 감자튀김",
+   "뿜치킹 오감볼",
+   "황올한 닭발튀김",
+   "뿜치킹 콘립(4개)",
+   "BBQ 감자튀김"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "current",
+  "id": "golden-004",
+  "case_type": "attr_single",
+  "query": "훈제 치킨 있어?",
+  "retrieved": [
+   "스모크치킨(5조각)",
+   "스모크치킨 반마리(3조각)"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.9072836011519267
+ },
+ {
+  "system": "current",
+  "id": "golden-005",
+  "case_type": "attr_single",
+  "query": "구운 치킨 메뉴 알려줘",
+  "retrieved": [
+   "TOP3세트메뉴 Set3",
+   "핫베이크 윙",
+   "자메이카 통다리구이",
+   "자메이카 통다리구이 반마리"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.8687949224876581
+ },
+ {
+  "system": "current",
+  "id": "golden-007",
+  "case_type": "attr_single",
+  "query": "양념 묻은 치킨 추천",
+  "retrieved": [
+   "황금올리브치킨™양념",
+   "극한왕갈비치킨",
+   "황금올리브치킨™양념 반마리",
+   "자메이카 소떡만나치킨",
+   "[황·양·반] 황올 반+양념 반"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.9125299483251055
+ },
+ {
+  "system": "current",
+  "id": "golden-009",
+  "case_type": "attr_single",
+  "query": "쫄깃한 사이드 먹고 싶어",
+  "retrieved": [
+   "BBQ 떡볶이",
+   "뿜치킹 BBQ볼",
+   "BBQ 오뎅탕",
+   "BBQ볼(5개)",
+   "BBQ 떡볶이+뿜치킹 BBQ볼+롱김말이(1개)+레몬보이 245ml"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.7994765465672333
+ },
+ {
+  "system": "current",
+  "id": "golden-012",
+  "case_type": "attr_combo",
+  "query": "안 맵고 촉촉한 구이 치킨",
+  "retrieved": [
+   "스모크치킨(5조각)"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.515157140670655
+ },
+ {
+  "system": "current",
+  "id": "golden-013",
+  "case_type": "attr_combo",
+  "query": "바삭하고 매운 윙 있어?",
+  "retrieved": [
+   "황금올리브치킨™핫크리스피",
+   "황금올리브치킨™핫크리스피 반마리",
+   "TOP3세트메뉴 Set2"
+  ],
+  "hit@5": 0.0,
+  "ndcg@5": 0.0
+ },
+ {
+  "system": "current",
+  "id": "golden-017",
+  "case_type": "attr_combo",
+  "query": "매운 버거 있어?",
+  "retrieved": [
+   "BBQ 썬더 치킨버거 스파이시"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.8262346571285599
+ },
+ {
+  "system": "current",
+  "id": "golden-018",
+  "case_type": "attr_combo",
+  "query": "바삭한 새우 사이드",
+  "retrieved": [
+   "새우스틱(2개)",
+   "BBQ 고추킹(2개)",
+   "뿜치킹 오감볼",
+   "뿜치킹 통새우 멘보샤(5개)",
+   "BBQ 소떡"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.6099058020499597
+ },
+ {
+  "system": "current",
+  "id": "golden-020",
+  "case_type": "price_family",
+  "query": "2만원 안쪽 치킨 추천해줘",
+  "retrieved": [
+   "황금올리브치킨™속안심",
+   "황금올리브치킨™핫크리스피 반마리",
+   "황금올리브치킨™양념 반마리",
+   "황금올리브치킨™매운양념 반마리",
+   "황금올리브치킨™블랙페퍼 반마리"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "current",
+  "id": "golden-022",
+  "case_type": "price_family",
+  "query": "제일 싼 음료 뭐야?",
+  "retrieved": [
+   "제로콜라1.25L",
+   "콜라1.25L",
+   "콜라500ml",
+   "제로콜라500ml",
+   "제로콜라355ml"
+  ],
+  "hit@5": 0.0,
+  "ndcg@5": 0.053652664646244
+ },
+ {
+  "system": "current",
+  "id": "golden-025",
+  "case_type": "price_family",
+  "query": "5천원짜리 버거",
+  "retrieved": [
+   "BBQ 썬더 치킨버거 마일드",
+   "BBQ 썬더 치킨버거 스파이시"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "current",
+  "id": "golden-026",
+  "case_type": "price_family",
+  "query": "2만원 넘는 사이드 있어?",
+  "retrieved": [
+   "BBQ 닭볶음탕"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "current",
+  "id": "golden-027",
+  "case_type": "situation",
+  "query": "맥주 안주로 좋은 치킨",
+  "retrieved": [
+   "황금올리브치킨™핫크리스피",
+   "황금올리브치킨™핫크리스피 반마리",
+   "TOP3세트메뉴 Set2"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.7227265726449517
+ },
+ {
+  "system": "current",
+  "id": "golden-028",
+  "case_type": "situation",
+  "query": "애들이랑 같이 먹을 치킨 추천해줘",
+  "retrieved": [
+   "황금올리브치킨™속안심"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.33916020527361607
+ },
+ {
+  "system": "current",
+  "id": "golden-029",
+  "case_type": "situation",
+  "query": "혼자 먹기 좋은 메뉴",
+  "retrieved": [],
+  "hit@5": 0.0,
+  "ndcg@5": 0.0
+ },
+ {
+  "system": "current",
+  "id": "golden-034",
+  "case_type": "situation",
+  "query": "영화 보면서 먹을 간식",
+  "retrieved": [
+   "뿜치킹 오감볼",
+   "뿜치킹 감자튀김",
+   "오감볼",
+   "뿜치킹 모둠감자튀김",
+   "BBQ 맛탕"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "current",
+  "id": "golden-036",
+  "case_type": "situation",
+  "query": "느끼한 거 먹고 나서 입가심할 음료",
+  "retrieved": [
+   "콜라500ml",
+   "스프라이트1.5L",
+   "제로콜라500ml",
+   "제로콜라245ml",
+   "콜라245ml"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.4759908431563516
+ },
+ {
+  "system": "current",
+  "id": "golden-039",
+  "case_type": "name_exact",
+  "query": "쉬림프고르곤졸라피자 있어?",
+  "retrieved": [
+   "쉬림프고르곤졸라피자",
+   "허니리코타 시카고피자",
+   "페퍼로니 씬피자",
+   "고구마퐁듀피자",
+   "페퍼로니 시카고피자"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "current",
+  "id": "golden-040",
+  "case_type": "name_exact",
+  "query": "치킨무 따로 살 수 있어?",
+  "retrieved": [
+   "치킨무",
+   "BBQ양념치킨컵소스(40g)",
+   "BBQ 소스",
+   "BBQ 치밥소스",
+   "BBQ 디핑소스"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "current",
+  "id": "golden-043",
+  "case_type": "name_variant",
+  "query": "뿜치깅 시키고 싶어",
+  "retrieved": [
+   "뿜치킹",
+   "뿜치킹 오감볼",
+   "뿜치킹 BBQ볼",
+   "뿜치킹 콘립(4개)",
+   "뿜치킹 감자튀김"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "current",
+  "id": "golden-045",
+  "case_type": "name_variant",
+  "query": "크런치 버터 치킨",
+  "retrieved": [
+   "크런치버터치킨",
+   "크런치 순살크래커",
+   "뿜치킹",
+   "빠리치킨",
+   "극한왕갈비치킨"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "current",
+  "id": "golden-046",
+  "case_type": "name_variant",
+  "query": "스모그 치킨 있어?",
+  "retrieved": [
+   "스모크치킨(5조각)",
+   "스모크치킨 반마리(3조각)",
+   "자메이카 소떡만나치킨",
+   "땡쇼크",
+   "맵소디"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "current",
+  "id": "golden-047",
+  "case_type": "negation",
+  "query": "안 매운 치킨만 보여줘",
+  "retrieved": [
+   "극한왕갈비치킨",
+   "황금올리브치킨™양념 반마리",
+   "황금올리브치킨™속안심",
+   "BBQ 황올 반마리 세트",
+   "파더's치킨"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "current",
+  "id": "golden-051",
+  "case_type": "negation",
+  "query": "우유 안 들어간 치킨",
+  "retrieved": [
+   "극한왕갈비치킨",
+   "바사칸 윙",
+   "마라핫"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 0.7227265726449517
+ },
+ {
+  "system": "current",
+  "id": "golden-052",
+  "case_type": "negation",
+  "query": "양념 말고 후라이드로 추천해줘",
+  "retrieved": [
+   "황금올리브치킨™",
+   "파더's치킨",
+   "바사칸 윙",
+   "황금올리브치킨™핫윙(VAP)",
+   "황금올리브치킨™핫크리스피"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "current",
+  "id": "golden-054",
+  "case_type": "negation",
+  "query": "새우 안 들어간 피자",
+  "retrieved": [
+   "페퍼로니 씬피자",
+   "콤비네이션피자",
+   "브라운비프피자",
+   "고구마퐁듀피자",
+   "페퍼로니 시카고피자"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "current",
+  "id": "golden-055",
+  "case_type": "family_browse",
+  "query": "피자 메뉴 다 보여줘",
+  "retrieved": [
+   "콤비네이션피자",
+   "페퍼로니 씬피자",
+   "쉬림프고르곤졸라피자",
+   "브라운비프피자",
+   "고구마퐁듀피자"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "current",
+  "id": "golden-059",
+  "case_type": "family_browse",
+  "query": "세트 메뉴 추천해줘",
+  "retrieved": [
+   "TOP3세트메뉴 Set3",
+   "TOP3세트메뉴 Set1",
+   "TOP3세트메뉴 Set2",
+   "[황.양.반]황올반+양념반+뿜치킹 BBQ볼",
+   "BBQ 떡볶이+뿜치킹 BBQ볼+롱김말이(1개)+레몬보이 245ml"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ },
+ {
+  "system": "current",
+  "id": "golden-060",
+  "case_type": "family_browse",
+  "query": "사이드 메뉴 뭐 있어?",
+  "retrieved": [
+   "오감볼",
+   "통새우 멘보샤(5개)",
+   "새우스틱(2개)",
+   "BBQ 맛탕",
+   "뿜치킹 오감볼"
+  ],
+  "hit@5": 1.0,
+  "ndcg@5": 1.0
+ }
+]
