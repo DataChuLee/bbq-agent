@@ -2,9 +2,18 @@ from eval.custom_rag_metrics import (
     evaluate_rankings,
     hit_at_k,
     keyword_recall,
+    ndcg_at_k,
     precision_at_k,
     reciprocal_rank,
 )
+
+
+def test_ndcg_at_k_rewards_better_grades_higher_in_the_list() -> None:
+    grades = {"best": 2, "ok": 1}
+
+    assert ndcg_at_k(["best", "ok", "x"], grades, k=3) == 1.0
+    assert ndcg_at_k(["x", "ok", "best"], grades, k=3) < ndcg_at_k(["best", "x", "ok"], grades, k=3)
+    assert ndcg_at_k(["x", "y"], grades, k=2) == 0.0
 
 
 def test_precision_at_k_counts_relevant_items_in_top_k() -> None:
