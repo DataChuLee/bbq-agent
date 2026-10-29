@@ -45,16 +45,30 @@ SIDE_NAME_TERMS = (
 )
 DRINK_NAME_TERMS = ("콜라", "스프라이트", "레몬보이")
 SEASONING_NAME_TERMS = ("시즈닝",)
-CHICKEN_NAME_TERMS = ("치킨", "닭", "윙", "봉", "순살", "반마리", "통다리")
+CHICKEN_NAME_TERMS = ("치킨", "닭", "윙", "봉", "순살", "반마리", "통다리", "황올")
 PIZZA_NAME_TERMS = ("피자",)
 BURGER_NAME_TERMS = ("버거",)
 SPICY_NAME_TERMS = ("핫", "매운", "마라", "땡쇼크", "맵소디", "고추")
-SAUCED_NAME_TERMS = ("양념", "왕갈비", "자메이카", "빠리", "뿜치킹", "소떡만나")
-SOY_SAUCE_NAME_TERMS = ("간장", "블랙페퍼")
+SAUCED_NAME_TERMS = ("양념", "왕갈비", "자메이카", "빠리", "소떡만나")
+SOY_SAUCE_NAME_TERMS = ("간장",)
 SMOKED_NAME_TERMS = ("스모크", "훈연")
 BAKED_NAME_TERMS = ("베이크", "구이")
-SOUP_NAME_TERMS = ("탕", "떡볶이")
+SOUP_NAME_TERMS = ("볶음탕", "오뎅탕", "떡볶이")
 OPTION_TAG_TERMS = ("순살", "반마리", "한마리", "윙", "봉", "닭다리", "콤보")
+# 규칙으로 판정할 수 없어 메뉴 설명을 보고 직접 바로잡은 값이다.
+METADATA_OVERRIDES = {
+    "빠리치킨": {"spiciness": "보통"},
+    "크런치버터치킨": {"spiciness": "보통"},
+    "페퍼로니 시카고피자": {"spiciness": "순함"},
+    "BBQ 카레고로케(3개)": {"spiciness": "순함"},
+    "[황.양.반]황올반+양념반+뿜치킹 BBQ볼": {"spiciness": "순함"},
+    "맵소디": {"primary_texture": "바삭함"},
+    "BBQ 소떡": {"sauce_style": "sauced"},
+    "황금올리브치킨 반마리+BBQ 감자튀김+양념치킨컵소스+레몬보이 245ml": {
+        "sauce_style": "none",
+        "primary_texture": "바삭함",
+    },
+}
 
 
 def build_embedding_text(item: dict) -> str:
@@ -102,7 +116,10 @@ def derive_product_type(item: dict) -> str:
 
     if category in SAUCE_CATEGORIES:
         return "sauce"
-    if category in DRINK_CATEGORIES or _contains_any(name, DRINK_NAME_TERMS):
+    # 세트 이름의 음료 구성품 때문에 세트 전체가 음료로 분류되지 않게 한다.
+    if category in DRINK_CATEGORIES or (
+        category not in COMBO_CHICKEN_CATEGORIES and _contains_any(name, DRINK_NAME_TERMS)
+    ):
         return "drink"
     if category in SIDE_CATEGORIES:
         return "side"
@@ -141,6 +158,12 @@ def derive_product_family(item: dict) -> str:
         if _contains_any(name, BURGER_NAME_TERMS):
             return "burger"
         return "burger_pizza"
+    if (
+        product_type == "set_menu"
+        and _contains_any(name, SIDE_NAME_TERMS)
+        and not _contains_any(name, CHICKEN_NAME_TERMS)
+    ):
+        return "side"
     if product_type in {"main_menu", "set_menu"}:
         return "chicken"
     return "unknown"
@@ -153,6 +176,8 @@ def derive_cooking_method(item: dict) -> str:
 
     if product_type in {"sauce", "drink"}:
         return ""
+    if derive_product_family(item) == "pizza":
+        return "baked"
     if _contains_any(text, SMOKED_NAME_TERMS):
         return "smoked"
     if category == "구이" or _contains_any(text, BAKED_NAME_TERMS):
@@ -218,7 +243,7 @@ def derive_search_spiciness(item: dict) -> str:
 
 def build_metadata(item: dict) -> dict:
     """SelfQueryRetriever 필터용 메타데이터 구성."""
-    return {
+    metadata = {
         "price":    int(item.get("가격", 0)),
         "category": str(item.get("구분", "")),
         "allergy":  str(item.get("알레르기 정보", "")),
@@ -236,6 +261,8 @@ def build_metadata(item: dict) -> dict:
         "name":     str(item.get("메뉴명", "")),
         "imageURL": str(item.get("imageURL", "")),
     }
+    metadata.update(METADATA_OVERRIDES.get(metadata["name"], {}))
+    return metadata
 
 
 def _clear_existing_collection(persist_directory: Path, collection_name: str) -> None:
@@ -256,6 +283,10 @@ def build_index() -> None:
     with open(DATA_PATH, encoding="utf-8") as f:
         menu_data = json.load(f)
     print(f"      메뉴 항목 수: {len(menu_data)}")
+    # 메뉴명이 바뀌면 보정값이 조용히 빠지므로 빌드를 멈춘다.
+    unknown = set(METADATA_OVERRIDES) - {str(item.get("메뉴명", "")) for item in menu_data}
+    if unknown:
+        raise SystemExit(f"원천 데이터에 없는 보정 대상 메뉴: {sorted(unknown)}")
 
     print("[2/4] Document 생성")
     documents = []
