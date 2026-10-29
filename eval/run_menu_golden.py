@@ -6,6 +6,8 @@
 
 import argparse
 import json
+import math
+import random
 from collections import defaultdict
 from pathlib import Path
 
@@ -18,6 +20,28 @@ EVAL_DIR = Path(__file__).parent
 RESULTS_DIR = EVAL_DIR / "results"
 # 첫 추천 화면이 메뉴 카드 5장이라 사용자가 보는 범위만 채점한다.
 K = 5
+
+
+def mcnemar_exact_p(base_hits: list[float], new_hits: list[float]) -> float:
+    """같은 질의에서 한쪽만 맞힌 경우만 세는 정확 McNemar 검정(양측)이다."""
+    b = sum(x > y for x, y in zip(base_hits, new_hits))
+    c = sum(y > x for x, y in zip(base_hits, new_hits))
+    n = b + c
+    if not n:
+        return 1.0
+    tail = sum(math.comb(n, i) for i in range(min(b, c) + 1)) / 2**n
+    return min(1.0, 2 * tail)
+
+
+def paired_bootstrap_ci(diffs: list[float], rounds: int = 10000, seed: int = 42) -> tuple[float, float]:
+    """질의를 복원 추출해 평균 차이의 95% 신뢰구간을 구한다."""
+    rng = random.Random(seed)
+    means = sorted(sum(rng.choices(diffs, k=len(diffs))) / len(diffs) for _ in range(rounds))
+    return means[int(rounds * 0.025)], means[int(rounds * 0.975)]
+
+
+assert mcnemar_exact_p([1, 1, 0], [1, 1, 0]) == 1.0
+assert mcnemar_exact_p([0] * 8, [1] * 8) < 0.01
 
 
 def _systems():
@@ -73,6 +97,14 @@ def main() -> None:
         hit = sum(r["hit@5"] for r in group) / len(group)
         ndcg = sum(r["ndcg@5"] for r in group) / len(group)
         print(f"{case_type:14} {system:9} n={len(group):2}  Hit@5 {hit:.3f}  nDCG@5 {ndcg:.3f}")
+
+    # 주 비교(기준선 vs 현재) 하나만 검정한다. 유형별로 여러 번 검정하면 우연히 유의한 결과가 나온다.
+    by_system = {s: [r for r in rows if r["system"] == s] for s in ("baseline", "current")}
+    base, curr = by_system["baseline"], by_system["current"]
+    p = mcnemar_exact_p([r["hit@5"] for r in base], [r["hit@5"] for r in curr])
+    low, high = paired_bootstrap_ci([c["ndcg@5"] - b["ndcg@5"] for b, c in zip(base, curr)])
+    print(f"Hit@5 McNemar 정확 검정 p={p:.3f}")
+    print(f"nDCG@5 차이(현재-기준선) 95% CI [{low:+.3f}, {high:+.3f}]")
 
 
 if __name__ == "__main__":
