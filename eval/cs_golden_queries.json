@@ -1,0 +1,414 @@
+[
+  {
+    "id": "cs-001",
+    "query": "기프티콘으로 주문하려는데 매장에서 안 받아준대요",
+    "gold_categories": [
+      "기프티콘 거부"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-002",
+    "query": "모바일 쿠폰 사용을 거절당했어요",
+    "gold_categories": [
+      "기프티콘 거부"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-003",
+    "query": "치킨이 평소랑 다르게 조리된 것 같아요",
+    "gold_categories": [
+      "매뉴얼 미 준수"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-004",
+    "query": "튀김옷이 이상하고 레시피대로 안 만든 느낌이에요",
+    "gold_categories": [
+      "매뉴얼 미 준수"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-005",
+    "query": "매장이 너무 지저분해요",
+    "gold_categories": [
+      "매장 청결"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-006",
+    "query": "가게 테이블이랑 바닥이 더러워서 불쾌했어요",
+    "gold_categories": [
+      "매장 청결"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-007",
+    "query": "주문한 지 1시간이 넘었는데 아직 안 와요",
+    "gold_categories": [
+      "배달 지연"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-008",
+    "query": "배달이 너무 늦어요",
+    "gold_categories": [
+      "배달 지연"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-009",
+    "query": "매장 직원이 너무 불친절했어요",
+    "gold_categories": [
+      "불친절 응대"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-010",
+    "query": "전화 주문할 때 직원이 짜증을 냈어요",
+    "gold_categories": [
+      "불친절 응대"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-011",
+    "query": "앱으로 주문하는 게 너무 불편해요",
+    "gold_categories": [
+      "사용 불편",
+      "전산오류"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-012",
+    "query": "홈페이지 주문 화면이 잘 안 돼요",
+    "gold_categories": [
+      "사용 불편",
+      "전산오류"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-013",
+    "query": "BBQ 상품권을 매장에서 안 받아요",
+    "gold_categories": [
+      "상품권 거부"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-014",
+    "query": "문화상품권으로 결제가 안 된대요",
+    "gold_categories": [
+      "상품권 거부"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-015",
+    "query": "본사 직원 응대가 마음에 안 들었어요",
+    "gold_categories": [
+      "서비스 불만"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-016",
+    "query": "본사 차량이 매장 앞을 막고 있었어요",
+    "gold_categories": [
+      "서비스 불만"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-017",
+    "query": "치킨에서 철사 같은 게 나왔어요",
+    "gold_categories": [
+      "이물질(본사)"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-018",
+    "query": "소스 안에 딱딱한 금속 조각이 있었어요",
+    "gold_categories": [
+      "이물질(본사)"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-019",
+    "query": "치킨에 머리카락이 있었어요",
+    "gold_categories": [
+      "이물질(패밀리)",
+      "이물질(본사)"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-020",
+    "query": "음식에서 이물질이 나왔어요",
+    "gold_categories": [
+      "이물질(패밀리)",
+      "이물질(본사)"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-021",
+    "query": "결제가 됐는데 주문이 안 들어갔어요",
+    "gold_categories": [
+      "전산오류"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-022",
+    "query": "기프티콘 번호를 넣으니 오류가 나요",
+    "gold_categories": [
+      "전산오류"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-023",
+    "query": "핫윙 뼈가 까맣게 변해 있어요",
+    "gold_categories": [
+      "흑골화(핫윙,바사칸)"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-024",
+    "query": "바사칸 뼈 색이 검은데 먹어도 되나요?",
+    "gold_categories": [
+      "흑골화(핫윙,바사칸)"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-025",
+    "query": "치킨 크기가 너무 작아요",
+    "gold_categories": [
+      "닭 크기"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-026",
+    "query": "닭이 평소보다 훨씬 작은 걸 받았어요",
+    "gold_categories": [
+      "닭 크기"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-027",
+    "query": "치킨 살이 분홍색이에요",
+    "gold_categories": [
+      "핑킹 현상",
+      "방혈 피고임"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-028",
+    "query": "고기에 핏기가 보여요",
+    "gold_categories": [
+      "핑킹 현상",
+      "방혈 피고임"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-029",
+    "query": "매장에서 주문을 안 받아줘요",
+    "gold_categories": [
+      "주문 거부"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-030",
+    "query": "영업 중인데 배달 주문을 거절당했어요",
+    "gold_categories": [
+      "주문 거부"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-031",
+    "query": "배달비를 추가로 더 내라고 했어요",
+    "gold_categories": [
+      "추가 금액 부여"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-032",
+    "query": "기프티콘 쓰는데 추가금을 요구해요",
+    "gold_categories": [
+      "추가 금액 부여"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-033",
+    "query": "치킨무가 안 왔어요",
+    "gold_categories": [
+      "필수 품목 미 제공",
+      "치킨 무"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-034",
+    "query": "소스랑 음료가 빠져서 왔어요",
+    "gold_categories": [
+      "필수 품목 미 제공",
+      "치킨 무"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-035",
+    "query": "현금영수증을 안 해준대요",
+    "gold_categories": [
+      "현금영수증 거부"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-036",
+    "query": "현금 결제했는데 영수증 발급을 거부당했어요",
+    "gold_categories": [
+      "현금영수증 거부"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-037",
+    "query": "치킨이 덜 익은 것 같아요",
+    "gold_categories": [
+      "방혈 피고임",
+      "핑킹 현상"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-038",
+    "query": "뼈 주변에 피가 고여 있어요",
+    "gold_categories": [
+      "방혈 피고임",
+      "핑킹 현상"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-039",
+    "query": "순살치킨은 다리살이랑 가슴살 비율이 어떻게 돼요?",
+    "gold_categories": [
+      "순살 비율"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-040",
+    "query": "순살 부위가 어떻게 섞여 있어요?",
+    "gold_categories": [
+      "순살 비율"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-041",
+    "query": "치킨 한 마리는 몇 조각이에요?",
+    "gold_categories": [
+      "치킨 조각 수"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-042",
+    "query": "조각 수가 너무 적게 온 것 같아요",
+    "gold_categories": [
+      "치킨 조각 수"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-043",
+    "query": "핫크리스피 색이 너무 빨개요",
+    "gold_categories": [
+      "핫 크리스피"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-044",
+    "query": "핫크리스피가 검게 탄 것 같아요",
+    "gold_categories": [
+      "핫 크리스피"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-045",
+    "query": "치킨무에서 이상한 게 나왔어요",
+    "gold_categories": [
+      "치킨 무",
+      "필수 품목 미 제공"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-046",
+    "query": "치킨무 맛이 이상해요",
+    "gold_categories": [
+      "치킨 무",
+      "필수 품목 미 제공"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-047",
+    "query": "매장에서 먹으면 가격이 달라요?",
+    "gold_categories": [
+      "내점 식사 비용"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-048",
+    "query": "매장 식사할 때 추가 비용이 있나요?",
+    "gold_categories": [
+      "내점 식사 비용"
+    ],
+    "split": "test"
+  },
+  {
+    "id": "cs-049",
+    "query": "치킨 먹고 배탈이 났어요",
+    "gold_categories": [
+      "배탈"
+    ],
+    "split": "dev"
+  },
+  {
+    "id": "cs-050",
+    "query": "먹고 나서 설사를 해요",
+    "gold_categories": [
+      "배탈"
+    ],
+    "split": "test"
+  }
+]
