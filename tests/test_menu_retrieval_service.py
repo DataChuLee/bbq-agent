@@ -82,16 +82,8 @@ def test_menu_search_service_uses_rule_filter_before_unfiltered_search() -> None
                 ]
             },
         },
-        {
-            "query": "매운 바삭한 치킨 추천해줘",
-            "k": 5,
-            "filter": {
-                "$and": [
-                    {"spiciness": {"$eq": "매움"}},
-                    {"primary_texture": {"$eq": "바삭함"}},
-                ]
-            },
-        },
+        # 치킨을 직접 말했으므로 제품군이 빠진 완화 후보는 건너뛰고 필터 없는 검색으로 간다.
+        {"query": "매운 바삭한 치킨 추천해줘", "k": 5, "filter": None},
     ]
     assert retriever.calls == []
 
