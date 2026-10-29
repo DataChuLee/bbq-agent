@@ -14,5 +14,6 @@
 - [x] 일반 대화 fallback과 조건 추가 메뉴 follow-up 테스트 추가
 - [x] OpenAPI에서 legacy `/search` 제거와 search-preview 계약 유지 검증
 - [x] 메뉴 메타데이터 검수에서 찾은 오분류 회귀 테스트 추가
+- [x] 부정 질의, 제외 조건 추출, 제품군 보존 완화 순서 테스트 추가
 
 ## 미완료
