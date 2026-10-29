@@ -10,5 +10,6 @@
 - [x] `tools/CLAUDE.md`의 `final_answer.py` 사용 상태 정정
 - [x] 사용하지 않는 `_build_order_task`, `_build_order_resume_task`, `search_cs_results` 제거
 - [x] Self-Query `cooking_method` 값에 `baked` 추가
+- [x] 메뉴 검색: 부정·제외 조건, 사이드·국물 규칙어, 명시 속성 우선, 제품군 보존 완화 추가 (골든셋 dev 실패 분석)
 
 ## 미완료
