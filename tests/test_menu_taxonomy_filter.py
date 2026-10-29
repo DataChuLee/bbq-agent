@@ -134,6 +134,26 @@ class ProductFamilyMetadataTests(unittest.TestCase):
         self.assertIn("순살", metadata["option_tags"])
         self.assertIn("닭다리", metadata["option_tags"])
 
+    def test_build_metadata_fixes_audited_misclassifications(self):
+        side_set = build_metadata(
+            {"구분": "세트메뉴", "메뉴명": "BBQ 떡볶이+뿜치킹 BBQ볼+롱김말이(1개)+레몬보이 245ml"}
+        )
+        seasoned = build_metadata(
+            {"구분": "신메뉴", "메뉴명": "뿜치킹 감자튀김", "texture": "바삭함"}
+        )
+        black_pepper = build_metadata({"구분": "시즈닝", "메뉴명": "황금올리브치킨™블랙페퍼"})
+        pizza = build_metadata({"구분": "피자&버거", "메뉴명": "고구마퐁듀피자"})
+        sweet_potato = build_metadata({"구분": "사이드메뉴", "메뉴명": "BBQ 맛탕"})
+        overridden = build_metadata({"구분": "양념", "메뉴명": "빠리치킨", "spiciness": "순함"})
+
+        self.assertEqual(side_set["product_family"], "side")
+        self.assertEqual(seasoned["sauce_style"], "none")
+        self.assertEqual(seasoned["primary_texture"], "바삭함")
+        self.assertEqual(black_pepper["sauce_style"], "none")
+        self.assertEqual(pizza["cooking_method"], "baked")
+        self.assertEqual(sweet_potato["cooking_method"], "fried")
+        self.assertEqual(overridden["spiciness"], "보통")
+
     def test_build_metadata_does_not_classify_main_dish_from_add_on_options(self):
         metadata = build_metadata(
             {
