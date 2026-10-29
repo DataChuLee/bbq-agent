@@ -9,5 +9,6 @@
 - [x] CS 질의 정규화에서 오타 교정과 유의어 확장을 분리하고, 원문 검색을 기본값으로 전환
 - [x] `tools/CLAUDE.md`의 `final_answer.py` 사용 상태 정정
 - [x] 사용하지 않는 `_build_order_task`, `_build_order_resume_task`, `search_cs_results` 제거
+- [x] Self-Query `cooking_method` 값에 `baked` 추가
 
 ## 미완료
