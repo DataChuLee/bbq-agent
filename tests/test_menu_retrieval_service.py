@@ -133,3 +133,16 @@ def test_menu_search_service_stores_retrieved_docs_in_redis_cache() -> None:
 
     assert [item["name"] for item in results] == ["검색 메뉴"]
     assert redis_cache.set_calls
+
+
+def test_menu_search_service_falls_back_when_criteria_self_query_is_empty() -> None:
+    vectorstore = FakeVectorStore([[make_doc("황금올리브치킨™반마리")]])
+    retriever = FakeRetriever(vectorstore)
+    service = MenuSearchService(retriever_loader=lambda: retriever)
+
+    results = service.search("혼자 먹기 좋은 메뉴", use_cache=False)
+
+    # Self-Query가 빈 결과를 내도 빈 화면 대신 필터 없는 벡터 검색 결과를 보여준다.
+    assert retriever.calls
+    assert [item["name"] for item in results] == ["황금올리브치킨™반마리"]
+    assert vectorstore.calls[0]["filter"] is None
