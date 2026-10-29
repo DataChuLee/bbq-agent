@@ -64,6 +64,7 @@ class MenuImageURLTests(unittest.TestCase):
 
         self.assertIn("https://example.com/menu.png", payload)
 
+    @patch("vectorstore.build_menu_index.METADATA_OVERRIDES", {})
     @patch("vectorstore.build_menu_index._clear_existing_collection", create=True)
     @patch("vectorstore.build_menu_index.Chroma.from_documents")
     @patch("vectorstore.build_menu_index.OpenAIEmbeddings")
