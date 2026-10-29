@@ -433,7 +433,16 @@ class MenuSearchService:
             has_criteria=bool(criteria),
         )
 
-        if not results and not criteria:
+        if not results and criteria:
+            # Self-Query LLM이 아무것도 안 걸리는 필터를 만들 때가 있어, LLM 없이 다시 찾는다.
+            docs = self._similarity_search(build_criteria_retrieval_query(query), fetch_k)
+            results = _apply_post_retrieval_filters(
+                query,
+                self._documents_to_menu_items(docs),
+                requested_family=requested_family,
+                has_criteria=True,
+            )
+        elif not results:
             docs = self._invoke_retriever(query, fetch_k)
             if use_cache and self._redis_cache and docs:
                 self._redis_cache.set_documents(cache_key, list(docs))
