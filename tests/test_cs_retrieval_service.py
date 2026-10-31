@@ -64,8 +64,13 @@ def test_cs_search_service_maps_documents_to_tool_contract() -> None:
     retriever = FakeRetriever(
         [
             FakeDoc(
-                page_content="대응 방법: 매장 확인 후 안내",
-                metadata={"cs_category": "배달 지연", "claim_category": "delay"},
+                page_content="대응 방법: 매장 확인 후 안내, 강성인 경우 보상 제안",
+                metadata={
+                    "cs_category": "배달 지연",
+                    "claim_category": "delay",
+                    "customer_answer": "매장에 확인해 안내드리겠습니다.",
+                    "customer_request": "주문 매장",
+                },
             )
         ]
     )
@@ -73,7 +78,8 @@ def test_cs_search_service_maps_documents_to_tool_contract() -> None:
 
     assert service.search("배달이 늦어요") == [
         {
-            "content": "대응 방법: 매장 확인 후 안내",
+            # 상담원용 원문(page_content)은 고객에게 나가지 않는다.
+            "content": "매장에 확인해 안내드리겠습니다.\n고객에게 받을 것: 주문 매장",
             "cs_category": "배달 지연",
             "claim_category": "delay",
         }
@@ -85,16 +91,16 @@ def test_cs_search_service_uses_redis_cache_before_retrieval() -> None:
     retriever = FakeRetriever(
         [
             FakeDoc(
-                page_content="retrieved",
-                metadata={"cs_category": "검색", "claim_category": ""},
+                page_content="원문",
+                metadata={"customer_answer": "retrieved", "cs_category": "검색", "claim_category": ""},
             )
         ]
     )
     redis_cache = FakeRedisCache(
         docs=[
             FakeDoc(
-                page_content="cached",
-                metadata={"cs_category": "캐시", "claim_category": ""},
+                page_content="원문",
+                metadata={"customer_answer": "cached", "cs_category": "캐시", "claim_category": ""},
             )
         ]
     )
@@ -114,8 +120,8 @@ def test_cs_search_service_stores_retrieved_docs_in_redis_cache() -> None:
     retriever = FakeRetriever(
         [
             FakeDoc(
-                page_content="retrieved",
-                metadata={"cs_category": "검색", "claim_category": ""},
+                page_content="원문",
+                metadata={"customer_answer": "retrieved", "cs_category": "검색", "claim_category": ""},
             )
         ]
     )
