@@ -17,21 +17,32 @@ EVAL_DIR = Path(__file__).parent
 RESULTS_DIR = EVAL_DIR / "results"
 CS_DATA_PATH = EVAL_DIR.parent / "Data" / "BBQ_CS.xlsx"
 # 생성 모델(gpt-4o-mini)과 다른 모델로 채점해야 자기 답에 후한 점수를 주지 않는다.
-JUDGE_MODEL = "gpt-4.1"
-JUDGE_PROMPT = """당신은 고객센터 답변의 근거를 검증하는 평가자입니다.
+# 사람 판정 113개와 비교해 고른 모델이다(eval.score_cs_judge_calibration).
+JUDGE_MODEL = "gpt-5.4-mini"
+# 주장 나누기와 근거 판정을 분리해야 같은 주장 목록으로 사람과 채점자를 비교할 수 있다.
+CLAIMS_PROMPT = """아래 [답변]을 검증 가능한 주장 단위로 나누세요.
+인사말, 사과, 공감, "도움이 되었으면 합니다" 같은 표현은 제외하세요. 주장이 없으면 빈 목록입니다.
 
-아래 [답변]을 검증 가능한 주장 단위로 나누세요. 인사말, 사과, 공감, "도움이 되었으면 합니다" 같은 표현은 제외하세요.
-남은 각 주장이 [정답 문서]로 직접 뒷받침되면 supported, 문서에 없거나 문서와 다르면 unsupported로 판정하세요.
+[답변]
+{answer}
+"""
+VERIFY_PROMPT = """당신은 고객센터 답변의 근거를 검증하는 평가자입니다.
+
+[주장 목록]의 각 주장이 [정답 문서]로 직접 뒷받침되면 supported, 문서에 없거나 문서와 다르면 unsupported로 판정하세요.
 
 규칙:
 - 외부 지식이나 상식으로 보완하지 마세요.
 - 답변이 문서보다 더 구체적이면(연락처, 기한, 보상 약속, 문서에 없는 절차) unsupported입니다.
 - 고객에게 사진 촬영, 앱 신고, 전화 문의 등을 안내했는데 문서에 그 행동이 없으면 unsupported입니다.
+- 문서는 상담원용 처리 절차입니다. 상담원이 고객에게 받는 것(사진, 계좌번호 등)을 고객에게 준비·제공해 달라고 안내하면 supported입니다. 상담원·BBQ가 직접 하는 일(매장에 전화, 운영부서 전달, 보상 제안)을 고객이 직접 하거나 요청하라고 바꾸면 unsupported입니다.
+- 한 주장 안에 문서에 없는 내용이 일부라도 섞여 있으면(추가로 준비할 정보, 바뀐 조건, 과장) 주장 전체가 unsupported입니다.
+- 연락처나 절차를 문서에 적힌 용도와 다른 용도로 안내하면 unsupported입니다.
+- 문서와 같은 뜻을 다른 말로 표현한 것은 supported입니다.
 - supported일 때만 evidence_indexes에 문서 번호를 넣으세요.
-- 검증할 주장이 없으면 verdicts는 빈 목록입니다.
+- 주장 목록과 같은 순서, 같은 개수로 판정하고 claim에는 주장을 그대로 적으세요.
 
-[답변]
-{answer}
+[주장 목록]
+{claims}
 
 [정답 문서]
 {reference}
@@ -113,19 +124,42 @@ async def _answer(agent, query: str) -> tuple[str, list[str]]:
     return str(_extract_response(result["messages"]).get("message", "")), retrieved
 
 
-def _judge(answer: str, reference: str) -> list[dict]:
+def _judge_llm(model: str):
     from langchain_openai import ChatOpenAI
 
+    # 추론 모델(gpt-5 계열)은 temperature를 바꿀 수 없다.
+    return ChatOpenAI(model=model, temperature=0) if model.startswith("gpt-4") else ChatOpenAI(model=model)
+
+
+def extract_claims(answer: str, model: str = JUDGE_MODEL) -> list[str]:
+    from pydantic import BaseModel
+
+    class Claims(BaseModel):
+        claims: list[str]
+
+    return _judge_llm(model).with_structured_output(Claims).invoke(CLAIMS_PROMPT.format(answer=answer)).claims
+
+
+def verify_claims(claims: list[str], reference: str, model: str = JUDGE_MODEL) -> list[dict]:
     from benchmarks.run_groundedness import GroundednessAssessment
 
-    judge = ChatOpenAI(model=JUDGE_MODEL, temperature=0).with_structured_output(GroundednessAssessment)
-    assessment = judge.invoke(JUDGE_PROMPT.format(answer=answer, reference=reference))
-    return [verdict.model_dump() for verdict in assessment.verdicts]
+    if not claims:
+        return []
+    numbered = "\n".join(f"{i}. {claim}" for i, claim in enumerate(claims, start=1))
+    judge = _judge_llm(model).with_structured_output(GroundednessAssessment)
+    verdicts = judge.invoke(VERIFY_PROMPT.format(claims=numbered, reference=reference)).verdicts
+    if len(verdicts) != len(claims):
+        raise ValueError(f"주장 {len(claims)}개에 판정 {len(verdicts)}개가 돌아왔습니다.")
+    # 채점자가 주장 문구를 바꿔 적어도 원래 주장 기준으로 저장한다.
+    return [{**v.model_dump(), "claim": claim} for v, claim in zip(verdicts, claims)]
+
+
+def _judge(answer: str, reference: str) -> list[dict]:
+    return verify_claims(extract_claims(answer), reference)
 
 
 def _coverage(answer: str, reference: str) -> list[dict]:
     """근거성만 보면 말을 줄인 답변이 이기므로, 문서의 핵심 처리를 전했는지도 잰다."""
-    from langchain_openai import ChatOpenAI
     from pydantic import BaseModel
 
     class StepCheck(BaseModel):
@@ -135,7 +169,7 @@ def _coverage(answer: str, reference: str) -> list[dict]:
     class CoverageAssessment(BaseModel):
         steps: list[StepCheck]
 
-    judge = ChatOpenAI(model=JUDGE_MODEL, temperature=0).with_structured_output(CoverageAssessment)
+    judge = _judge_llm(JUDGE_MODEL).with_structured_output(CoverageAssessment)
     assessment = judge.invoke(COVERAGE_PROMPT.format(answer=answer, reference=reference))
     return [step.model_dump() for step in assessment.steps]
 
