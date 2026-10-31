@@ -47,6 +47,8 @@ def build_document(row: pd.Series, customer: pd.Series) -> Document:
         "cs_category":    str(row.get("CS 구분", "")),
         "claim_category": str(row.get("클레임 카테고리", "")),
         "index":          int(row.get("구분", 0)),
+        # 분류기가 구분을 고를 때 보는 한 줄 설명이다.
+        "summary":        " ".join(str(row.get("주 내용", "")).split()),
         "customer_answer":  str(customer["고객 안내"]),
         "customer_request": str(customer["고객에게 받을 것"]),
     }
