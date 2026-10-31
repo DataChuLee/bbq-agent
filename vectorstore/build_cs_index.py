@@ -19,15 +19,17 @@ from langchain_community.retrievers import BM25Retriever
 load_dotenv()
 
 DATA_PATH = Path(__file__).parent.parent / "Data" / "BBQ_CS.xlsx"
+# 원본은 상담원용 매뉴얼이라 내부 정책(보상 조건 등)이 섞여 있다. 고객에게는 검수한 문구만 보낸다.
+CUSTOMER_PATH = Path(__file__).parent.parent / "Data" / "BBQ_CS_customer.csv"
 FAISS_PATH = Path(__file__).parent / "faiss_index"
 BM25_PATH  = Path(__file__).parent / "bm25_index.pkl"
 
 
-def build_document(row: pd.Series) -> Document:
+def build_document(row: pd.Series, customer: pd.Series) -> Document:
     """한 행을 하나의 Document로 변환.
 
-    page_content: LLM 검색 및 BM25에 사용할 텍스트
-    metadata:     필터링 및 출처 추적용
+    page_content: 검색(임베딩, BM25)에만 쓰는 텍스트. 고객에게 보내지 않는다.
+    metadata:     고객 안내 문구, 필터링 및 출처 추적용
     """
     lines = []
     if pd.notna(row.get("CS 구분")):
@@ -45,6 +47,8 @@ def build_document(row: pd.Series) -> Document:
         "cs_category":    str(row.get("CS 구분", "")),
         "claim_category": str(row.get("클레임 카테고리", "")),
         "index":          int(row.get("구분", 0)),
+        "customer_answer":  str(customer["고객 안내"]),
+        "customer_request": str(customer["고객에게 받을 것"]),
     }
     return Document(page_content="\n".join(lines), metadata=metadata)
 
@@ -55,7 +59,11 @@ def build_index() -> None:
     print(f"      CS 항목 수: {len(df)}")
 
     print("[2/5] Document 생성")
-    documents = [build_document(row) for _, row in df.iterrows()]
+    customer = pd.read_csv(CUSTOMER_PATH, encoding="utf-8-sig", keep_default_na=False).set_index("CS 구분")
+    missing = set(df["CS 구분"].astype(str)) - set(customer.index)
+    if missing:
+        raise SystemExit(f"고객 안내 문구가 없는 CS 구분: {sorted(missing)}")
+    documents = [build_document(row, customer.loc[str(row["CS 구분"])]) for _, row in df.iterrows()]
 
     print("[3/5] 임베딩 모델 초기화 (text-embedding-3-large)")
     embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
