@@ -2,6 +2,12 @@
 
 실행 방법:
     venv\\Scripts\\python.exe -m eval.run_cs_grounding --split dev --system baseline
+    venv\\Scripts\\python.exe -m eval.run_cs_grounding --split dev --system baseline --rescore
+
+시스템:
+    baseline  기존 프롬프트 + 상담원용 원문 검색 결과
+    grounded  근거 제한 프롬프트 + 상담원용 원문 검색 결과
+    customer  고객 문구 프롬프트 + 검수한 고객 안내 문구 검색 결과(현재 서비스)
 """
 
 import argparse
@@ -16,6 +22,9 @@ from dotenv import load_dotenv
 EVAL_DIR = Path(__file__).parent
 RESULTS_DIR = EVAL_DIR / "results"
 CS_DATA_PATH = EVAL_DIR.parent / "Data" / "BBQ_CS.xlsx"
+CUSTOMER_PATH = EVAL_DIR.parent / "Data" / "BBQ_CS_customer.csv"
+# 상담원용 원문에만 있는 내부 정책 용어다. 고객 답변에 나오면 내부 정보가 샌 것으로 본다.
+LEAK_TERMS = ("보상", "강성", "보험", "사제", "차림비", "계도", "미수긍", "미 수긍")
 # 생성 모델(gpt-4o-mini)과 다른 모델로 채점해야 자기 답에 후한 점수를 주지 않는다.
 # 사람 판정 113개와 비교해 고른 모델이다(eval.score_cs_judge_calibration).
 JUDGE_MODEL = "gpt-5.4-mini"
@@ -51,13 +60,13 @@ VERIFY_PROMPT = """당신은 고객센터 답변의 근거를 검증하는 평�
 
 COVERAGE_PROMPT = """당신은 고객센터 답변을 평가하는 평가자입니다.
 
-[정답 문서]의 '대응 방법'과 '조치 사항'을 고객에게 전할 만한 핵심 처리 내용 2~6개로 나누세요.
+[정답 안내]를 고객에게 꼭 전해야 할 핵심 내용 2~6개로 나누세요.
 각 내용이 [답변]에 같은 뜻으로 들어 있으면 covered=true, 없으면 false로 판정하세요.
 
 [답변]
 {answer}
 
-[정답 문서]
+[정답 안내]
 {reference}
 """
 
@@ -70,25 +79,53 @@ def _load_reference_rows() -> dict[str, str]:
     }
 
 
-def _build_agent(prompt: str):
+def _load_customer_answers() -> dict[str, str]:
+    df = pd.read_csv(CUSTOMER_PATH, encoding="utf-8-sig", keep_default_na=False)
+    return {str(r["CS 구분"]): f"{r['고객 안내']}\n고객에게 받을 것: {r['고객에게 받을 것']}" for _, r in df.iterrows()}
+
+
+def _raw_search_cs():
+    """고객 문구로 바꾸기 전의 search_cs다. 이전 시스템을 같은 조건으로 다시 재기 위해 남긴다."""
+    from langchain_core.tools import tool
+
+    from tools.cs_query_rules import keep_cs_query
+    from tools.cs_retrieval import build_cs_retriever
+    from tools.search_cs import search_cs
+
+    @tool("search_cs", description=search_cs.description)
+    def raw_search_cs(query: str) -> str:
+        docs = build_cs_retriever().invoke(keep_cs_query(query))
+        results = [
+            {
+                "content": d.page_content,
+                "cs_category": d.metadata.get("cs_category", ""),
+                "claim_category": d.metadata.get("claim_category", ""),
+            }
+            for d in docs
+        ]
+        return json.dumps({"results": results}, ensure_ascii=False)
+
+    return raw_search_cs
+
+
+def _build_agent(system: str):
     from langchain_openai import ChatOpenAI
     from langgraph.prebuilt import create_react_agent
 
-    from graph.graph import _ReActState
+    from graph.graph import CS_SYSTEM_PROMPT, _ReActState
     from tools.search_cs import search_cs
 
+    prompt, tool = {
+        "baseline": (CS_SYSTEM_PROMPT, _raw_search_cs()),
+        "grounded": (GROUNDED_CS_PROMPT, _raw_search_cs()),
+        "customer": (CUSTOMER_CS_PROMPT, search_cs),
+    }[system]
     return create_react_agent(
         model=ChatOpenAI(model="gpt-4o-mini", temperature=0),
-        tools=[search_cs],
+        tools=[tool],
         prompt=prompt,
         state_schema=_ReActState,
     )
-
-
-def _system_prompts() -> dict[str, str]:
-    from graph.graph import CS_SYSTEM_PROMPT
-
-    return {"baseline": CS_SYSTEM_PROMPT, "grounded": GROUNDED_CS_PROMPT}
 
 
 # CS 데이터는 상담원용 처리 절차라서, 고객 행동 대신 BBQ가 할 처리를 문서 그대로 전하게 한다.
@@ -104,6 +141,29 @@ GROUNDED_CS_PROMPT = """당신은 BBQ 치킨 고객센터 AI 어시스턴트입�
 - 검색 결과에 없는 내용은 절대 쓰지 않습니다. 특히 전화번호·연락처, 환불·교환·보상 약속, 처리 기한, 고객이 따로 해야 할 행동(사진 촬영, 앱 신고 등)은 사례에 적혀 있을 때만 씁니다.
 - 맞는 사례가 없으면 추측하지 말고, 확인 후 안내드리겠다고만 답합니다.
 - 브라우저 자동화나 주문 도구는 사용하지 않습니다."""
+
+
+# 검색 결과가 이미 고객에게 전할 수 있게 검수한 문구라서, 바꾸지 말고 그대로 전하게 한다.
+CUSTOMER_CS_PROMPT = """당신은 BBQ 치킨 고객센터 AI 어시스턴트입니다.
+
+답변 순서:
+1. search_cs(query)로 관련 CS 안내를 검색합니다.
+2. 고객 문의와 맞는 안내의 content만 근거로 답합니다. content는 고객에게 전하도록 검수한 문구입니다.
+
+답변 원칙:
+- 항상 한국어로, 짧고 정중하게 답합니다.
+- content의 안내를 뜻이 바뀌지 않게 전하고, '고객에게 받을 것'이 있으면 그 정보를 요청합니다.
+- content에 없는 내용은 쓰지 않습니다. 특히 전화번호, 환불·교환·보상 약속, 처리 기한, 고객이 따로 해야 할 행동을 덧붙이지 않습니다.
+- 맞는 안내가 없으면 추측하지 말고, 확인 후 안내드리겠다고만 답합니다.
+- 브라우저 자동화나 주문 도구는 사용하지 않습니다."""
+
+
+def leaked_terms(answer: str) -> list[str]:
+    return [term for term in LEAK_TERMS if term in answer]
+
+
+assert leaked_terms("매장 미수긍시 보상 제안") == ["보상", "미수긍"]
+assert leaked_terms("매장에 확인해 안내드리겠습니다.") == []
 
 
 async def _answer(agent, query: str) -> tuple[str, list[str]]:
@@ -177,7 +237,9 @@ def _coverage(answer: str, reference: str) -> list[dict]:
 async def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--split", choices=("dev", "test"), required=True)
-    parser.add_argument("--system", default="baseline")
+    parser.add_argument("--system", choices=("baseline", "grounded", "customer"), required=True)
+    # 채점 기준만 바뀌었을 때 답변은 그대로 두고 다시 채점한다.
+    parser.add_argument("--rescore", action="store_true")
     args = parser.parse_args()
     output_path = RESULTS_DIR / f"cs_grounding_{args.split}_{args.system}.json"
     # test는 최종 비교에서 시스템마다 한 번만 돌린다.
@@ -186,22 +248,32 @@ async def main() -> None:
 
     load_dotenv()
     references = _load_reference_rows()
-    agent = _build_agent(_system_prompts()[args.system])
-    cases = json.loads((EVAL_DIR / "cs_golden_queries.json").read_text(encoding="utf-8"))
-    cases = [c for c in cases if c["split"] == args.split]
+    customer_answers = _load_customer_answers()
+    if args.rescore:
+        answered = json.loads(output_path.read_text(encoding="utf-8"))
+    else:
+        agent = _build_agent(args.system)
+        cases = json.loads((EVAL_DIR / "cs_golden_queries.json").read_text(encoding="utf-8"))
+        answered = []
+        for case in (c for c in cases if c["split"] == args.split):
+            answer, retrieved = await _answer(agent, case["query"])
+            answered.append({**case, "answer": answer, "retrieved": retrieved})
 
     rows = []
-    for case in cases:
-        answer, retrieved = await _answer(agent, case["query"])
+    for row in answered:
+        case = {k: row[k] for k in ("id", "query", "gold_categories", "split") if k in row}
+        answer, retrieved = row["answer"], row["retrieved"]
+        # 근거성은 원문 전체로 본다. 고객 문구도 원문에 있는 사실만 썼기 때문이다.
         reference = "\n\n".join(f"[{i}] {references[c]}" for i, c in enumerate(case["gold_categories"], start=1))
         verdicts = _judge(answer, reference)
         unsupported = sum(v["verdict"] == "unsupported" for v in verdicts)
-        # 포괄성은 대표 문서 하나를 기준으로 본다. 겹치는 문서까지 요구하면 과하다.
-        steps = _coverage(answer, references[case["gold_categories"][0]])
+        # 포괄성은 고객에게 전해야 할 안내 기준이다. 원문 기준이면 내부 절차를 빼는 시스템이 손해를 본다.
+        steps = _coverage(answer, customer_answers[case["gold_categories"][0]])
         rows.append({
             **case,
             "answer": answer,
             "retrieved": retrieved,
+            "leaked_terms": leaked_terms(answer),
             "retrieval_hit": any(c in retrieved for c in case["gold_categories"]),
             "verdicts": verdicts,
             "claim_count": len(verdicts),
@@ -222,6 +294,7 @@ async def main() -> None:
     print(f"주장 지지율: {claims - unsupported}/{claims} = {(claims - unsupported) / max(claims, 1):.1%}")
     print(f"핵심 처리 포괄성 평균: {sum(r['coverage'] for r in rows) / len(rows):.1%}")
     print(f"검색 적중: {sum(r['retrieval_hit'] for r in rows)}/{len(rows)}")
+    print(f"내부 정보 노출 답변: {sum(bool(r['leaked_terms']) for r in rows)}/{len(rows)}")
 
 
 if __name__ == "__main__":
