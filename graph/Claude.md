@@ -20,6 +20,7 @@
 - 각 노드는 최종적으로 `response: dict`를 남겨야 하며, 최종 타입은 `text`, `clarification`, `menu_cards` 중 하나여야 한다.
 - `_extract_response()`는 우선 `ToolMessage`의 typed JSON을 읽고, 없으면 마지막 일반 `AIMessage`를 `text` 응답으로 변환한다.
 - `route_intent()`는 `menu_agent`, `menu_followup`, `cs_agent`, `fallback`만 반환한다.
+- CS 에이전트는 `search_cs`가 준 검수 고객 문구만 전한다. 문구에 없는 연락처·보상 약속·고객 행동을 덧붙이지 않는다. 프롬프트를 바꾸면 `eval.run_cs_grounding --split dev --system customer`로 노출·근거성·포괄성을 다시 잰다.
 
 ## 객체 지향 로컬 계약
 - 그래프 노드 자체는 LangGraph 계약에 맞춰 함수형 인터페이스를 유지한다.
