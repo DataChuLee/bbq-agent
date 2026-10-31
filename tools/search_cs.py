@@ -15,7 +15,8 @@ from tools.retrieval_cache import build_redis_cache
 
 
 _get_retriever = build_cs_retriever
-CS_REDIS_NAMESPACE = "cs_lcel"
+# v2: 내부 원문이 담긴 예전 캐시를 쓰지 않도록 이름을 바꿨다.
+CS_REDIS_NAMESPACE = "cs_lcel_v2"
 CS_REDIS_TTL = 3600
 
 
