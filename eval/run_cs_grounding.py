@@ -8,6 +8,13 @@
     baseline  기존 프롬프트 + 상담원용 원문 검색 결과
     grounded  근거 제한 프롬프트 + 상담원용 원문 검색 결과
     customer  고객 문구 프롬프트 + 검수한 고객 안내 문구 검색 결과(현재 서비스)
+    customer_faiss     customer와 같고 검색만 FAISS 단독
+    customer_classify  customer와 같고 검색 대신 LLM 구분 분류 + 메타데이터 조회
+
+split:
+    dev   프롬프트 조정에 쓴 25개
+    test  최종 비교용 100개, 시스템마다 한 번만 실행
+    dev2  test 이후 검색 방식 비교용 75개
 """
 
 import argparse
@@ -108,17 +115,36 @@ def _raw_search_cs():
     return raw_search_cs
 
 
+def _service_search_cs(retriever_loader):
+    """서비스의 search_cs와 같은 출력이지만 검색기만 바꿔 끼운다."""
+    from langchain_core.tools import tool
+
+    from tools.cs_retrieval import NO_MATCH_MESSAGE, CsSearchService
+    from tools.search_cs import search_cs
+
+    @tool("search_cs", description=search_cs.description)
+    def swapped_search_cs(query: str) -> str:
+        results = CsSearchService(retriever_loader=retriever_loader).search(query)
+        payload = {"results": results} if results else {"results": [], "message": NO_MATCH_MESSAGE}
+        return json.dumps(payload, ensure_ascii=False)
+
+    return swapped_search_cs
+
+
 def _build_agent(system: str):
     from langchain_openai import ChatOpenAI
     from langgraph.prebuilt import create_react_agent
 
     from graph.graph import CS_SYSTEM_PROMPT, _ReActState
+    from tools.cs_retrieval import build_cs_classifier, build_cs_retriever
     from tools.search_cs import search_cs
 
     prompt, tool = {
         "baseline": (BASELINE_CS_PROMPT, _raw_search_cs()),
         "grounded": (GROUNDED_CS_PROMPT, _raw_search_cs()),
         "customer": (CS_SYSTEM_PROMPT, search_cs),
+        "customer_faiss": (CS_SYSTEM_PROMPT, _service_search_cs(lambda: build_cs_retriever().retrievers[1])),
+        "customer_classify": (CS_SYSTEM_PROMPT, _service_search_cs(build_cs_classifier)),
     }[system]
     return create_react_agent(
         model=ChatOpenAI(model="gpt-4o-mini", temperature=0),
@@ -237,8 +263,12 @@ def _coverage(answer: str, reference: str) -> list[dict]:
 
 async def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--split", choices=("dev", "test"), required=True)
-    parser.add_argument("--system", choices=("baseline", "grounded", "customer"), required=True)
+    parser.add_argument("--split", choices=("dev", "test", "dev2"), required=True)
+    parser.add_argument(
+        "--system",
+        choices=("baseline", "grounded", "customer", "customer_faiss", "customer_classify"),
+        required=True,
+    )
     # 채점 기준만 바뀌었을 때 답변은 그대로 두고 다시 채점한다.
     parser.add_argument("--rescore", action="store_true")
     args = parser.parse_args()
