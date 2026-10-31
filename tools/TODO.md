@@ -12,5 +12,6 @@
 - [x] Self-Query `cooking_method` 값에 `baked` 추가
 - [x] 메뉴 검색: 부정·제외 조건, 사이드·국물 규칙어, 명시 속성 우선, 제품군 보존 완화 추가 (골든셋 dev 실패 분석)
 - [x] 상황 추천 질의에서 Self-Query가 0건이면 LLM 없이 벡터 검색으로 폴백
+- [x] CS 검색 결과를 상담원용 원문 대신 검수한 고객 안내 문구로 교체, Redis namespace `cs_lcel_v2`
 
 ## 미완료
