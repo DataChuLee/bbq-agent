@@ -32,16 +32,18 @@ def main() -> None:
 
     load_dotenv()
     sheet = _read_sheet(EVAL_DIR / "cs_grounding_calibration_scored.csv")
-    rows = json.loads((RESULTS_DIR / "cs_grounding_dev_baseline.json").read_text(encoding="utf-8"))
-    # 보정 시트는 채점 결과의 주장 순서대로 만들었으므로, 순서가 어긋나면 결과 파일이 다시 생성된 것이다.
-    if [r["주장"] for r in sheet] != [v["claim"] for row in rows for v in row["verdicts"]]:
-        raise SystemExit("보정 시트와 채점 결과의 주장이 다릅니다. dev 기준선 결과를 다시 만들지 마세요.")
+    # 주장은 시트에서 읽는다. dev 결과 파일은 채점 기준이 바뀌면 다시 채점되기 때문이다.
+    cases = json.loads((EVAL_DIR / "cs_golden_queries.json").read_text(encoding="utf-8"))
+    gold = {c["id"]: c["gold_categories"] for c in cases}
+    claims_by_query = {}
+    for r in sheet:
+        claims_by_query.setdefault(r["질의ID"], []).append(r["주장"])
 
     references = _load_reference_rows()
     verdicts = []
-    for row in rows:
-        reference = "\n\n".join(f"[{i}] {references[c]}" for i, c in enumerate(row["gold_categories"], start=1))
-        verdicts += verify_claims([v["claim"] for v in row["verdicts"]], reference, model=args.model)
+    for query_id, claims in claims_by_query.items():
+        reference = "\n\n".join(f"[{i}] {references[c]}" for i, c in enumerate(gold[query_id], start=1))
+        verdicts += verify_claims(claims, reference, model=args.model)
     RESULTS_DIR.mkdir(exist_ok=True)
     (RESULTS_DIR / f"cs_judge_calibration_{args.model}.json").write_text(
         json.dumps(verdicts, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
