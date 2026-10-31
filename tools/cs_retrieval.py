@@ -73,9 +73,16 @@ class CsSearchService:
     def _documents_to_results(self, docs: Sequence[Any]) -> list[dict]:
         return [
             {
-                "content": doc.page_content,
+                # page_content는 상담원용 원문이라 고객에게 보낼 수 있는 검수 문구만 넘긴다.
+                "content": _customer_content(doc.metadata),
                 "cs_category": doc.metadata.get("cs_category", ""),
                 "claim_category": doc.metadata.get("claim_category", ""),
             }
             for doc in docs
         ]
+
+
+def _customer_content(metadata: dict) -> str:
+    answer = metadata.get("customer_answer", "")
+    request = metadata.get("customer_request", "")
+    return f"{answer}\n고객에게 받을 것: {request}" if request else answer
