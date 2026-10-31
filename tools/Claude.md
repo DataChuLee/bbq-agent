@@ -25,6 +25,7 @@
 - "X 말고/빼고"와 "X 알레르기/안 들어간"은 제외 조건이다. 3배수로 가져온 뒤 메뉴명·설명·알레르기에 X가 있는 항목을 빼고 k개로 자른다.
 - 질의에 맵기·식감·조리 방식 같은 속성이 직접 있으면 상황 추천 기준(`recommendation_criteria`)보다 그 조건을 우선한다.
 - `search_cs(query, state)`는 `{"results": [{"content", "cs_category", "claim_category"}]}` 형태를 유지한다.
+- CS `content`는 검수한 고객 안내 문구(`customer_answer` + `customer_request`)다. 상담원용 원문(`page_content`)은 내부 정책이 섞여 있어 tool 출력과 출처 표시에 넣지 않는다.
 - 두 검색 tool 모두 `state`에서 세션 캐시를 읽는다. 캐시 키는 원문 `query` 그대로다.
 - Redis 캐시는 retriever 문서 결과만 저장하는 성능 최적화 계층이다. Redis 조회/쓰기 실패 시 검색 결과 생성은 계속 진행해야 한다.
 - 기본 Redis TTL은 메뉴 `86400`초, CS `3600`초다. `REDIS_CACHE_ENABLED=false`면 Redis 캐시를 사용하지 않는다.
