@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from tools.cs_retrieval import CsSearchService
+from tools.cs_retrieval import NO_CATEGORY, CsCategoryClassifier, CsSearchService
 
 
 @dataclass
@@ -155,3 +155,36 @@ def test_cs_search_service_propagates_retriever_failure() -> None:
 
     with pytest.raises(RuntimeError, match="retriever unavailable"):
         service.search("배달 문의")
+
+
+class FakeClassifierLlm:
+    def __init__(self, category: str) -> None:
+        self.category = category
+        self.prompts: list[str] = []
+
+    def with_structured_output(self, schema):
+        self.schema = schema
+        return self
+
+    def invoke(self, prompt: str):
+        self.prompts.append(prompt)
+        return self.schema(category=self.category)
+
+
+def test_cs_category_classifier_returns_the_chosen_category_document() -> None:
+    docs = [
+        FakeDoc(page_content="원문", metadata={"cs_category": "전산오류", "summary": "결제오류"}),
+        FakeDoc(page_content="원문", metadata={"cs_category": "주문 거부", "summary": "일방적 주문 거부"}),
+    ]
+    llm = FakeClassifierLlm("전산오류")
+
+    result = CsCategoryClassifier(docs, llm).invoke("결제됐는데 주문이 안 들어갔어요")
+
+    assert result == [docs[0]]
+    assert "- 주문 거부: 일방적 주문 거부" in llm.prompts[0]
+
+
+def test_cs_category_classifier_returns_nothing_for_no_category() -> None:
+    docs = [FakeDoc(page_content="원문", metadata={"cs_category": "전산오류", "summary": ""})]
+
+    assert CsCategoryClassifier(docs, FakeClassifierLlm(NO_CATEGORY)).invoke("오늘 날씨 어때요") == []
