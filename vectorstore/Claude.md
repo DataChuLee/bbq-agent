@@ -17,7 +17,8 @@
 - 메뉴 인덱스는 `collection_name="bbq_menu"`를 유지한다.
 - 메뉴 메타데이터는 최소 `price`, `category`, `allergy`, `texture`, `spiciness`, `origin`, `nutrition`, `options`, `name` 키를 유지한다.
 - 메뉴 임베딩 텍스트는 메뉴명, 카테고리, 설명, 알레르기, 식감, 맵기 정보를 포함한다.
-- CS 문서는 한 행을 하나의 `Document`로 만들고, 메타데이터에 최소 `cs_category`, `claim_category`, `index`를 유지한다.
+- CS 문서는 한 행을 하나의 `Document`로 만들고, 메타데이터에 최소 `cs_category`, `claim_category`, `index`, `customer_answer`, `customer_request`를 유지한다.
+- CS `page_content`는 상담원용 원문(내부 정책 포함)이라 검색에만 쓴다. 고객 문구는 `Data/BBQ_CS_customer.csv`(검수본)에서 읽고, 원본 행과 짝이 안 맞으면 빌드를 멈춘다.
 - 산출물 경로가 바뀌면 `tools/search_menu.py`, `tools/search_cs.py`의 상수 경로도 같이 바꿔야 한다.
 
 ## 수정 원칙
