@@ -117,14 +117,17 @@ def _raw_search_cs():
 
 def _service_search_cs(retriever_loader):
     """서비스의 search_cs와 같은 출력이지만 검색기만 바꿔 끼운다."""
+    from typing import Annotated
+
     from langchain_core.tools import tool
+    from langgraph.prebuilt import InjectedState
 
     from tools.cs_retrieval import NO_MATCH_MESSAGE, CsSearchService
-    from tools.search_cs import search_cs
+    from tools.search_cs import retrieval_query, search_cs
 
     @tool("search_cs", description=search_cs.description)
-    def swapped_search_cs(query: str) -> str:
-        results = CsSearchService(retriever_loader=retriever_loader).search(query)
+    def swapped_search_cs(query: str, state: Annotated[dict, InjectedState]) -> str:
+        results = CsSearchService(retriever_loader=retriever_loader).search(retrieval_query(query, state))
         payload = {"results": results} if results else {"results": [], "message": NO_MATCH_MESSAGE}
         return json.dumps(payload, ensure_ascii=False)
 
