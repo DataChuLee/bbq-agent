@@ -51,7 +51,7 @@ venv\Scripts\python.exe -m benchmarks.run_intent_routing
 
 ## Redis Cold/Warm Cache 지연 평가
 
-`--clear-cache`는 `rag:menu_lcel:*` 또는 `rag:cs_lcel:*` 키를 삭제하고 새로 측정합니다. 공유 Redis에서는 전용 DB를 사용하세요.
+`--clear-cache`는 서비스와 같은 namespace(`tools/search_menu.py`, `tools/search_cs.py`의 상수)의 키를 삭제하고 새로 측정합니다. 공유 Redis에서는 전용 DB를 사용하세요.
 
 ```powershell
 venv\Scripts\python.exe -m benchmarks.run_cache_latency --kind menu --clear-cache
