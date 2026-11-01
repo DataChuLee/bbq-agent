@@ -95,8 +95,9 @@ def _measure_stream(
 
 def _build_menu_cache_resetter() -> Callable[[], None]:
     from tools.retrieval_cache import build_redis_cache
+    from tools.search_menu import MENU_REDIS_NAMESPACE, MENU_REDIS_TTL
 
-    cache = build_redis_cache("menu_lcel", 86400)
+    cache = build_redis_cache(MENU_REDIS_NAMESPACE, MENU_REDIS_TTL)
     if cache is None:
         raise RuntimeError("메뉴 Redis 캐시가 비활성화되어 있습니다.")
     try:
