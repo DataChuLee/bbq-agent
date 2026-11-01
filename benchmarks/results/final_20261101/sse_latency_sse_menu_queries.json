@@ -1,0 +1,120 @@
+{
+  "generated_at": "2026-11-01T10:00:49.361030+00:00",
+  "base_url": "http://localhost:8000",
+  "iterations": 3,
+  "summary": {
+    "case_count": 9,
+    "sync_error_count": 0,
+    "stream_success_count": 9,
+    "stream_error_count": 0,
+    "sync_complete_p50_ms": 2311.632200013264,
+    "sync_complete_p95_ms": 4741.455180002958,
+    "stream_ttft_p50_ms": 0.0,
+    "stream_ttft_p95_ms": 0.0,
+    "stream_first_content_p50_ms": 2637.7111000037985,
+    "stream_first_content_p95_ms": 3386.9744200026616,
+    "stream_complete_p50_ms": 2638.1231999985175,
+    "stream_complete_p95_ms": 3387.269260000903
+  },
+  "rows": [
+    {
+      "id": "sse-menu-001",
+      "query": "치킨 메뉴 알려줘",
+      "sync_complete_ms": 5670.3455000097165,
+      "sync_error": null,
+      "stream_ttft_ms": null,
+      "stream_first_content_ms": 2252.9699000006076,
+      "stream_complete_ms": 2253.4663999977056,
+      "stream_error": null,
+      "iteration": 1
+    },
+    {
+      "id": "sse-menu-002",
+      "query": "BBQ 메뉴 알려줘",
+      "sync_complete_ms": 2875.300800005789,
+      "sync_error": null,
+      "stream_ttft_ms": null,
+      "stream_first_content_ms": 2938.4379999974044,
+      "stream_complete_ms": 2939.016799995443,
+      "stream_error": null,
+      "iteration": 1
+    },
+    {
+      "id": "sse-menu-003",
+      "query": "사이드 메뉴 알려줘",
+      "sync_complete_ms": 2238.5981999977957,
+      "sync_error": null,
+      "stream_ttft_ms": null,
+      "stream_first_content_ms": 2280.413699991186,
+      "stream_complete_ms": 2280.8864999969956,
+      "stream_error": null,
+      "iteration": 1
+    },
+    {
+      "id": "sse-menu-001",
+      "query": "치킨 메뉴 알려줘",
+      "sync_complete_ms": 2261.0205999953905,
+      "sync_error": null,
+      "stream_ttft_ms": null,
+      "stream_first_content_ms": 3255.379299997003,
+      "stream_complete_ms": 3255.5838999978732,
+      "stream_error": null,
+      "iteration": 2
+    },
+    {
+      "id": "sse-menu-002",
+      "query": "BBQ 메뉴 알려줘",
+      "sync_complete_ms": 2836.493700000574,
+      "sync_error": null,
+      "stream_ttft_ms": null,
+      "stream_first_content_ms": 3334.9374999961583,
+      "stream_complete_ms": 3335.217100000591,
+      "stream_error": null,
+      "iteration": 2
+    },
+    {
+      "id": "sse-menu-003",
+      "query": "사이드 메뉴 알려줘",
+      "sync_complete_ms": 2311.632200013264,
+      "sync_error": null,
+      "stream_ttft_ms": null,
+      "stream_first_content_ms": 2637.7111000037985,
+      "stream_complete_ms": 2638.1231999985175,
+      "stream_error": null,
+      "iteration": 2
+    },
+    {
+      "id": "sse-menu-001",
+      "query": "치킨 메뉴 알려줘",
+      "sync_complete_ms": 2272.16480000061,
+      "sync_error": null,
+      "stream_ttft_ms": null,
+      "stream_first_content_ms": 2522.4167999986093,
+      "stream_complete_ms": 2523.3070999966003,
+      "stream_error": null,
+      "iteration": 3
+    },
+    {
+      "id": "sse-menu-002",
+      "query": "BBQ 메뉴 알려줘",
+      "sync_complete_ms": 3348.1196999928216,
+      "sync_error": null,
+      "stream_ttft_ms": null,
+      "stream_first_content_ms": 3421.665700006997,
+      "stream_complete_ms": 3421.9707000011113,
+      "stream_error": null,
+      "iteration": 3
+    },
+    {
+      "id": "sse-menu-003",
+      "query": "사이드 메뉴 알려줘",
+      "sync_complete_ms": 2258.264900010545,
+      "sync_error": null,
+      "stream_ttft_ms": null,
+      "stream_first_content_ms": 2246.076499999617,
+      "stream_complete_ms": 2246.3584000070114,
+      "stream_error": null,
+      "iteration": 3
+    }
+  ]
+}
