@@ -1,0 +1,53 @@
+{
+  "generated_at": "2026-11-01T10:01:51.867923+00:00",
+  "model": "gpt-4o-mini",
+  "pricing": {
+    "input_usd_per_million_tokens": 0.15,
+    "output_usd_per_million_tokens": 0.6,
+    "source": "https://developers.openai.com/api/docs/models/gpt-4o-mini"
+  },
+  "summary": {
+    "case_count": 3,
+    "success_count": 3,
+    "error_count": 0,
+    "llm_call_count": 4,
+    "input_tokens": 1386,
+    "output_tokens": 127,
+    "estimated_cost_usd": 0.00028409999999999997
+  },
+  "rows": [
+    {
+      "id": "cost-menu",
+      "query": "치킨 메뉴 알려줘",
+      "intent": "menu",
+      "llm_call_count": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "estimated_cost_usd": 0.0,
+      "usage_available": false
+    },
+    {
+      "id": "cost-cs",
+      "query": "배달이 너무 늦어서 고객이 화났어",
+      "intent": "cs",
+      "llm_call_count": 2,
+      "input_tokens": 1247,
+      "output_tokens": 92,
+      "total_tokens": 1339,
+      "estimated_cost_usd": 0.00024224999999999998,
+      "usage_available": true
+    },
+    {
+      "id": "cost-unknown",
+      "query": "오늘 날씨 어때?",
+      "intent": "unknown",
+      "llm_call_count": 2,
+      "input_tokens": 139,
+      "output_tokens": 35,
+      "total_tokens": 174,
+      "estimated_cost_usd": 4.1849999999999994e-05,
+      "usage_available": true
+    }
+  ]
+}
