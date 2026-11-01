@@ -200,3 +200,20 @@ def test_retrieval_query_keeps_the_customer_message() -> None:
     # 에이전트가 줄인 검색어에 "거부" 단서가 없어도 고객 원문이 함께 들어가야 한다.
     assert retrieval_query("기프티콘 사용 관련", state) == "기프티콘 내밀었더니 못 받는대요\n기프티콘 사용 관련"
     assert retrieval_query("질문", {"messages": []}) == "질문"
+
+
+def test_search_cs_uses_session_cache_keyed_by_agent_query(monkeypatch) -> None:
+    import json
+
+    import tools.search_cs as search_cs_module
+
+    def fail_service():
+        raise AssertionError("세션 캐시가 있으면 검색하지 않아야 한다")
+
+    monkeypatch.setattr(search_cs_module, "_get_service", fail_service)
+    cached = [{"content": "cached", "cs_category": "배달 지연", "claim_category": ""}]
+    state = {"messages": [], "cs_results": {"배달 지연": cached}}
+
+    output = search_cs_module.search_cs.func("배달 지연", state)
+
+    assert json.loads(output) == {"results": cached}
