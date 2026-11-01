@@ -39,15 +39,18 @@ def run(kind: str, iterations: int, clear_cache: bool) -> dict[str, Any]:
     if kind == "menu":
         from tools.menu_retrieval import MenuSearchService
         from tools.retrieval_cache import build_redis_cache
+        from tools.search_menu import MENU_REDIS_NAMESPACE, MENU_REDIS_TTL
 
-        cache = build_redis_cache("menu_lcel", 86400)
+        # 서비스와 같은 캐시를 재도록 namespace를 서비스 상수에서 가져온다.
+        cache = build_redis_cache(MENU_REDIS_NAMESPACE, MENU_REDIS_TTL)
         service = MenuSearchService(redis_cache=cache)
         search = lambda query: service.search(query, use_cache=True)
     else:
         from tools.cs_retrieval import CsSearchService
         from tools.retrieval_cache import build_redis_cache
+        from tools.search_cs import CS_REDIS_NAMESPACE, CS_REDIS_TTL
 
-        cache = build_redis_cache("cs_lcel", 3600)
+        cache = build_redis_cache(CS_REDIS_NAMESPACE, CS_REDIS_TTL)
         service = CsSearchService(redis_cache=cache)
         search = lambda query: service.search(query)
 
