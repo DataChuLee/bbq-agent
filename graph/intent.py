@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
 
 Intent = Literal["menu", "menu_followup", "cs", "unknown"]
@@ -66,6 +66,8 @@ CS_KEYWORDS = (
     "항의",
     "컴플레인",
 )
+# "치킨", "순살" 같은 단어는 불만 글에도 흔해서, 메뉴는 명시적인 요청어가 있을 때만 규칙으로 확정한다.
+MENU_REQUEST_MARKERS = ("추천", "메뉴")
 
 
 def _normalize(message: str) -> str:
@@ -106,7 +108,7 @@ def heuristic_classify(
     menu_hits = sum(1 for keyword in MENU_KEYWORDS if keyword in normalized)
     if cs_hits > menu_hits and cs_hits >= 2:
         return "cs"
-    if menu_hits > cs_hits and menu_hits >= 2:
+    if menu_hits > cs_hits and menu_hits >= 2 and any(m in normalized for m in MENU_REQUEST_MARKERS):
         return "menu"
     return None
 
@@ -114,11 +116,28 @@ def heuristic_classify(
 def build_intent_prompt(message: str) -> str:
     return f"""Classify the user's message into exactly one intent.
 
-- menu: BBQ menu recommendation, menu search, final menu selection, price/flavor/allergy/menu availability.
-- cs: delivery delay, refund, complaint, gift certificate, existing order issue, customer service.
-- unknown: anything else.
+- menu: recommending, searching, comparing or choosing BBQ menu items by flavor, spiciness, texture, price, allergens or occasion,
+  and asking which items are sold (chicken, sides, drinks, pizza, burgers) or what a menu item tastes like.
+- cs: any problem or question about an order, a store or a received product. This includes delivery delay, refunds,
+  refused gift vouchers or gift cards, payment/POS/app/website errors or inconvenience, cash receipts, extra charges,
+  rude or dirty stores, head-office staff or vehicles, missing items (pickled radish, sauce, drinks), foreign objects,
+  the product looking wrong (pink or bloody meat, black bones, too red or too dark color, too small chicken),
+  feeling sick after eating, and product facts handled by customer service: number of pieces, boneless meat part ratio,
+  dine-in price difference.
+- unknown: greetings, small talk, off-topic requests, and BBQ company information such as franchising, jobs,
+  opening hours, events, stock or brand history.
 
 Answer with only one lowercase label: menu, cs, or unknown.
 
 User message: {message}
 Intent:"""
+
+
+async def classify_intent(message: str, *, last_menu_query: object, llm: Any) -> tuple[Intent, str]:
+    """규칙이 확실할 때만 바로 정하고 나머지는 LLM에 맡긴다. 두 번째 값은 판정 경로(rule/llm)다."""
+    intent = heuristic_classify(message, last_menu_query=last_menu_query)
+    if intent:
+        return intent, "rule"
+    response = await llm.ainvoke(build_intent_prompt(message))
+    label = str(response.content).strip().lower()
+    return (label if label in ("menu", "cs") else "unknown"), "llm"
