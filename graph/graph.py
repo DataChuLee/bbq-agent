@@ -30,9 +30,8 @@ from langgraph.managed import RemainingSteps
 from langgraph.prebuilt import create_react_agent
 
 from graph.intent import (
-    build_intent_prompt,
+    classify_intent,
     has_new_menu_constraints,
-    heuristic_classify,
     looks_like_order_request,
 )
 from graph.state import AgentState
@@ -357,17 +356,11 @@ def _extract_order_tool_response(content: str) -> dict:
 async def intent_classifier_node(state: AgentState) -> dict:
     """Classify initial request only as menu, cs, or unknown."""
     last_message = str(state["messages"][-1].content)
-    heuristic_intent = heuristic_classify(
+    intent, _ = await classify_intent(
         last_message,
         last_menu_query=state.get("last_menu_query"),
+        llm=_classifier_llm,
     )
-    if heuristic_intent:
-        return {"intent": heuristic_intent}
-
-    response = await _classifier_llm.ainvoke(build_intent_prompt(last_message))
-    intent = response.content.strip().lower()
-    if intent not in ("menu", "cs"):
-        intent = "unknown"
     return {"intent": intent}
 
 
