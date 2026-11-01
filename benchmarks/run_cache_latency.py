@@ -21,8 +21,8 @@ DATA_PATH = ROOT / "benchmarks" / "data" / "latency_queries.json"
 DEFAULT_OUTPUT_DIR = ROOT / "benchmarks" / "results"
 
 
-def _load_queries(kind: str) -> list[str]:
-    queries = json.loads(DATA_PATH.read_text(encoding="utf-8"))
+def _load_queries(kind: str, data_path: Path = DATA_PATH) -> list[str]:
+    queries = json.loads(data_path.read_text(encoding="utf-8"))
     return [str(query) for query in queries[kind]]
 
 
@@ -35,7 +35,7 @@ def _measure(search: Callable[[str], object], queries: list[str]) -> list[float]
     return durations
 
 
-def run(kind: str, iterations: int, clear_cache: bool) -> dict[str, Any]:
+def run(kind: str, iterations: int, clear_cache: bool, data_path: Path = DATA_PATH) -> dict[str, Any]:
     if kind == "menu":
         from tools.menu_retrieval import MenuSearchService
         from tools.retrieval_cache import build_redis_cache
@@ -64,7 +64,7 @@ def run(kind: str, iterations: int, clear_cache: bool) -> dict[str, Any]:
     if clear_cache:
         cache.flush()
 
-    queries = _load_queries(kind)
+    queries = _load_queries(kind, data_path)
     cold = _measure(search, queries)
     warm = [duration for _ in range(iterations) for duration in _measure(search, queries)]
     return {
@@ -83,12 +83,13 @@ def main() -> None:
     parser.add_argument("--kind", choices=("menu", "cs"), required=True)
     parser.add_argument("--iterations", type=int, default=3)
     parser.add_argument("--clear-cache", action="store_true")
+    parser.add_argument("--queries-file", type=Path, default=DATA_PATH)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     args = parser.parse_args()
     if args.iterations <= 0:
         parser.error("--iterations는 1 이상이어야 합니다.")
 
-    report = run(args.kind, args.iterations, args.clear_cache)
+    report = run(args.kind, args.iterations, args.clear_cache, args.queries_file)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     output = args.output_dir / f"cache_latency_{args.kind}.json"
     output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
