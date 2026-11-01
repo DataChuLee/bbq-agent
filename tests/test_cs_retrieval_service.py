@@ -188,3 +188,15 @@ def test_cs_category_classifier_returns_nothing_for_no_category() -> None:
     docs = [FakeDoc(page_content="원문", metadata={"cs_category": "전산오류", "summary": ""})]
 
     assert CsCategoryClassifier(docs, FakeClassifierLlm(NO_CATEGORY)).invoke("오늘 날씨 어때요") == []
+
+
+def test_retrieval_query_keeps_the_customer_message() -> None:
+    from langchain_core.messages import AIMessage, HumanMessage
+
+    from tools.search_cs import retrieval_query
+
+    state = {"messages": [HumanMessage(content="기프티콘 내밀었더니 못 받는대요"), AIMessage(content="")]}
+
+    # 에이전트가 줄인 검색어에 "거부" 단서가 없어도 고객 원문이 함께 들어가야 한다.
+    assert retrieval_query("기프티콘 사용 관련", state) == "기프티콘 내밀었더니 못 받는대요\n기프티콘 사용 관련"
+    assert retrieval_query("질문", {"messages": []}) == "질문"
