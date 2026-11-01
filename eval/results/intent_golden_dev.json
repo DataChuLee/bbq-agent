@@ -1,0 +1,1202 @@
+[
+ {
+  "id": "cs-002",
+  "query": "모바일 쿠폰 사용을 거절당했어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-004",
+  "query": "튀김옷이 이상하고 레시피대로 안 만든 느낌이에요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-005",
+  "query": "매장이 너무 지저분해요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-008",
+  "query": "배달이 너무 늦어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "rule",
+  "correct": true
+ },
+ {
+  "id": "cs-010",
+  "query": "전화 주문할 때 직원이 짜증을 냈어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-012",
+  "query": "홈페이지 주문 화면이 잘 안 돼요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-014",
+  "query": "문화상품권으로 결제가 안 된대요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-016",
+  "query": "본사 차량이 매장 앞을 막고 있었어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-017",
+  "query": "치킨에서 철사 같은 게 나왔어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-020",
+  "query": "음식에서 이물질이 나왔어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-022",
+  "query": "기프티콘 번호를 넣으니 오류가 나요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "rule",
+  "correct": true
+ },
+ {
+  "id": "cs-024",
+  "query": "바사칸 뼈 색이 검은데 먹어도 되나요?",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-026",
+  "query": "닭이 평소보다 훨씬 작은 걸 받았어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-028",
+  "query": "고기에 핏기가 보여요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-030",
+  "query": "영업 중인데 배달 주문을 거절당했어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-032",
+  "query": "기프티콘 쓰는데 추가금을 요구해요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-033",
+  "query": "치킨무가 안 왔어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-036",
+  "query": "현금 결제했는데 영수증 발급을 거부당했어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-037",
+  "query": "치킨이 덜 익은 것 같아요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-039",
+  "query": "순살치킨은 다리살이랑 가슴살 비율이 어떻게 돼요?",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-042",
+  "query": "조각 수가 너무 적게 온 것 같아요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-044",
+  "query": "핫크리스피가 검게 탄 것 같아요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-045",
+  "query": "치킨무에서 이상한 게 나왔어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-047",
+  "query": "매장에서 먹으면 가격이 달라요?",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-049",
+  "query": "치킨 먹고 배탈이 났어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-126",
+  "query": "기프티콘 안 받는다는데요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-127",
+  "query": "친구가 생일선물로 보내준 치킨 기프티콘이 있는데 집 근처 매장 가서 내밀었더니 점장님이 본사랑 정산이 안 된다면서 못 받는다고 하시더라고요. 이미 치킨 먹을 준비하고 갔는데 그냥 빈손으로 왔어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-128",
+  "query": "카톡 선물하기로 받은 교환권 보여줬더니 거긴 현금 내고 사라고만 하네요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-129",
+  "query": "튀김 상태가 엉망이에요 규정대로 한 거 맞나요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-130",
+  "query": "이번에 시킨 후라이드가 겉은 허옇고 속은 기름에 절어 있었어요. 전에는 바삭하고 노릇했는데 매장에서 튀김 온도나 시간을 제대로 안 지킨 것 같아서 따지고 싶네요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-131",
+  "query": "양념치킨 소스가 닭에 제대로 버무려지지도 않고 바닥에 흥건하게 고여서 왔어요. 원래 이렇게 만드는 건 아니겠죠",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-132",
+  "query": "가게 더러워요 진ㅉ ㅏ",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-133",
+  "query": "어제 매장에서 먹었는데 의자가 끈적끈적하고 컵에는 얼룩이 남아 있었고 쓰레기통도 넘쳐서 냄새가 났어요. 직원한테 말했는데 대충 닦고 마는 수준이라 본사에 알리고 싶어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-134",
+  "query": "주문하고 기다리는 동안 보니까 가게 구석에 먼지랑 거미줄이 가득하고 바닥에 닭뼈가 굴러다니더라구요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-135",
+  "query": "배달 왜이리 늣죠",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-136",
+  "query": "금요일 저녁에 주문했는데 예상시간 40분이라더니 1시간 반이 지나서야 도착했어요. 중간에 매장에 두 번이나 전화했는데 곧 도착한다는 말만 반복했고 치킨은 완전히 식어서 왔네요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-137",
+  "query": "시킨 지 두 시간 가까이 돼 가는데 아직 현관 앞에 아무도 없어요. 애들 저녁도 못 먹이고 있습니다",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-138",
+  "query": "사장님 태도가 최악이에요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-139",
+  "query": "포장하러 갔는데 계산하면서 눈도 안 마주치고 반말로 대답하셨어요. 소스 하나 더 달라고 했더니 인상을 쓰면서 던지듯 주시길래 기분이 너무 상해서 문의드립니다",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-140",
+  "query": "주문 취소 전화했다가 욕 비슷한 말을 들었어요. 그냥 정중하게 말했을 뿐인데 소리부터 지르시더라구요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-141",
+  "query": "앱이 너무느려요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-142",
+  "query": "BBQ 앱에서 주소 입력하는 부분이 자꾸 초기화되고 메뉴 사진도 한참 있다 떠요. 홈페이지는 글씨가 작아서 보기도 어렵고 주문 한 번 하는데 너무 번거로워서 개선이 필요해 보여요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-143",
+  "query": "홈페이지에서 장바구니 수정이 안돼서 처음부터 다시 담아야 했어요 UI가 직관적이지 않은듯",
+  "expected": "cs",
+  "predicted": "menu",
+  "source": "rule",
+  "correct": false
+ },
+ {
+  "id": "cs-144",
+  "query": "문상 결제 안된다네요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-145",
+  "query": "어머니가 주신 비비큐 상품권 들고 오늘 매장에 갔는데 사장님이 이런 거 안 받는다고 하셨어요. 유효기간도 안 지났고 진짜 상품권인데 이게 맞는 건가요? 한참 서서 설명했는데도 안 통했어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-146",
+  "query": "컬쳐랜드 문화상품권 핀번호로 계산하려 했더니 매장 단말기에서 처리가 안 된다고 거절당했어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-147",
+  "query": "본사 직원 때문에 화나요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-148",
+  "query": "저희 동네 담당 운영과장님이 매장 점검 나왔다면서 손님 많은 점심시간에 가게 한복판에서 큰소리로 사장님을 나무라시는 걸 봤어요. 밥 먹다가 분위기가 너무 불편했고 본사 직원 교육이 필요해 보여요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-149",
+  "query": "본사 배송 차량이 가게 앞 인도를 한참 점거해서 유모차 끌고 지나가지도 못했어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-150",
+  "query": "치킨에 철사 나옴",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-151",
+  "query": "순살 먹다가 이에 뭔가 딱 걸려서 꺼내보니 가느다란 철사 조각이었어요. 매장에서 일부러 넣을 수 있는 게 아니고 공장 쪽 문제 같은데 아이가 삼킬 뻔해서 너무 화가 나요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-152",
+  "query": "닭껍질 안쪽에서 은색 금속 같은 뾰족한 게 박혀 있었어요. 조리 과정에서 생길 수 있는 건 아닌 것 같은데요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-153",
+  "query": "치킨에 머리카락 나왔어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-154",
+  "query": "배달 온 닭다리 튀김옷에 검은 머리카락이 붙어서 같이 튀겨진 상태였어요. 매장 주방에서 모자나 위생 관리를 제대로 안 한 것 같아서 사진 보내고 환불받고 싶습니다",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "rule",
+  "correct": true
+ },
+ {
+  "id": "cs-155",
+  "query": "치킨무 말고 치킨 먹다가 튀김 속에서 짧은 털이 나왔어요 조리하다 들어간 거겠죠",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-156",
+  "query": "포스기 오류인가요 결제가 안돼요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-157",
+  "query": "매장에서 카드를 긁었는데 결제 실패라고 떠서 다시 했더니 두 번 결제됐어요. 직원이 포스기가 먹통이라 그렇대요. 이중 결제된 금액은 어떻게 돌려받나요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-158",
+  "query": "모바일 기프티콘을 앱에 등록했는데 이미 사용된 쿠폰이라고 뜨네요. 한 번도 안 썼거든요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-159",
+  "query": "핫윙 뼈 시커매요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-160",
+  "query": "냉동으로 나오는 바사칸을 시켰는데 뼈랑 그 주변 살이 거무튀튀해서 놀랐어요. 튀김은 잘 익은 것 같은데 상한 게 아닌지 걱정돼요. 아이 먹이기 전에 확인하고 싶어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-161",
+  "query": "윙 먹는데 뼈 끝쪽 고기가 짙은 갈색에서 검정으로 변색돼 있어요 이거 정상 맞아요?",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-162",
+  "query": "닭이 병아리 만해요",
+  "expected": "cs",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": false
+ },
+ {
+  "id": "cs-163",
+  "query": "치킨 한 마리 시켰는데 뭐 이렇게 작은 닭이 왔는지 모르겠어요. 다리는 손가락 두 개 굵기에 가슴살도 얇아서 이 가격에 이건 아닌 것 같아요. 닭 크기 기준 같은 게 있나요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-164",
+  "query": "예전에 먹던 것보다 닭 몸집이 눈에 띄게 작아서 둘이 먹다 보니 금방 없어졌어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-165",
+  "query": "고기 색이 분홍빛이에요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-166",
+  "query": "푹 익혔다는데 가슴살 속이 선명한 핑크색이에요. 핏물이 흐르는 건 아니고 그냥 살코기 자체가 분홍빛이라 덜 익은 건지 아니면 원래 그런 건지 알고 싶어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-167",
+  "query": "살코기가 연어색처럼 발그레해요 먹어도 되는건가요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-168",
+  "query": "주문 취소 당햇어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-169",
+  "query": "앱으로 결제까지 마쳤는데 20분 뒤에 매장에서 전화가 와서 오늘은 주문 못 받겠다고 취소한다고 하더라고요. 이유도 제대로 안 알려주고 일방적으로 끊었어요. 배달 가능 지역 안인데 이럴 수 있나요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-170",
+  "query": "가게에 직접 가서 포장하겠다니까 지금 바빠서 안 한다고 돌려보냈어요 영업 중이었는데",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-171",
+  "query": "배달비 더 받던데요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-172",
+  "query": "기프티콘으로 주문했는데 매장에서 치킨 사이즈가 다르다면서 추가금 칠천원을 내야 한다고 했어요. 기프티콘에는 그런 말이 없었는데 원래 이렇게 돈을 더 받나요? 어이가 없었어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-173",
+  "query": "앱에는 배달비 3000원이라고 돼 있었는데 문 앞에서 기사님이 4000원 더 달라고 하셨습니다",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-174",
+  "query": "무 안왓는데요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-175",
+  "query": "양념치킨 시켰는데 같이 오는 무랑 포크가 하나도 없고 콜라도 빠져 있었어요. 영수증에는 음료 포함으로 되어 있는데 다 먹고 나서야 알았네요. 그냥 넘어가야 하나요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-176",
+  "query": "배달 와서 열어보니 소스 종류가 하나도 없네요 닭만 덜렁 들어 있어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-177",
+  "query": "현금영수증 발급 거절당함",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-178",
+  "query": "현금으로 이만오천원 결제하고 휴대폰 번호로 현금영수증 해달라 했더니 매장에서 현금 결제는 영수증 처리가 안 된다고 거부했어요. 이거 법적으로 해줘야 하는 거 아닌가요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-179",
+  "query": "계산할 때 지출증빙으로 현금영수증 부탁드렸더니 사장님이 그냥 깎아줄 테니 하지 말자고 하시네요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-180",
+  "query": "뼈에서 피가 나와여",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-181",
+  "query": "닭다리 뼈 주변이 검붉게 피가 고여 있고 살을 가르니까 핏물이 스며 나오더라고요. 겉은 바삭한데 속이 덜 익은 느낌이라 환불이나 재조리 가능한지 알고 싶어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-182",
+  "query": "뼈 가까운 쪽 살이 붉고 축축하게 피가 맺혀 있어서 먹다 멈췄어요 날것 같아요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-183",
+  "query": "순살 가슴살 다리살 비률이요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-184",
+  "query": "순살 치킨 한 상자 안에 가슴살이랑 다리살이 각각 몇 퍼센트쯤 들어가는지 궁금해요. 부모님이 퍽퍽한 가슴살을 잘 못 드셔서 다리살 비중이 높은지 알아보고 주문하려고요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-185",
+  "query": "순살은 어떤 부위로 만들어요? 다 닭다리살인가요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-186",
+  "query": "치킨 몃 조각이에요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-187",
+  "query": "후라이드 한 마리 시켰는데 날개 다리 포함해서 총 여덟 조각밖에 안 되더라고요. 보통 한 마리당 몇 조각으로 잘라주는 건지 기준이 정해져 있나요? 지난번엔 훨씬 많았어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-188",
+  "query": "조각수가 매장마다 다른가요 이번엔 너무 듬성듬성 잘라줬네요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-189",
+  "query": "핫크리스피 색이 이상함",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-190",
+  "query": "핫 크리스피 치킨을 처음 시켜봤는데 겉 색이 새까맣다 싶을 만큼 어둡고 군데군데 시뻘건 얼룩이 있어요. 원래 이런 색인지 아니면 탄 건지 모르겠어서 문의해요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-191",
+  "query": "핫크리스피 양념이 너무 붉어서 손에 빨간 물이 들 정도예요 정상인가요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-192",
+  "query": "치킨무에 털 있어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-193",
+  "query": "같이 온 치킨무 통을 열었더니 무 사이에 가는 털 같은 게 엉켜 있고 검은 점도 몇 개 보였어요. 사진 찍어놨는데 먹기 찝찝해서 교환이나 환불 가능한지 알고 싶어요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-194",
+  "query": "무 한 조각이 연노랑에 초록빛이 살짝 돌아요 곰팡이 아닌가요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-195",
+  "query": "매장에서 먹으면 더 비싸요?",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-196",
+  "query": "오늘 가족끼리 매장에 앉아서 치킨이랑 맥주를 먹으려는데 홀에서 먹을 때 배달 앱 가격이랑 차이가 있는지 궁금해요. 테이블 이용료나 추가 요금 같은 게 붙으면 미리 알고 싶습니다",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-197",
+  "query": "가서 먹는 거랑 시켜 먹는 거랑 값이 같아요?",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-198",
+  "query": "치킨먹고 배아파요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-199",
+  "query": "점심에 치킨 먹은 뒤 두 시간쯤 지나서부터 복통이 심하고 계속 설사를 하고 있어요. 다른 건 먹은 게 없어서 치킨이 원인인 것 같은데 영수증이랑 남은 음식 보관해야 하나요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "cs-200",
+  "query": "치킨 먹은 다음날부터 속이 안 좋고 구토가 계속됩니다 식중독 같아요",
+  "expected": "cs",
+  "predicted": "cs",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-001",
+  "query": "진짜 매운 치킨 먹고 싶어",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-003",
+  "query": "촉촉한 치킨 뭐 있어?",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-006",
+  "query": "간장 치킨 있나요?",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-008",
+  "query": "국물 있는 메뉴 있어?",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "rule",
+  "correct": true
+ },
+ {
+  "id": "golden-010",
+  "query": "살짝 매콤한 정도가 좋아",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-011",
+  "query": "매콤하면서 촉촉한 치킨",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-014",
+  "query": "매운 피자 있어?",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-015",
+  "query": "순한 양념치킨 추천해줘",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "rule",
+  "correct": true
+ },
+ {
+  "id": "golden-016",
+  "query": "바삭한 순살 치킨 추천",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "rule",
+  "correct": true
+ },
+ {
+  "id": "golden-019",
+  "query": "만원 이하로 먹을 수 있는 사이드",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-021",
+  "query": "15000원으로 살 수 있는 피자",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-023",
+  "query": "3만원짜리 세트 뭐 있어?",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-024",
+  "query": "1만 5천원 이하 1인분 치킨",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-030",
+  "query": "4명이서 먹을 만한 세트",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-031",
+  "query": "치킨이랑 같이 시킬 사이드 추천",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "rule",
+  "correct": true
+ },
+ {
+  "id": "golden-032",
+  "query": "술안주로 국물 있는 거",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-033",
+  "query": "야식으로 가볍게 먹을 거",
+  "expected": "menu",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": false
+ },
+ {
+  "id": "golden-035",
+  "query": "다이어트 중인데 부담 덜한 메뉴",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-037",
+  "query": "황금올리브치킨 반마리 얼마야?",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-038",
+  "query": "자메이카 통다리구이 알려줘",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-041",
+  "query": "마라핫 어떤 메뉴야?",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "rule",
+  "correct": true
+ },
+ {
+  "id": "golden-042",
+  "query": "황올 양념 반마리",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-044",
+  "query": "맵쏘디 맛있어?",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-048",
+  "query": "매운 거 못 먹는 사람도 먹을 수 있는 치킨",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-049",
+  "query": "튀기지 않은 치킨 있어?",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-050",
+  "query": "새우 알레르기 있는데 먹을 수 있는 사이드",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-053",
+  "query": "콜라 말고 다른 음료",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-056",
+  "query": "버거 있어?",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-057",
+  "query": "음료 뭐 팔아?",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "golden-058",
+  "query": "소스 종류 알려줘",
+  "expected": "menu",
+  "predicted": "menu",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-004",
+  "query": "손흥민 어제 경기 결과 알려줘",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-005",
+  "query": "수학 숙제 좀 도와줘 이차방정식 푸는법",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-010",
+  "query": "영어로 자기소개 써줘",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-011",
+  "query": "대통령 선거 언제야?",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-012",
+  "query": "kfc 쿠폰 어디서 받아",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-013",
+  "query": "제주도 2박3일 여행 코스 짜줘",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-014",
+  "query": "심심한데 끝말잇기 하자",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-019",
+  "query": "고마워",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-022",
+  "query": "잘가 수고했어",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-023",
+  "query": "오늘 기분 별로야",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-024",
+  "query": "뭘 할 수 있는지 알려줘",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-025",
+  "query": "ㅎㅇ",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-026",
+  "query": "BBQ 가맹점 창업하려면 비용이 얼마나 들어요?",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-027",
+  "query": "비비큐 본사 채용공고 있나요",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-029",
+  "query": "BBQ 주식 상장했나요? 주가 궁금해요",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-031",
+  "query": "이번달 BBQ 이벤트 뭐 하나요?",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-033",
+  "query": "집에서 후라이드치킨 만드는 레시피 알려주세요",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-035",
+  "query": "BBQ 대표님 이름이 뭐에요",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-036",
+  "query": "올리브유로 튀기면 건강에 정말 좋아?",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ },
+ {
+  "id": "unk-037",
+  "query": "BBQ 가맹 계약 기간은 보통 몇년이에요",
+  "expected": "unknown",
+  "predicted": "unknown",
+  "source": "llm",
+  "correct": true
+ }
+]
