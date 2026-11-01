@@ -1,0 +1,202 @@
+[
+  {
+    "id": "unk-001",
+    "query": "오늘 서울 날씨 어때?",
+    "split": "test"
+  },
+  {
+    "id": "unk-002",
+    "query": "파이썬에서 리스트 정렬하는 법 알려줘",
+    "split": "test"
+  },
+  {
+    "id": "unk-003",
+    "query": "요즘 환율 얼마야",
+    "split": "test"
+  },
+  {
+    "id": "unk-004",
+    "query": "손흥민 어제 경기 결과 알려줘",
+    "split": "dev"
+  },
+  {
+    "id": "unk-005",
+    "query": "수학 숙제 좀 도와줘 이차방정식 푸는법",
+    "split": "dev"
+  },
+  {
+    "id": "unk-006",
+    "query": "롯데리아 신메뉴 뭐 나왔어?",
+    "split": "test"
+  },
+  {
+    "id": "unk-007",
+    "query": "자바스크립트 async await 차이가 뭐야",
+    "split": "test"
+  },
+  {
+    "id": "unk-008",
+    "query": "이번주 로또 번호 추천해줘",
+    "split": "test"
+  },
+  {
+    "id": "unk-009",
+    "query": "삼성전자 주가 전망 어때",
+    "split": "test"
+  },
+  {
+    "id": "unk-010",
+    "query": "영어로 자기소개 써줘",
+    "split": "dev"
+  },
+  {
+    "id": "unk-011",
+    "query": "대통령 선거 언제야?",
+    "split": "dev"
+  },
+  {
+    "id": "unk-012",
+    "query": "kfc 쿠폰 어디서 받아",
+    "split": "dev"
+  },
+  {
+    "id": "unk-013",
+    "query": "제주도 2박3일 여행 코스 짜줘",
+    "split": "dev"
+  },
+  {
+    "id": "unk-014",
+    "query": "심심한데 끝말잇기 하자",
+    "split": "dev"
+  },
+  {
+    "id": "unk-015",
+    "query": "아이폰 배터리 빨리 닳는데 어떻게 해",
+    "split": "test"
+  },
+  {
+    "id": "unk-016",
+    "query": "안녕",
+    "split": "test"
+  },
+  {
+    "id": "unk-017",
+    "query": "안녕하세요~",
+    "split": "test"
+  },
+  {
+    "id": "unk-018",
+    "query": "너 누구야",
+    "split": "test"
+  },
+  {
+    "id": "unk-019",
+    "query": "고마워",
+    "split": "dev"
+  },
+  {
+    "id": "unk-020",
+    "query": "넌 무슨 일 해?",
+    "split": "test"
+  },
+  {
+    "id": "unk-021",
+    "query": "ㅋㅋㅋㅋ 너 사람이야 AI야?",
+    "split": "test"
+  },
+  {
+    "id": "unk-022",
+    "query": "잘가 수고했어",
+    "split": "dev"
+  },
+  {
+    "id": "unk-023",
+    "query": "오늘 기분 별로야",
+    "split": "dev"
+  },
+  {
+    "id": "unk-024",
+    "query": "뭘 할 수 있는지 알려줘",
+    "split": "dev"
+  },
+  {
+    "id": "unk-025",
+    "query": "ㅎㅇ",
+    "split": "dev"
+  },
+  {
+    "id": "unk-026",
+    "query": "BBQ 가맹점 창업하려면 비용이 얼마나 들어요?",
+    "split": "dev"
+  },
+  {
+    "id": "unk-027",
+    "query": "비비큐 본사 채용공고 있나요",
+    "split": "dev"
+  },
+  {
+    "id": "unk-028",
+    "query": "우리동네 BBQ 몇시까지 해요?",
+    "split": "test"
+  },
+  {
+    "id": "unk-029",
+    "query": "BBQ 주식 상장했나요? 주가 궁금해요",
+    "split": "dev"
+  },
+  {
+    "id": "unk-030",
+    "query": "BBQ 치킨 브랜드 역사가 궁금해",
+    "split": "test"
+  },
+  {
+    "id": "unk-031",
+    "query": "이번달 BBQ 이벤트 뭐 하나요?",
+    "split": "dev"
+  },
+  {
+    "id": "unk-032",
+    "query": "치킨 많이 먹으면 콜레스테롤 올라가나요",
+    "split": "test"
+  },
+  {
+    "id": "unk-033",
+    "query": "집에서 후라이드치킨 만드는 레시피 알려주세요",
+    "split": "dev"
+  },
+  {
+    "id": "unk-034",
+    "query": "튀김기름은 몇번까지 재사용해도 돼?",
+    "split": "test"
+  },
+  {
+    "id": "unk-035",
+    "query": "BBQ 대표님 이름이 뭐에요",
+    "split": "dev"
+  },
+  {
+    "id": "unk-036",
+    "query": "올리브유로 튀기면 건강에 정말 좋아?",
+    "split": "dev"
+  },
+  {
+    "id": "unk-037",
+    "query": "BBQ 가맹 계약 기간은 보통 몇년이에요",
+    "split": "dev"
+  },
+  {
+    "id": "unk-038",
+    "query": "치킨 칼로리 높은 이유가 뭐야 일반적으로",
+    "split": "test"
+  },
+  {
+    "id": "unk-039",
+    "query": "BBQ 모델 누구야 광고 나온 사람",
+    "split": "test"
+  },
+  {
+    "id": "unk-040",
+    "query": "bbq 알바 시급 얼마인가여",
+    "split": "test"
+  }
+]
