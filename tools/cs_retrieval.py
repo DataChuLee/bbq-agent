@@ -23,8 +23,11 @@ BM25_PATH = Path(__file__).parent.parent / "vectorstore" / "bm25_index.pkl"
 TOP_K = 3
 NO_MATCH_MESSAGE = "관련 CS 사례를 찾지 못했습니다."
 NO_CATEGORY = "해당 없음"
-CLASSIFIER_PROMPT = """BBQ 고객센터 문의를 아래 CS 구분 중 하나로 분류하세요.
-맞는 구분이 없으면 "해당 없음"을 고르세요.
+# 구분 설명이 상담원 용어라 용어를 풀어 주고, "해당 없음"은 CS와 무관한 질문에만 쓰게 한다.
+# dev2에서 "해당 없음" 남용으로 분류 정답이 55/75에 그쳐 추가했다(수정 후 65/75).
+CLASSIFIER_PROMPT = """BBQ 고객센터 문의를 아래 CS 구분 중 가장 가까운 하나로 분류하세요.
+용어: 패밀리 = 가맹점(매장), 본사 = BBQ 본사, 내점 = 매장에서 먹는 것.
+"해당 없음"은 치킨 주문·매장·제품과 관계없는 질문일 때만 고르세요.
 
 [CS 구분]
 {categories}
