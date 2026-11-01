@@ -95,16 +95,21 @@ def _measure_stream(
 
 def _build_menu_cache_resetter() -> Callable[[], None]:
     from tools.retrieval_cache import build_redis_cache
+    from tools.search_cs import CS_REDIS_NAMESPACE, CS_REDIS_TTL
     from tools.search_menu import MENU_REDIS_NAMESPACE, MENU_REDIS_TTL
 
-    cache = build_redis_cache(MENU_REDIS_NAMESPACE, MENU_REDIS_TTL)
-    if cache is None:
-        raise RuntimeError("메뉴 Redis 캐시가 비활성화되어 있습니다.")
+    # 같은 질문을 동기·스트리밍으로 두 번 보내므로, CS 캐시도 비워야 두 번째 요청이 캐시 덕을 보지 않는다.
+    caches = [
+        build_redis_cache(MENU_REDIS_NAMESPACE, MENU_REDIS_TTL),
+        build_redis_cache(CS_REDIS_NAMESPACE, CS_REDIS_TTL),
+    ]
+    if any(cache is None for cache in caches):
+        raise RuntimeError("Redis 캐시가 비활성화되어 있습니다.")
     try:
-        cache.redis.ping()
+        caches[0].redis.ping()
     except Exception as exc:
-        raise RuntimeError("메뉴 Redis 캐시에 연결할 수 없습니다.") from exc
-    return cache.flush
+        raise RuntimeError("Redis 캐시에 연결할 수 없습니다.") from exc
+    return lambda: [cache.flush() for cache in caches]
 
 
 def run(
@@ -220,7 +225,7 @@ def main() -> None:
     parser.add_argument(
         "--reset-menu-cache",
         action="store_true",
-        help="각 동기·스트리밍 요청 전에 메뉴 검색 캐시만 비웁니다.",
+        help="각 동기·스트리밍 요청 전에 메뉴·CS 검색 캐시를 비웁니다.",
     )
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     args = parser.parse_args()
