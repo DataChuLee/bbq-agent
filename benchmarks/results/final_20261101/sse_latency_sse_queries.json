@@ -1,0 +1,120 @@
+{
+  "generated_at": "2026-11-01T09:59:09.988171+00:00",
+  "base_url": "http://localhost:8000",
+  "iterations": 3,
+  "summary": {
+    "case_count": 9,
+    "sync_error_count": 0,
+    "stream_success_count": 9,
+    "stream_error_count": 0,
+    "sync_complete_p50_ms": 4919.683100000839,
+    "sync_complete_p95_ms": 19634.177020002964,
+    "stream_ttft_p50_ms": 4036.5090999985114,
+    "stream_ttft_p95_ms": 4228.302000003168,
+    "stream_first_content_p50_ms": 4036.510799996904,
+    "stream_first_content_p95_ms": 4228.305420000106,
+    "stream_complete_p50_ms": 4594.378699999652,
+    "stream_complete_p95_ms": 5113.841620006133
+  },
+  "rows": [
+    {
+      "id": "sse-001",
+      "query": "배달이 너무 늦어서 고객이 화났어",
+      "sync_complete_ms": 29145.987100011553,
+      "sync_error": null,
+      "stream_ttft_ms": 3657.871100003831,
+      "stream_first_content_ms": 3657.8756000089925,
+      "stream_complete_ms": 4256.931399999303,
+      "stream_error": null,
+      "iteration": 1
+    },
+    {
+      "id": "sse-002",
+      "query": "기프티콘을 매장에서 거부당했어 어떻게 해야 해?",
+      "sync_complete_ms": 5366.4618999900995,
+      "sync_error": null,
+      "stream_ttft_ms": 4092.0772999961628,
+      "stream_first_content_ms": 4092.0807999937097,
+      "stream_complete_ms": 4974.4965999998385,
+      "stream_error": null,
+      "iteration": 1
+    },
+    {
+      "id": "sse-003",
+      "query": "치킨에서 이물질이 나왔다고 해",
+      "sync_complete_ms": 4960.160700007691,
+      "sync_error": null,
+      "stream_ttft_ms": 4070.729500002926,
+      "stream_first_content_ms": 4070.7368000003044,
+      "stream_complete_ms": 5111.17240000749,
+      "stream_error": null,
+      "iteration": 1
+    },
+    {
+      "id": "sse-001",
+      "query": "배달이 너무 늦어서 고객이 화났어",
+      "sync_complete_ms": 3848.023099999409,
+      "sync_error": null,
+      "stream_ttft_ms": 3588.7626000039745,
+      "stream_first_content_ms": 3588.76450000389,
+      "stream_complete_ms": 4129.745800004457,
+      "stream_error": null,
+      "iteration": 2
+    },
+    {
+      "id": "sse-002",
+      "query": "기프티콘을 매장에서 거부당했어 어떻게 해야 해?",
+      "sync_complete_ms": 4917.405000000144,
+      "sync_error": null,
+      "stream_ttft_ms": 3898.8284000079148,
+      "stream_first_content_ms": 3898.8310000131605,
+      "stream_complete_ms": 4568.851400006679,
+      "stream_error": null,
+      "iteration": 2
+    },
+    {
+      "id": "sse-003",
+      "query": "치킨에서 이물질이 나왔다고 해",
+      "sync_complete_ms": 4784.0632000006735,
+      "sync_error": null,
+      "stream_ttft_ms": 4205.683799998951,
+      "stream_first_content_ms": 4205.688000001828,
+      "stream_complete_ms": 4874.069199999212,
+      "stream_error": null,
+      "iteration": 2
+    },
+    {
+      "id": "sse-001",
+      "query": "배달이 너무 늦어서 고객이 화났어",
+      "sync_complete_ms": 4039.868599997135,
+      "sync_error": null,
+      "stream_ttft_ms": 3849.0125000098487,
+      "stream_first_content_ms": 3849.016100008157,
+      "stream_complete_ms": 4436.623600005987,
+      "stream_error": null,
+      "iteration": 3
+    },
+    {
+      "id": "sse-002",
+      "query": "기프티콘을 매장에서 거부당했어 어떻게 해야 해?",
+      "sync_complete_ms": 4919.683100000839,
+      "sync_error": null,
+      "stream_ttft_ms": 4243.38080000598,
+      "stream_first_content_ms": 4243.383699998958,
+      "stream_complete_ms": 5115.621100005228,
+      "stream_error": null,
+      "iteration": 3
+    },
+    {
+      "id": "sse-003",
+      "query": "치킨에서 이물질이 나왔다고 해",
+      "sync_complete_ms": 4995.016599990777,
+      "sync_error": null,
+      "stream_ttft_ms": 4036.5090999985114,
+      "stream_first_content_ms": 4036.510799996904,
+      "stream_complete_ms": 4594.378699999652,
+      "stream_error": null,
+      "iteration": 3
+    }
+  ]
+}
