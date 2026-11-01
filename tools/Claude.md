@@ -12,7 +12,7 @@
 | `menu_retrieval.py` | 사용 중 | Chroma + rule filter + SelfQuery fallback 기반 메뉴 검색 서비스 |
 | `menu_query_rules.py` | 사용 중 | 메뉴 자연어 조건을 Chroma metadata filter로 변환 |
 | `search_cs.py` | 사용 중 | CS 검색 LangGraph tool 어댑터 |
-| `cs_retrieval.py` | 사용 중 | FAISS + BM25 EnsembleRetriever 기반 CS 검색 서비스 |
+| `cs_retrieval.py` | 사용 중 | FAISS + BM25 EnsembleRetriever 기반 CS 검색 서비스. `CsCategoryClassifier`는 실험용(서비스 미사용) |
 | `retrieval_cache.py` | 사용 중 | Redis 기반 retriever 결과 캐시 |
 | `ask_clarification.py` | 보류 | 재질문용 typed 응답 helper |
 | `final_answer.py` | 사용 중 | 메뉴 카드 응답 포맷 helper (`graph/graph.py`에서 사용) |
@@ -27,6 +27,8 @@
 - `search_cs(query, state)`는 `{"results": [{"content", "cs_category", "claim_category"}]}` 형태를 유지한다.
 - CS `content`는 검수한 고객 안내 문구(`customer_answer` + `customer_request`)다. 상담원용 원문(`page_content`)은 내부 정책이 섞여 있어 tool 출력과 출처 표시에 넣지 않는다.
 - 두 검색 tool 모두 `state`에서 세션 캐시를 읽는다. 캐시 키는 원문 `query` 그대로다.
+- `search_cs`는 에이전트 검색어에 마지막 고객 메시지 원문을 붙여 검색한다. 에이전트가 질문을 줄이며 "거부" 같은 단서를 버리기 때문이다(dev2 근거성 47/75 → 54/75). 세션 캐시는 붙이기 전 검색어로 찾는다.
+- `CsCategoryClassifier`(LLM 구분 분류 + 메타데이터 조회)는 dev2에서 1위 정답 54 → 65/75였지만 답변 근거성은 54 → 55/75로 차이가 없어 서비스에 넣지 않았다. 재현용으로 `eval.run_cs_grounding --system customer_classify`에서만 쓴다.
 - Redis 캐시는 retriever 문서 결과만 저장하는 성능 최적화 계층이다. Redis 조회/쓰기 실패 시 검색 결과 생성은 계속 진행해야 한다.
 - 기본 Redis TTL은 메뉴 `86400`초, CS `3600`초다. `REDIS_CACHE_ENABLED=false`면 Redis 캐시를 사용하지 않는다.
 - `ask_clarification.py`는 현재 그래프에 연결되어 있지 않다. 재사용할 때는 `graph/graph.py` wiring까지 같이 수정한다.
