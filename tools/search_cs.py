@@ -40,10 +40,9 @@ def _get_service() -> CsSearchService:
 @tool
 def search_cs(query: str, state: Annotated[dict, InjectedState]) -> str:
     """BBQ 고객센터 Q&A에서 유사한 CS 사례를 검색합니다."""
-    results = _get_service().search(
-        retrieval_query(query, state),
-        cache=state.get("cs_results") or {},
-    )
+    # graph는 세션 캐시를 에이전트 검색어 키로 저장하므로, 원문을 붙이기 전에 그 키로 먼저 찾는다.
+    cached = (state.get("cs_results") or {}).get(query)
+    results = list(cached) if cached is not None else _get_service().search(retrieval_query(query, state))
 
     if not results:
         return json.dumps(
