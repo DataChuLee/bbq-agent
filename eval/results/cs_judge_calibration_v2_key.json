@@ -1,0 +1,648 @@
+{
+ "claims": [
+  {
+   "번호": 1,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 2,
+   "정답": "unsupported",
+   "받은": "unsupported"
+  },
+  {
+   "번호": 3,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 4,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 5,
+   "정답": "unsupported",
+   "받은": "unsupported"
+  },
+  {
+   "번호": 6,
+   "정답": "unsupported",
+   "받은": "supported"
+  },
+  {
+   "번호": 7,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 8,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 9,
+   "정답": "unsupported",
+   "받은": "supported"
+  },
+  {
+   "번호": 10,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 11,
+   "정답": "unsupported",
+   "받은": "supported"
+  },
+  {
+   "번호": 12,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 13,
+   "정답": "unsupported",
+   "받은": "unsupported"
+  },
+  {
+   "번호": 14,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 15,
+   "정답": "unsupported",
+   "받은": "supported"
+  },
+  {
+   "번호": 16,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 17,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 18,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 19,
+   "정답": "unsupported",
+   "받은": "supported"
+  },
+  {
+   "번호": 20,
+   "정답": "unsupported",
+   "받은": "unsupported"
+  },
+  {
+   "번호": 21,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 22,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 23,
+   "정답": "unsupported",
+   "받은": "unsupported"
+  },
+  {
+   "번호": 24,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 25,
+   "정답": "unsupported",
+   "받은": "supported"
+  },
+  {
+   "번호": 26,
+   "정답": "unsupported",
+   "받은": "unsupported"
+  },
+  {
+   "번호": 27,
+   "정답": "unsupported",
+   "받은": "supported"
+  },
+  {
+   "번호": 28,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 29,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 30,
+   "정답": "unsupported",
+   "받은": "unsupported"
+  },
+  {
+   "번호": 31,
+   "정답": "unsupported",
+   "받은": "supported"
+  },
+  {
+   "번호": 32,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 33,
+   "정답": "unsupported",
+   "받은": "unsupported"
+  },
+  {
+   "번호": 34,
+   "정답": "unsupported",
+   "받은": "supported"
+  },
+  {
+   "번호": 35,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 36,
+   "정답": "unsupported",
+   "받은": "supported"
+  },
+  {
+   "번호": 37,
+   "정답": "unsupported",
+   "받은": "supported"
+  },
+  {
+   "번호": 38,
+   "정답": "unsupported",
+   "받은": "supported"
+  },
+  {
+   "번호": 39,
+   "정답": "supported",
+   "받은": "supported"
+  },
+  {
+   "번호": 40,
+   "정답": "supported",
+   "받은": "supported"
+  }
+ ],
+ "coverage": [
+  {
+   "번호": 1,
+   "covered": true
+  },
+  {
+   "번호": 2,
+   "covered": true
+  },
+  {
+   "번호": 3,
+   "covered": false
+  },
+  {
+   "번호": 4,
+   "covered": true
+  },
+  {
+   "번호": 5,
+   "covered": true
+  },
+  {
+   "번호": 6,
+   "covered": true
+  },
+  {
+   "번호": 7,
+   "covered": true
+  },
+  {
+   "번호": 8,
+   "covered": false
+  },
+  {
+   "번호": 9,
+   "covered": true
+  },
+  {
+   "번호": 10,
+   "covered": true
+  },
+  {
+   "번호": 11,
+   "covered": true
+  },
+  {
+   "번호": 12,
+   "covered": false
+  },
+  {
+   "번호": 13,
+   "covered": true
+  },
+  {
+   "번호": 14,
+   "covered": false
+  },
+  {
+   "번호": 15,
+   "covered": true
+  },
+  {
+   "번호": 16,
+   "covered": true
+  },
+  {
+   "번호": 17,
+   "covered": true
+  },
+  {
+   "번호": 18,
+   "covered": false
+  },
+  {
+   "번호": 19,
+   "covered": true
+  },
+  {
+   "번호": 20,
+   "covered": true
+  },
+  {
+   "번호": 21,
+   "covered": true
+  },
+  {
+   "번호": 22,
+   "covered": true
+  },
+  {
+   "번호": 23,
+   "covered": true
+  },
+  {
+   "번호": 24,
+   "covered": false
+  },
+  {
+   "번호": 25,
+   "covered": false
+  },
+  {
+   "번호": 26,
+   "covered": true
+  },
+  {
+   "번호": 27,
+   "covered": true
+  },
+  {
+   "번호": 28,
+   "covered": true
+  },
+  {
+   "번호": 29,
+   "covered": true
+  },
+  {
+   "번호": 30,
+   "covered": true
+  },
+  {
+   "번호": 31,
+   "covered": true
+  },
+  {
+   "번호": 32,
+   "covered": true
+  },
+  {
+   "번호": 33,
+   "covered": true
+  },
+  {
+   "번호": 34,
+   "covered": true
+  },
+  {
+   "번호": 35,
+   "covered": true
+  },
+  {
+   "번호": 36,
+   "covered": true
+  },
+  {
+   "번호": 37,
+   "covered": true
+  },
+  {
+   "번호": 38,
+   "covered": false
+  },
+  {
+   "번호": 39,
+   "covered": true
+  },
+  {
+   "번호": 40,
+   "covered": false
+  },
+  {
+   "번호": 41,
+   "covered": true
+  },
+  {
+   "번호": 42,
+   "covered": true
+  },
+  {
+   "번호": 43,
+   "covered": false
+  },
+  {
+   "번호": 44,
+   "covered": true
+  },
+  {
+   "번호": 45,
+   "covered": true
+  },
+  {
+   "번호": 46,
+   "covered": true
+  },
+  {
+   "번호": 47,
+   "covered": true
+  },
+  {
+   "번호": 48,
+   "covered": true
+  },
+  {
+   "번호": 49,
+   "covered": true
+  },
+  {
+   "번호": 50,
+   "covered": true
+  },
+  {
+   "번호": 51,
+   "covered": true
+  },
+  {
+   "번호": 52,
+   "covered": true
+  },
+  {
+   "번호": 53,
+   "covered": true
+  },
+  {
+   "번호": 54,
+   "covered": true
+  },
+  {
+   "번호": 55,
+   "covered": true
+  },
+  {
+   "번호": 56,
+   "covered": true
+  },
+  {
+   "번호": 57,
+   "covered": true
+  },
+  {
+   "번호": 58,
+   "covered": true
+  },
+  {
+   "번호": 59,
+   "covered": true
+  },
+  {
+   "번호": 60,
+   "covered": true
+  },
+  {
+   "번호": 61,
+   "covered": true
+  },
+  {
+   "번호": 62,
+   "covered": true
+  },
+  {
+   "번호": 63,
+   "covered": true
+  },
+  {
+   "번호": 64,
+   "covered": true
+  },
+  {
+   "번호": 65,
+   "covered": true
+  }
+ ],
+ "leak": [
+  {
+   "번호": 1,
+   "system": "customer",
+   "id": "cs-177",
+   "keyword_leak": false
+  },
+  {
+   "번호": 2,
+   "system": "grounded",
+   "id": "cs-039",
+   "keyword_leak": false
+  },
+  {
+   "번호": 3,
+   "system": "grounded",
+   "id": "cs-026",
+   "keyword_leak": true
+  },
+  {
+   "번호": 4,
+   "system": "grounded",
+   "id": "cs-047",
+   "keyword_leak": false
+  },
+  {
+   "번호": 5,
+   "system": "customer",
+   "id": "cs-184",
+   "keyword_leak": false
+  },
+  {
+   "번호": 6,
+   "system": "customer",
+   "id": "cs-157",
+   "keyword_leak": false
+  },
+  {
+   "번호": 7,
+   "system": "grounded",
+   "id": "cs-049",
+   "keyword_leak": true
+  },
+  {
+   "번호": 8,
+   "system": "customer",
+   "id": "cs-195",
+   "keyword_leak": false
+  },
+  {
+   "번호": 9,
+   "system": "customer",
+   "id": "cs-189",
+   "keyword_leak": false
+  },
+  {
+   "번호": 10,
+   "system": "customer",
+   "id": "cs-172",
+   "keyword_leak": false
+  },
+  {
+   "번호": 11,
+   "system": "grounded",
+   "id": "cs-010",
+   "keyword_leak": true
+  },
+  {
+   "번호": 12,
+   "system": "grounded",
+   "id": "cs-045",
+   "keyword_leak": true
+  },
+  {
+   "번호": 13,
+   "system": "customer",
+   "id": "cs-158",
+   "keyword_leak": false
+  },
+  {
+   "번호": 14,
+   "system": "customer",
+   "id": "cs-140",
+   "keyword_leak": false
+  },
+  {
+   "번호": 15,
+   "system": "grounded",
+   "id": "cs-042",
+   "keyword_leak": false
+  },
+  {
+   "번호": 16,
+   "system": "grounded",
+   "id": "cs-012",
+   "keyword_leak": false
+  },
+  {
+   "번호": 17,
+   "system": "customer",
+   "id": "cs-176",
+   "keyword_leak": false
+  },
+  {
+   "번호": 18,
+   "system": "grounded",
+   "id": "cs-008",
+   "keyword_leak": false
+  },
+  {
+   "번호": 19,
+   "system": "customer",
+   "id": "cs-134",
+   "keyword_leak": false
+  },
+  {
+   "번호": 20,
+   "system": "customer",
+   "id": "cs-144",
+   "keyword_leak": false
+  },
+  {
+   "번호": 21,
+   "system": "grounded",
+   "id": "cs-020",
+   "keyword_leak": true
+  },
+  {
+   "번호": 22,
+   "system": "customer",
+   "id": "cs-143",
+   "keyword_leak": false
+  },
+  {
+   "번호": 23,
+   "system": "grounded",
+   "id": "cs-004",
+   "keyword_leak": true
+  },
+  {
+   "번호": 24,
+   "system": "customer",
+   "id": "cs-159",
+   "keyword_leak": false
+  },
+  {
+   "번호": 25,
+   "system": "grounded",
+   "id": "cs-022",
+   "keyword_leak": false
+  },
+  {
+   "번호": 26,
+   "system": "grounded",
+   "id": "cs-044",
+   "keyword_leak": true
+  },
+  {
+   "번호": 27,
+   "system": "grounded",
+   "id": "cs-036",
+   "keyword_leak": false
+  },
+  {
+   "번호": 28,
+   "system": "customer",
+   "id": "cs-180",
+   "keyword_leak": false
+  },
+  {
+   "번호": 29,
+   "system": "grounded",
+   "id": "cs-016",
+   "keyword_leak": true
+  },
+  {
+   "번호": 30,
+   "system": "customer",
+   "id": "cs-153",
+   "keyword_leak": false
+  }
+ ]
+}
