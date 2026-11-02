@@ -34,12 +34,25 @@ def cluster_bootstrap_ci(diffs_by_cluster: dict[str, list[float]], rounds: int =
 assert cluster_bootstrap_ci({"a": [1.0, 1.0], "b": [1.0]}) == (1.0, 1.0)
 
 
+def reciprocal_rank(retrieved: list[str], gold: list[str], k: int = 3) -> float:
+    ranked = list(dict.fromkeys(retrieved))[:k]
+    return next((1 / i for i, c in enumerate(ranked, start=1) if c in gold), 0.0)
+
+
+assert reciprocal_rank(["a", "a", "b"], ["b"]) == 0.5
+assert reciprocal_rank(["a"], ["b"]) == 0.0
+
+
 def _metrics(row: dict) -> dict[str, float]:
+    ranked = list(dict.fromkeys(row["retrieved"]))
     return {
         "fully_grounded": float(row["fully_grounded"]),
+        "faithful": float(row.get("faithful", False)),
         "no_leak": float(not row["leaked_terms"]),
         "coverage": row["coverage"],
-        "top1": float(bool(row["retrieved"]) and row["retrieved"][0] in row["gold_categories"]),
+        "top1": float(bool(ranked) and ranked[0] in row["gold_categories"]),
+        "hit3": float(any(c in row["gold_categories"] for c in ranked[:3])),
+        "mrr": reciprocal_rank(row["retrieved"], row["gold_categories"]),
     }
 
 
@@ -63,19 +76,20 @@ def main() -> None:
         group = [rows[s][i] for i in ids]
         claims = sum(r["claim_count"] for r in group)
         unsupported = sum(r["unsupported_count"] for r in group)
+        m = {key: sum(_metrics(r)[key] for r in group) for key in ("faithful", "top1", "hit3", "mrr")}
         print(
-            f"{s:17} 근거 없는 주장 없는 답변 {sum(r['fully_grounded'] for r in group)}/{len(group)}"
-            f" | 주장 지지율 {(claims - unsupported) / max(claims, 1):.1%}"
+            f"{s:17} 최종 정확도 {sum(r['fully_grounded'] for r in group)}/{len(group)}"
             f" | 포괄성 {sum(r['coverage'] for r in group) / len(group):.1%}"
             f" | 노출 {sum(bool(r['leaked_terms']) for r in group)}/{len(group)}"
-            f" | 검색 적중 {sum(r['retrieval_hit'] for r in group)}/{len(group)}"
-            f" | 1위 정답 {sum(_metrics(r)['top1'] for r in group):.0f}/{len(group)}"
+            f" || 충실도 {m['faithful']:.0f}/{len(group)}"
+            f" | Hit@1 {m['top1']:.0f} Hit@3 {m['hit3']:.0f} MRR {m['mrr'] / len(group):.3f}"
+            f" | 주장 지지율 {(claims - unsupported) / max(claims, 1):.1%}"
         )
 
-    # 미리 정한 비교 두 개만 검정한다. 비교를 늘릴수록 우연히 유의한 결과가 나온다.
+    # 판단은 주 지표(최종 정확도)와 안전 기준으로만 한다(eval/CS_METRICS.md). 나머지 줄은 원인 설명용이다.
     for base in systems[:-1]:
         print(f"\n{base} → {target}")
-        for metric in ("fully_grounded", "no_leak", "coverage", "top1"):
+        for metric in ("fully_grounded", "no_leak", "coverage", "faithful", "top1"):
             before = [_metrics(rows[base][i])[metric] for i in ids]
             after = [_metrics(rows[target][i])[metric] for i in ids]
             by_cluster: dict[str, list[float]] = {}
