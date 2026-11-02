@@ -83,7 +83,11 @@ class CsHierarchicalRetriever:
         self._llm = llm.with_structured_output(choice)
 
     def invoke(self, query: str) -> list[Any]:
-        category = self._llm.invoke(CLASSIFIER_PROMPT.format(categories=self._categories, query=query)).category
+        try:
+            category = self._llm.invoke(CLASSIFIER_PROMPT.format(categories=self._categories, query=query)).category
+        except Exception:
+            # 분류기 LLM이 실패해도 CS 검색은 멈추지 않게, 필터 없는 검색으로 넘어간다.
+            category = NO_CATEGORY
         unfiltered = self._vectorstore.similarity_search(query, k=self._k)
         if category == NO_CATEGORY:
             return unfiltered
