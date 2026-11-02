@@ -244,3 +244,15 @@ def test_search_cs_uses_session_cache_keyed_by_agent_query(monkeypatch) -> None:
     output = search_cs_module.search_cs.func("배달 지연", state)
 
     assert json.loads(output) == {"results": cached}
+
+
+def test_hierarchical_retriever_falls_back_when_classifier_fails() -> None:
+    class BrokenLlm(FakeClassifierLlm):
+        def invoke(self, prompt: str):
+            raise TimeoutError("LLM timeout")
+
+    docs = [cs_doc("배달 지연", "기타 불만"), cs_doc("주문 거부", "주문 거부")]
+
+    result = CsHierarchicalRetriever(FakeCsVectorStore(docs), BrokenLlm(NO_CATEGORY), k=3).invoke("배달이 안 와요")
+
+    assert result == docs
