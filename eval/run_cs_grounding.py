@@ -11,17 +11,20 @@
     customer_faiss     customer와 같고 검색만 FAISS 단독
     customer_subcase   세부 상황 단위 인덱스 + 앙상블 검색
     customer_hier      세부 상황 단위 인덱스 + LLM 큰 카테고리 분류 → 카테고리 안 검색 + 폴백
+    customer_v1        세부 상황 분할 전 서비스(구분 25개 문서, 행 전체 임베딩, 앙상블)를 메모리에서 다시 만든 것
     (구 customer_classify: 25개 구분을 LLM이 고르던 실험. 결과는 results/cs_grounding_dev2_customer_classify.json)
 
 split:
     dev   프롬프트 조정에 쓴 25개
     test  최종 비교용 100개, 시스템마다 한 번만 실행
     dev2  test 이후 검색 방식 비교용 75개
+    test2 계층형 구조 최종 평가용 100개, 시스템마다 한 번만 실행
 """
 
 import argparse
 import asyncio
 import json
+from functools import lru_cache
 from pathlib import Path
 
 import pandas as pd
@@ -32,6 +35,8 @@ EVAL_DIR = Path(__file__).parent
 RESULTS_DIR = EVAL_DIR / "results"
 CS_DATA_PATH = EVAL_DIR.parent / "Data" / "BBQ_CS.xlsx"
 CUSTOMER_PATH = EVAL_DIR.parent / "Data" / "BBQ_CS_customer.csv"
+# 세부 상황으로 나누기 전의 검수 문구. customer_v1 재현과 그 시스템의 충실도 채점에만 쓴다.
+V1_CUSTOMER_PATH = EVAL_DIR / "fixtures" / "BBQ_CS_customer_v1.csv"
 # 상담원용 원문에만 있는 내부 정책 용어다. 고객 답변에 나오면 내부 정보가 샌 것으로 본다.
 LEAK_TERMS = ("보상", "강성", "보험", "사제", "차림비", "계도", "미수긍", "미 수긍")
 # 생성 모델(gpt-4o-mini)과 다른 모델로 채점해야 자기 답에 후한 점수를 주지 않는다.
@@ -145,6 +150,34 @@ def _service_search_cs(retriever_loader):
     return swapped_search_cs
 
 
+@lru_cache(maxsize=1)
+def _v1_retriever():
+    """서비스 인덱스는 이미 세부 상황 단위로 바뀌었으므로, 분할 전 서비스를 같은 조건으로 재려고 메모리에서 다시 만든다."""
+    from langchain.retrievers import EnsembleRetriever
+    from langchain_community.retrievers import BM25Retriever
+    from langchain_community.vectorstores import FAISS
+    from langchain_core.documents import Document
+    from langchain_openai import OpenAIEmbeddings
+
+    df = pd.read_excel(CS_DATA_PATH)
+    customer = pd.read_csv(V1_CUSTOMER_PATH, encoding="utf-8-sig", keep_default_na=False).set_index("CS 구분")
+    docs = []
+    for _, row in df.iterrows():
+        name = str(row["CS 구분"])
+        lines = [f"{col}: {row[col]}" for col in ("CS 구분", "주 내용", "대응 방법", "조치 사항", "참고") if pd.notna(row[col])]
+        meta = {
+            "cs_category": name,
+            "claim_category": str(row["클레임 카테고리"]),
+            "customer_answer": customer.loc[name, "고객 안내"],
+            "customer_request": customer.loc[name, "고객에게 받을 것"],
+        }
+        docs.append(Document(page_content="\n".join(lines), metadata=meta))
+    faiss = FAISS.from_documents(docs, OpenAIEmbeddings(model="text-embedding-3-large")).as_retriever(search_kwargs={"k": 3})
+    bm25 = BM25Retriever.from_documents(docs)
+    bm25.k = 3
+    return EnsembleRetriever(retrievers=[bm25, faiss], weights=[0.4, 0.6])
+
+
 def _build_agent(system: str):
     from langchain_openai import ChatOpenAI
     from langgraph.prebuilt import create_react_agent
@@ -160,6 +193,7 @@ def _build_agent(system: str):
         "customer_faiss": (CS_SYSTEM_PROMPT, _service_search_cs(lambda: build_cs_retriever().retrievers[1])),
         "customer_subcase": (CS_SYSTEM_PROMPT, _service_search_cs(build_cs_retriever)),
         "customer_hier": (CS_SYSTEM_PROMPT, _service_search_cs(build_cs_hierarchical_retriever)),
+        "customer_v1": (CS_SYSTEM_PROMPT, _service_search_cs(_v1_retriever)),
     }[system]
     return create_react_agent(
         model=ChatOpenAI(model="gpt-4o-mini", temperature=0),
@@ -274,10 +308,10 @@ def _coverage(answer: str, reference: str, query: str) -> list[dict]:
 
 async def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--split", choices=("dev", "test", "dev2"), required=True)
+    parser.add_argument("--split", choices=("dev", "test", "dev2", "test2"), required=True)
     parser.add_argument(
         "--system",
-        choices=("baseline", "grounded", "customer", "customer_faiss", "customer_classify", "customer_subcase", "customer_hier"),
+        choices=("baseline", "grounded", "customer", "customer_faiss", "customer_classify", "customer_subcase", "customer_hier", "customer_v1"),
         required=True,
     )
     # 채점 기준만 바뀌었을 때 답변은 그대로 두고 다시 채점한다.
@@ -285,7 +319,7 @@ async def main() -> None:
     args = parser.parse_args()
     output_path = RESULTS_DIR / f"cs_grounding_{args.split}_{args.system}.json"
     # test는 최종 비교에서 시스템마다 한 번만 돌린다.
-    if args.split == "test" and output_path.exists():
+    if args.split in ("test", "test2") and output_path.exists():
         raise SystemExit(f"test 결과가 이미 있습니다: {output_path}")
 
     load_dotenv()
@@ -302,7 +336,13 @@ async def main() -> None:
             answered.append({**case, "answer": answer, "retrieved": retrieved})
 
     # 챗봇이 실제로 받은 내용을 다시 만든다. 원문 시스템은 상담원용 원문, 고객 문구 시스템은 검수 문구를 받았다.
-    received_text = references if args.system in ("baseline", "grounded") else customer_answers
+    if args.system in ("baseline", "grounded"):
+        received_text = references
+    elif args.system == "customer_v1":
+        v1 = pd.read_csv(V1_CUSTOMER_PATH, encoding="utf-8-sig", keep_default_na=False)
+        received_text = {str(r["CS 구분"]): f"{r['고객 안내']}\n고객에게 받을 것: {r['고객에게 받을 것']}" for _, r in v1.iterrows()}
+    else:
+        received_text = customer_answers
 
     def score(row: dict) -> dict:
         case = {k: row[k] for k in ("id", "query", "gold_categories", "split") if k in row}
