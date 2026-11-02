@@ -25,30 +25,31 @@ FAISS_PATH = Path(__file__).parent / "faiss_index"
 BM25_PATH  = Path(__file__).parent / "bm25_index.pkl"
 
 
+# 원본에 클레임 카테고리가 비어 있는 구분은 성격이 같은 카테고리로 채운다.
+MISSING_CLAIM_CATEGORY = {"치킨 조각 수": "제품 문의"}
+
+
 def build_document(row: pd.Series, customer: pd.Series) -> Document:
-    """한 행을 하나의 Document로 변환.
+    """세부 상황 하나를 Document 하나로 만든다.
 
-    page_content: 검색(임베딩, BM25)에만 쓰는 텍스트. 고객에게 보내지 않는다.
-    metadata:     고객 안내 문구, 필터링 및 출처 추적용
+    page_content: 검색(임베딩, BM25)에만 쓰는 텍스트. 고객 문의 말투와 가까운 고객 안내 문구로 검색한다.
+    metadata:     고객 안내 문구, 계층 필터(claim_category → cs_category → sub_case), 출처 추적용
     """
-    lines = []
-    if pd.notna(row.get("CS 구분")):
-        lines.append(f"CS 구분: {row['CS 구분']}")
-    if pd.notna(row.get("주 내용")):
-        lines.append(f"주 내용: {row['주 내용']}")
-    if pd.notna(row.get("대응 방법")):
-        lines.append(f"대응 방법: {row['대응 방법']}")
-    if pd.notna(row.get("조치 사항")):
-        lines.append(f"조치 사항: {row['조치 사항']}")
-    if pd.notna(row.get("참고")) and str(row.get("참고")) != "nan":
-        lines.append(f"참고: {row['참고']}")
+    name = str(row["CS 구분"])
+    summary = " ".join(str(row.get("주 내용", "")).split())
+    sub_case = str(customer["세부 상황"])
+    lines = [f"CS 구분: {name}", f"주 내용: {summary}"]
+    if sub_case:
+        lines.append(f"세부 상황: {sub_case}")
+    lines.append(f"고객 안내: {customer['고객 안내']}")
 
+    claim = row.get("클레임 카테고리")
     metadata = {
-        "cs_category":    str(row.get("CS 구분", "")),
-        "claim_category": str(row.get("클레임 카테고리", "")),
+        "cs_category":    name,
+        "claim_category": str(claim) if pd.notna(claim) else MISSING_CLAIM_CATEGORY[name],
         "index":          int(row.get("구분", 0)),
-        # 분류기가 구분을 고를 때 보는 한 줄 설명이다.
-        "summary":        " ".join(str(row.get("주 내용", "")).split()),
+        "summary":        summary,
+        "sub_case":       sub_case,
         "customer_answer":  str(customer["고객 안내"]),
         "customer_request": str(customer["고객에게 받을 것"]),
     }
@@ -61,11 +62,13 @@ def build_index() -> None:
     print(f"      CS 항목 수: {len(df)}")
 
     print("[2/5] Document 생성")
-    customer = pd.read_csv(CUSTOMER_PATH, encoding="utf-8-sig", keep_default_na=False).set_index("CS 구분")
-    missing = set(df["CS 구분"].astype(str)) - set(customer.index)
+    customer = pd.read_csv(CUSTOMER_PATH, encoding="utf-8-sig", keep_default_na=False)
+    missing = set(df["CS 구분"].astype(str)) - set(customer["CS 구분"])
     if missing:
         raise SystemExit(f"고객 안내 문구가 없는 CS 구분: {sorted(missing)}")
-    documents = [build_document(row, customer.loc[str(row["CS 구분"])]) for _, row in df.iterrows()]
+    rows = {str(row["CS 구분"]): row for _, row in df.iterrows()}
+    documents = [build_document(rows[c["CS 구분"]], c) for _, c in customer.iterrows()]
+    print(f"      세부 상황 문서 수: {len(documents)}")
 
     print("[3/5] 임베딩 모델 초기화 (text-embedding-3-large)")
     embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
