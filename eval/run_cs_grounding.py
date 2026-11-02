@@ -9,7 +9,9 @@
     grounded  근거 제한 프롬프트 + 상담원용 원문 검색 결과
     customer  고객 문구 프롬프트 + 검수한 고객 안내 문구 검색 결과(현재 서비스)
     customer_faiss     customer와 같고 검색만 FAISS 단독
-    customer_classify  customer와 같고 검색 대신 LLM 구분 분류 + 메타데이터 조회
+    customer_subcase   세부 상황 단위 인덱스 + 앙상블 검색
+    customer_hier      세부 상황 단위 인덱스 + LLM 큰 카테고리 분류 → 카테고리 안 검색 + 폴백
+    (구 customer_classify: 25개 구분을 LLM이 고르던 실험. 결과는 results/cs_grounding_dev2_customer_classify.json)
 
 split:
     dev   프롬프트 조정에 쓴 25개
@@ -92,7 +94,12 @@ def _load_reference_rows() -> dict[str, str]:
 
 def _load_customer_answers() -> dict[str, str]:
     df = pd.read_csv(CUSTOMER_PATH, encoding="utf-8-sig", keep_default_na=False)
-    return {str(r["CS 구분"]): f"{r['고객 안내']}\n고객에게 받을 것: {r['고객에게 받을 것']}" for _, r in df.iterrows()}
+    texts: dict[str, list[str]] = {}
+    for _, r in df.iterrows():
+        label = f"({r['세부 상황']}) " if r["세부 상황"] else ""
+        texts.setdefault(str(r["CS 구분"]), []).append(f"{label}{r['고객 안내']}\n고객에게 받을 것: {r['고객에게 받을 것']}")
+    # 한 구분의 세부 상황을 모두 이어 붙인다. 정답 문서와 받은 문서 재현에 쓴다.
+    return {name: "\n".join(parts) for name, parts in texts.items()}
 
 
 def _raw_search_cs():
@@ -143,7 +150,7 @@ def _build_agent(system: str):
     from langgraph.prebuilt import create_react_agent
 
     from graph.graph import CS_SYSTEM_PROMPT, _ReActState
-    from tools.cs_retrieval import build_cs_classifier, build_cs_retriever
+    from tools.cs_retrieval import build_cs_hierarchical_retriever, build_cs_retriever
     from tools.search_cs import search_cs
 
     prompt, tool = {
@@ -151,7 +158,8 @@ def _build_agent(system: str):
         "grounded": (GROUNDED_CS_PROMPT, _raw_search_cs()),
         "customer": (CS_SYSTEM_PROMPT, search_cs),
         "customer_faiss": (CS_SYSTEM_PROMPT, _service_search_cs(lambda: build_cs_retriever().retrievers[1])),
-        "customer_classify": (CS_SYSTEM_PROMPT, _service_search_cs(build_cs_classifier)),
+        "customer_subcase": (CS_SYSTEM_PROMPT, _service_search_cs(build_cs_retriever)),
+        "customer_hier": (CS_SYSTEM_PROMPT, _service_search_cs(build_cs_hierarchical_retriever)),
     }[system]
     return create_react_agent(
         model=ChatOpenAI(model="gpt-4o-mini", temperature=0),
@@ -269,7 +277,7 @@ async def main() -> None:
     parser.add_argument("--split", choices=("dev", "test", "dev2"), required=True)
     parser.add_argument(
         "--system",
-        choices=("baseline", "grounded", "customer", "customer_faiss", "customer_classify"),
+        choices=("baseline", "grounded", "customer", "customer_faiss", "customer_classify", "customer_subcase", "customer_hier"),
         required=True,
     )
     # 채점 기준만 바뀌었을 때 답변은 그대로 두고 다시 채점한다.
