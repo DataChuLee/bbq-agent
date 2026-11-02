@@ -23,13 +23,12 @@ BM25_PATH = Path(__file__).parent.parent / "vectorstore" / "bm25_index.pkl"
 TOP_K = 3
 NO_MATCH_MESSAGE = "관련 CS 사례를 찾지 못했습니다."
 NO_CATEGORY = "해당 없음"
-# 구분 설명이 상담원 용어라 용어를 풀어 주고, "해당 없음"은 CS와 무관한 질문에만 쓰게 한다.
-# dev2에서 "해당 없음" 남용으로 분류 정답이 55/75에 그쳐 추가했다(수정 후 65/75).
-CLASSIFIER_PROMPT = """BBQ 고객센터 문의를 아래 CS 구분 중 가장 가까운 하나로 분류하세요.
+# 카테고리 설명이 상담원 용어라 용어를 풀어 주고, "해당 없음"은 CS와 무관한 질문에만 쓰게 한다.
+CLASSIFIER_PROMPT = """BBQ 고객센터 문의를 아래 큰 카테고리 중 가장 가까운 하나로 분류하세요.
 용어: 패밀리 = 가맹점(매장), 본사 = BBQ 본사, 내점 = 매장에서 먹는 것.
 "해당 없음"은 치킨 주문·매장·제품과 관계없는 질문일 때만 고르세요.
 
-[CS 구분]
+[큰 카테고리: 포함된 CS 구분(설명) / 세부 상황]
 {categories}
 
 [문의]
@@ -58,33 +57,52 @@ def build_cs_retriever() -> EnsembleRetriever:
     )
 
 
-class CsCategoryClassifier:
-    """CS 문서가 25개로 고정된 분류 문제라, 유사도 검색 대신 구분을 고른 뒤 그 문서를 꺼낸다."""
+class CsHierarchicalRetriever:
+    """큰 카테고리는 LLM이 고르고, 그 안의 세부 상황은 벡터 검색이 고른다.
 
-    def __init__(self, documents: Sequence[Any], llm: Any) -> None:
-        self._documents = {doc.metadata["cs_category"]: doc for doc in documents}
+    비슷한 구분(핑킹 현상·방혈 피고임 등)은 같은 큰 카테고리라 분류기는 쉬운 선택만 하고,
+    헷갈리는 선택은 후보가 적은 카테고리 안에서 검색이 한다.
+    """
+
+    def __init__(self, vectorstore: Any, llm: Any, k: int = TOP_K) -> None:
+        self._vectorstore = vectorstore
+        self._k = k
+        self._size = len(vectorstore.index_to_docstore_id)
+        groups: dict[str, dict[str, list[str]]] = {}
+        for docstore_id in vectorstore.index_to_docstore_id.values():
+            meta = vectorstore.docstore.search(docstore_id).metadata
+            subs = groups.setdefault(meta["claim_category"], {}).setdefault(f"{meta['cs_category']}({meta.get('summary', '')})", [])
+            if meta.get("sub_case"):
+                subs.append(meta["sub_case"])
         self._categories = "\n".join(
-            f"- {name}: {doc.metadata.get('summary', '')}" for name, doc in self._documents.items()
+            f"- {claim}: " + "; ".join(f"{name}" + (f" / {', '.join(subs)}" if subs else "") for name, subs in members.items())
+            for claim, members in groups.items()
         )
-        # 선택지를 고정해 목록에 없는 구분을 지어내지 못하게 한다.
-        choice = create_model("CsCategory", category=(Literal[(*self._documents, NO_CATEGORY)], ...))
+        # 선택지를 고정해 목록에 없는 카테고리를 지어내지 못하게 한다.
+        choice = create_model("ClaimCategory", category=(Literal[(*groups, NO_CATEGORY)], ...))
         self._llm = llm.with_structured_output(choice)
 
     def invoke(self, query: str) -> list[Any]:
-        result = self._llm.invoke(CLASSIFIER_PROMPT.format(categories=self._categories, query=query))
-        doc = self._documents.get(result.category)
-        return [doc] if doc else []
+        category = self._llm.invoke(CLASSIFIER_PROMPT.format(categories=self._categories, query=query)).category
+        unfiltered = self._vectorstore.similarity_search(query, k=self._k)
+        if category == NO_CATEGORY:
+            return unfiltered
+        filtered = self._vectorstore.similarity_search(
+            query, k=self._k, filter={"claim_category": category}, fetch_k=self._size
+        )
+        # 분류가 틀려도 정답이 살아남도록, 필터 밖 1위를 목록에 없을 때만 마지막 자리에 둔다.
+        fallback = [doc for doc in unfiltered[:1] if doc not in filtered]
+        return filtered[: self._k - len(fallback)] + fallback
 
 
 @lru_cache(maxsize=1)
-def build_cs_classifier() -> CsCategoryClassifier:
+def build_cs_hierarchical_retriever() -> CsHierarchicalRetriever:
     vectorstore = FAISS.load_local(
         str(FAISS_PATH),
         OpenAIEmbeddings(model="text-embedding-3-large"),
         allow_dangerous_deserialization=True,
     )
-    documents = [vectorstore.docstore.search(i) for i in vectorstore.index_to_docstore_id.values()]
-    return CsCategoryClassifier(documents, ChatOpenAI(model="gpt-4o-mini", temperature=0))
+    return CsHierarchicalRetriever(vectorstore, ChatOpenAI(model="gpt-4o-mini", temperature=0))
 
 
 class CsSearchService:
