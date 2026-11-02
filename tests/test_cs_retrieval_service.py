@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from tools.cs_retrieval import NO_CATEGORY, CsCategoryClassifier, CsSearchService
+from tools.cs_retrieval import NO_CATEGORY, CsHierarchicalRetriever, CsSearchService
 
 
 @dataclass
@@ -171,23 +171,50 @@ class FakeClassifierLlm:
         return self.schema(category=self.category)
 
 
-def test_cs_category_classifier_returns_the_chosen_category_document() -> None:
-    docs = [
-        FakeDoc(page_content="원문", metadata={"cs_category": "전산오류", "summary": "결제오류"}),
-        FakeDoc(page_content="원문", metadata={"cs_category": "주문 거부", "summary": "일방적 주문 거부"}),
-    ]
-    llm = FakeClassifierLlm("전산오류")
+class FakeDocstore:
+    def __init__(self, docs: list[FakeDoc]) -> None:
+        self.docs = {str(i): doc for i, doc in enumerate(docs)}
 
-    result = CsCategoryClassifier(docs, llm).invoke("결제됐는데 주문이 안 들어갔어요")
-
-    assert result == [docs[0]]
-    assert "- 주문 거부: 일방적 주문 거부" in llm.prompts[0]
+    def search(self, docstore_id: str) -> FakeDoc:
+        return self.docs[docstore_id]
 
 
-def test_cs_category_classifier_returns_nothing_for_no_category() -> None:
-    docs = [FakeDoc(page_content="원문", metadata={"cs_category": "전산오류", "summary": ""})]
+class FakeCsVectorStore:
+    """유사도 순서를 문서 목록 순서로 흉내 낸다."""
 
-    assert CsCategoryClassifier(docs, FakeClassifierLlm(NO_CATEGORY)).invoke("오늘 날씨 어때요") == []
+    def __init__(self, docs: list[FakeDoc]) -> None:
+        self.docs = docs
+        self.docstore = FakeDocstore(docs)
+        self.index_to_docstore_id = {i: str(i) for i in range(len(docs))}
+
+    def similarity_search(self, query: str, k: int, filter: dict | None = None, fetch_k: int | None = None):
+        matches = [d for d in self.docs if not filter or all(d.metadata.get(key) == v for key, v in filter.items())]
+        return matches[:k]
+
+
+def cs_doc(name: str, claim: str, sub_case: str = "") -> FakeDoc:
+    return FakeDoc(page_content=name, metadata={"cs_category": name, "claim_category": claim, "summary": "", "sub_case": sub_case})
+
+
+def test_hierarchical_retriever_searches_inside_the_chosen_category_with_fallback() -> None:
+    docs = [cs_doc("주문 거부", "주문 거부"), cs_doc("핑킹 현상", "제품 퀄리티"), cs_doc("방혈 피고임", "제품 퀄리티")]
+    llm = FakeClassifierLlm("제품 퀄리티")
+
+    result = CsHierarchicalRetriever(FakeCsVectorStore(docs), llm, k=3).invoke("뼈 근처 살이 붉어요")
+
+    # 카테고리 안 후보가 먼저 오고, 분류가 틀렸을 때를 위해 필터 밖 1위가 마지막에 남는다.
+    assert [d.metadata["cs_category"] for d in result] == ["핑킹 현상", "방혈 피고임", "주문 거부"]
+    assert "- 제품 퀄리티: 핑킹 현상(); 방혈 피고임()" in llm.prompts[0]
+
+
+def test_hierarchical_retriever_lists_sub_cases_and_falls_back_for_no_category() -> None:
+    docs = [cs_doc("전산오류", "전산오류", "결제 오류"), cs_doc("전산오류", "전산오류", "기프티콘 취소 오류")]
+    llm = FakeClassifierLlm(NO_CATEGORY)
+
+    result = CsHierarchicalRetriever(FakeCsVectorStore(docs), llm, k=3).invoke("오늘 날씨 어때요")
+
+    assert result == docs
+    assert "- 전산오류: 전산오류() / 결제 오류, 기프티콘 취소 오류" in llm.prompts[0]
 
 
 def test_retrieval_query_keeps_the_customer_message() -> None:
