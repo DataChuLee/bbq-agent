@@ -67,8 +67,12 @@ VERIFY_PROMPT = """당신은 고객센터 답변의 근거를 검증하는 평�
 
 COVERAGE_PROMPT = """당신은 고객센터 답변을 평가하는 평가자입니다.
 
-[정답 안내]를 고객에게 꼭 전해야 할 핵심 내용 2~6개로 나누세요.
+[정답 안내] 중 [문의]한 상황에 해당하는 내용만 골라, 고객에게 꼭 전해야 할 핵심 내용 2~6개로 나누세요.
+안내에 여러 상황(예: 결제 오류와 기프티콘 오류)이 있으면 문의와 관계없는 상황은 제외하세요.
 각 내용이 [답변]에 같은 뜻으로 들어 있으면 covered=true, 없으면 false로 판정하세요.
+
+[문의]
+{query}
 
 [답변]
 {answer}
@@ -244,11 +248,7 @@ def verify_claims(claims: list[str], reference: str, model: str = JUDGE_MODEL) -
     return [{**v.model_dump(), "claim": claim} for v, claim in zip(verdicts, claims)]
 
 
-def _judge(answer: str, reference: str) -> list[dict]:
-    return verify_claims(extract_claims(answer), reference)
-
-
-def _coverage(answer: str, reference: str) -> list[dict]:
+def _coverage(answer: str, reference: str, query: str) -> list[dict]:
     """근거성만 보면 말을 줄인 답변이 이기므로, 문서의 핵심 처리를 전했는지도 잰다."""
     from pydantic import BaseModel
 
@@ -260,7 +260,7 @@ def _coverage(answer: str, reference: str) -> list[dict]:
         steps: list[StepCheck]
 
     judge = _judge_llm(JUDGE_MODEL).with_structured_output(CoverageAssessment)
-    assessment = judge.invoke(COVERAGE_PROMPT.format(answer=answer, reference=reference))
+    assessment = judge.invoke(COVERAGE_PROMPT.format(answer=answer, reference=reference, query=query))
     return [step.model_dump() for step in assessment.steps]
 
 
@@ -293,17 +293,25 @@ async def main() -> None:
             answer, retrieved = await _answer(agent, case["query"])
             answered.append({**case, "answer": answer, "retrieved": retrieved})
 
-    rows = []
-    for row in answered:
+    # 챗봇이 실제로 받은 내용을 다시 만든다. 원문 시스템은 상담원용 원문, 고객 문구 시스템은 검수 문구를 받았다.
+    received_text = references if args.system in ("baseline", "grounded") else customer_answers
+
+    def score(row: dict) -> dict:
         case = {k: row[k] for k in ("id", "query", "gold_categories", "split") if k in row}
         answer, retrieved = row["answer"], row["retrieved"]
-        # 근거성은 원문 전체로 본다. 고객 문구도 원문에 있는 사실만 썼기 때문이다.
-        reference = "\n\n".join(f"[{i}] {references[c]}" for i, c in enumerate(case["gold_categories"], start=1))
-        verdicts = _judge(answer, reference)
+        claims = extract_claims(answer)
+        # 최종 답변 정확도: 정답 문서(원문 + 검수한 고객 문구) 기준. 고객 문구를 그대로 전한 답이 원문과 표현이 달라 틀리지 않게 한다.
+        gold = "\n\n".join(
+            f"[{i}] {references[c]}\n고객 안내: {customer_answers[c]}" for i, c in enumerate(case["gold_categories"], start=1)
+        )
+        verdicts = verify_claims(claims, gold)
+        # 충실도: 챗봇이 받은 문서 기준. 검색이 틀렸는지 생성이 틀렸는지 나누는 데 쓴다.
+        received = list(dict.fromkeys(retrieved))
+        received_doc = "\n\n".join(f"[{i}] {received_text[c]}" for i, c in enumerate(received, start=1))
+        faith = verify_claims(claims, received_doc) if received else [{"claim": c, "verdict": "unsupported"} for c in claims]
         unsupported = sum(v["verdict"] == "unsupported" for v in verdicts)
-        # 포괄성은 고객에게 전해야 할 안내 기준이다. 원문 기준이면 내부 절차를 빼는 시스템이 손해를 본다.
-        steps = _coverage(answer, customer_answers[case["gold_categories"][0]])
-        rows.append({
+        steps = _coverage(answer, customer_answers[case["gold_categories"][0]], case["query"])
+        return {
             **case,
             "answer": answer,
             "retrieved": retrieved,
@@ -312,11 +320,18 @@ async def main() -> None:
             "verdicts": verdicts,
             "claim_count": len(verdicts),
             "unsupported_count": unsupported,
-            # 주장이 하나도 없는 답변은 근거를 따질 수 없어 성공으로 치지 않는다.
+            # 최종 답변 정확도. 주장이 하나도 없는 답변은 근거를 따질 수 없어 성공으로 치지 않는다.
             "fully_grounded": bool(verdicts) and unsupported == 0,
+            "faithfulness_verdicts": faith,
+            "faithful": bool(faith) and all(v["verdict"] == "supported" for v in faith),
             "coverage_steps": steps,
             "coverage": sum(s["covered"] for s in steps) / len(steps) if steps else 0.0,
-        })
+        }
+
+    from concurrent.futures import ThreadPoolExecutor
+
+    with ThreadPoolExecutor(8) as pool:
+        rows = list(pool.map(score, answered))
 
     RESULTS_DIR.mkdir(exist_ok=True)
     output_path.write_text(json.dumps(rows, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
@@ -324,7 +339,8 @@ async def main() -> None:
     claims = sum(r["claim_count"] for r in rows)
     unsupported = sum(r["unsupported_count"] for r in rows)
     print(f"{args.split}/{args.system} n={len(rows)} → {output_path}")
-    print(f"근거 없는 주장이 없는 답변: {sum(r['fully_grounded'] for r in rows)}/{len(rows)}")
+    print(f"최종 답변 정확도: {sum(r['fully_grounded'] for r in rows)}/{len(rows)}")
+    print(f"충실도: {sum(r['faithful'] for r in rows)}/{len(rows)}")
     print(f"주장 지지율: {claims - unsupported}/{claims} = {(claims - unsupported) / max(claims, 1):.1%}")
     print(f"핵심 처리 포괄성 평균: {sum(r['coverage'] for r in rows) / len(rows):.1%}")
     print(f"검색 적중: {sum(r['retrieval_hit'] for r in rows)}/{len(rows)}")
