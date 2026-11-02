@@ -1,0 +1,2568 @@
+[
+ {
+  "id": "cs-002",
+  "query": "모바일 쿠폰 사용을 거절당했어요",
+  "gold_categories": [
+   "기프티콘 거부"
+  ],
+  "split": "dev",
+  "answer": "모바일 쿠폰 사용을 거부당하셨다니 불편을 드려 죄송합니다. 사용하신 쿠폰의 종류에 따라 아래와 같이 안내드립니다.\n\n1. **비비큐 상품권**: 매장 또는 BBQ 앱에서 사용 가능합니다. 앱에서 쿠폰 등록 후 주문하실 수 있습니다. 거부당하신 매장 정보를 알려주시면, 해당 매장에 상품권 사용 요청을 하겠습니다.\n\n2. **기프티콘**: 주문 경로, 주문 매장, 기프티콘 번호를 알려주시면, 해당 매장을 관리하는 담당 부서에 전달하여 같은 일이 없도록 요청하겠습니다.\n\n어떤 쿠폰을 사용하셨는지와 필요한 정보를 알려주시면 도움을 드리겠습니다.",
+  "retrieved": [
+   "상품권 거부",
+   "기프티콘 거부",
+   "상품권 거부"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "비비큐 상품권은 매장 또는 BBQ 앱에서 사용할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 '앱 또는 홈페이지내에서 회원가입후 기프티콘 등록 하여 장바구니 내에서 매장선택 하여 주문' 및 매장 이용 안내가 있어, 매장 또는 BBQ 앱에서 사용 가능함을 뒷받침한다."
+   },
+   {
+    "claim": "BBQ 앱에서는 쿠폰 등록 후 주문할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 'BBQ 앱 또는 홈페이지에서 회원가입 후 기프티콘을 등록하고 장바구니에서 매장을 선택해 주문'이라고 명시되어 있다."
+   },
+   {
+    "claim": "거부당한 매장 정보를 알려주면 해당 매장에 상품권 사용을 요청할 수 있다.",
+    "verdict": "unsupported",
+    "evidence_indexes": [],
+    "reason": "문서는 해당 매장에 직접 사용을 요청하는 것이 아니라, 해당 매장을 관리하는 담당 운영부서로 전달해 계도 요청을 하도록 안내한다."
+   },
+   {
+    "claim": "기프티콘 관련 문의에서는 주문 경로, 주문 매장, 기프티콘 번호가 필요하다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 고객에게 받을 것에 '주문 경로, 주문 매장, 기프티콘 번호'가 명시되어 있다."
+   },
+   {
+    "claim": "기프티콘 관련 정보를 받으면 해당 매장을 관리하는 담당 부서에 전달해 같은 일이 없도록 요청할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 '해당 매장을 관리하는 담당 부서에 전달해 같은 일이 없도록 요청하겠습니다'라고 되어 있다."
+   }
+  ],
+  "claim_count": 5,
+  "unsupported_count": 1,
+  "fully_grounded": false,
+  "faithfulness_verdicts": [
+   {
+    "claim": "비비큐 상품권은 매장 또는 BBQ 앱에서 사용할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 '비비큐 상품권은 매장뿐 아니라 BBQ 앱에서도 쓸 수 있습니다.'라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "BBQ 앱에서는 쿠폰 등록 후 주문할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 앱 첫 화면에서 쿠폰 등록 후 배달/포장을 선택하고 주문하기를 누르라고 되어 있어 주장을 직접 뒷받침합니다."
+   },
+   {
+    "claim": "거부당한 매장 정보를 알려주면 해당 매장에 상품권 사용을 요청할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 비비큐 상품권을 거부당했을 때 어느 매장인지 알려주면 담당 부서를 통해 해당 매장에 상품권 사용을 요청하겠다고 되어 있습니다."
+   },
+   {
+    "claim": "기프티콘 관련 문의에서는 주문 경로, 주문 매장, 기프티콘 번호가 필요하다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     2
+    ],
+    "reason": "문서 [2]에 고객에게 받을 것로 주문 경로, 주문 매장, 기프티콘 번호가 명시되어 있습니다."
+   },
+   {
+    "claim": "기프티콘 관련 정보를 받으면 해당 매장을 관리하는 담당 부서에 전달해 같은 일이 없도록 요청할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     2
+    ],
+    "reason": "문서 [2]에 해당 정보를 알려주면 해당 매장을 관리하는 담당 부서에 전달해 같은 일이 없도록 요청하겠다고 직접 적혀 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "기프티콘 사용 거부에 대한 사과와 불편 언급",
+    "covered": true
+   },
+   {
+    "step": "주문 경로, 주문 매장, 기프티콘 번호를 알려주면 해당 매장 관리 부서에 전달해 재발 방지 요청",
+    "covered": true
+   },
+   {
+    "step": "다른 매장을 이용하려면 1588-9282로 전화해 1번, 1번을 눌러 주문 가능",
+    "covered": false
+   },
+   {
+    "step": "BBQ 앱 또는 홈페이지에서 회원가입 후 기프티콘 등록 및 장바구니에서 매장 선택해 주문 가능",
+    "covered": false
+   }
+  ],
+  "coverage": 0.5
+ },
+ {
+  "id": "cs-004",
+  "query": "튀김옷이 이상하고 레시피대로 안 만든 느낌이에요",
+  "gold_categories": [
+   "매뉴얼 미 준수"
+  ],
+  "split": "dev",
+  "answer": "제품이 제대로 조리되지 않아 불편을 드려 죄송합니다. 주문 경로와 주문 매장을 알려주시고, 제품 사진을 보내주시면 감사하겠습니다. 환불과 재배달 중 원하시는 방법도 함께 알려주시고, 고객님 정보를 매장에 전달하는 데 동의해 주세요. 매뉴얼대로 조리되지 않은 것으로 확인되면 매장에 교환 또는 환불을 요청하겠습니다.",
+  "retrieved": [
+   "매뉴얼 미 준수",
+   "기프티콘 거부"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "주문 경로와 주문 매장을 알려주면 된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 '주문 경로와 주문 매장을 알려주시고' 및 '고객에게 받을 것: 주문 경로, 주문 매장'이라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "제품 사진을 보내면 된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 '제품 사진을 보내주세요' 및 '고객에게 받을 것: ... 제품 사진'이라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "환불과 재배달 중 원하는 방법을 함께 알려야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 '환불과 재배달 중 원하시는 방법을 알려주시고'라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "고객 정보가 매장에 전달되는 것에 동의해야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 '고객님 정보를 매장에 전달하는 데 동의해 주세요'라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "매뉴얼대로 조리되지 않은 것으로 확인되면 매장에 교환 또는 환불을 요청하겠다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 '매뉴얼대로 조리되지 않은 것으로 확인되면 매장에 교환 또는 환불을 요청하겠습니다'라고 직접 명시되어 있습니다."
+   }
+  ],
+  "claim_count": 5,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "주문 경로와 주문 매장을 알려주면 된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]의 ‘주문 경로와 주문 매장을 알려주시고’와 직접 일치합니다."
+   },
+   {
+    "claim": "제품 사진을 보내면 된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 ‘제품 사진을 보내주세요’라고 명시되어 있습니다."
+   },
+   {
+    "claim": "환불과 재배달 중 원하는 방법을 함께 알려야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]의 ‘환불과 재배달 중 원하시는 방법을 알려주시고’와 같은 의미입니다."
+   },
+   {
+    "claim": "고객 정보가 매장에 전달되는 것에 동의해야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 ‘고객님 정보를 매장에 전달하는 데 동의해 주세요’라고 되어 있습니다."
+   },
+   {
+    "claim": "매뉴얼대로 조리되지 않은 것으로 확인되면 매장에 교환 또는 환불을 요청하겠다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 ‘매뉴얼대로 조리되지 않은 것으로 확인되면 매장에 교환 또는 환불을 요청하겠습니다’라고 그대로 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "제품이 제대로 조리되지 않아 죄송하다는 사과/불편 언급",
+    "covered": true
+   },
+   {
+    "step": "주문 경로와 주문 매장을 알려달라는 요청",
+    "covered": true
+   },
+   {
+    "step": "제품 사진을 보내달라는 요청",
+    "covered": true
+   },
+   {
+    "step": "환불과 재배달 중 원하시는 방법을 알려달라는 요청",
+    "covered": true
+   },
+   {
+    "step": "고객님 정보를 매장에 전달하는 데 동의해 달라는 요청",
+    "covered": true
+   },
+   {
+    "step": "매뉴얼대로 조리되지 않으면 교환 또는 환불을 요청하겠다는 안내",
+    "covered": true
+   },
+   {
+    "step": "해당 매장이 조리 매뉴얼을 지키도록 담당 부서에도 전달하겠다는 안내",
+    "covered": false
+   }
+  ],
+  "coverage": 0.8571428571428571
+ },
+ {
+  "id": "cs-005",
+  "query": "매장이 너무 지저분해요",
+  "gold_categories": [
+   "매장 청결"
+  ],
+  "split": "dev",
+  "answer": "불편을 드려 죄송합니다. 어느 매장인지 알려주시고, 찍어 두신 사진이 있으면 보내주세요. 해당 매장이 청결을 유지하도록 매장을 관리하는 담당 부서에 전달해 개선을 요청하겠습니다.",
+  "retrieved": [
+   "매장 청결",
+   "배달 지연"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "어느 매장인지 알려주어야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 고객 안내와 고객에게 받을 것에 '어느 매장인지 알려주시고', '매장 정보'가 명시되어 있다."
+   },
+   {
+    "claim": "찍어 둔 사진이 있으면 보내주어야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 대응 방법과 고객 안내에 '찍어놓은 사진이 있다면 사진 요청', '찍어 두신 사진이 있으면 보내주세요'가 직접 제시되어 있다."
+   },
+   {
+    "claim": "해당 매장이 청결을 유지하도록 매장을 관리하는 담당 부서에 전달하여 개선을 요청하겠다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 대응 방법과 고객 안내에 해당 매장을 관리하는 담당 운영부서로 전달하여 계도 요청/개선 요청을 하겠다고 명시되어 있다."
+   }
+  ],
+  "claim_count": 3,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "어느 매장인지 알려주어야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 '어느 매장인지 알려주시고'라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "찍어 둔 사진이 있으면 보내주어야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 '찍어 두신 사진이 있으면 보내주세요'라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "해당 매장이 청결을 유지하도록 매장을 관리하는 담당 부서에 전달하여 개선을 요청하겠다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 '해당 매장이 청결을 유지하도록 매장을 관리하는 담당 부서에 전달해 개선을 요청하겠습니다'라고 직접 명시되어 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "불편을 드려 죄송합니다.",
+    "covered": true
+   },
+   {
+    "step": "어느 매장인지 알려주세요.",
+    "covered": true
+   },
+   {
+    "step": "찍어 두신 사진이 있으면 보내주세요.",
+    "covered": true
+   },
+   {
+    "step": "해당 매장의 청결 개선을 위해 담당 부서에 전달하겠습니다.",
+    "covered": true
+   }
+  ],
+  "coverage": 1.0
+ },
+ {
+  "id": "cs-008",
+  "query": "배달이 너무 늦어요",
+  "gold_categories": [
+   "배달 지연"
+  ],
+  "split": "dev",
+  "answer": "배달이 늦어져 죄송합니다. 주문 경로, 주문 매장, 주문 시간을 알려주시면 매장에 지연 사유와 예상 소요 시간을 확인해 다시 안내드리겠습니다. 매장과 계속 연락이 닿지 않으면 시간이 조금 더 걸릴 수 있는 점 양해 부탁드립니다.",
+  "retrieved": [
+   "배달 지연",
+   "매장 청결"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "주문 경로, 주문 매장, 주문 시간 정보를 알려주면 매장에 지연 사유와 예상 소요 시간을 확인해 다시 안내할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 고객 안내와 ‘고객에게 받을 것’에 주문 경로, 주문 매장, 주문 시간을 알려주면 매장에 지연 사유와 예상 소요 시간을 확인해 다시 안내하겠다고 명시되어 있다."
+   },
+   {
+    "claim": "매장과 계속 연락이 닿지 않으면 더 시간이 걸릴 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 고객 안내에 ‘매장과 계속 연락이 닿지 않으면 시간이 조금 더 걸릴 수 있는 점 양해 부탁드립니다’라고 직접 적혀 있다."
+   }
+  ],
+  "claim_count": 2,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "주문 경로, 주문 매장, 주문 시간 정보를 알려주면 매장에 지연 사유와 예상 소요 시간을 확인해 다시 안내할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 주문 경로, 주문 매장, 주문 시간을 알려주면 매장에 지연 사유와 예상 소요 시간을 확인해 다시 안내드리겠다고 직접 적혀 있다."
+   },
+   {
+    "claim": "매장과 계속 연락이 닿지 않으면 더 시간이 걸릴 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 매장과 계속 연락이 닿지 않으면 시간이 조금 더 걸릴 수 있다고 직접 명시되어 있다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "배달 지연에 대해 사과한다",
+    "covered": true
+   },
+   {
+    "step": "주문 경로를 알려달라고 요청한다",
+    "covered": true
+   },
+   {
+    "step": "주문 매장을 알려달라고 요청한다",
+    "covered": true
+   },
+   {
+    "step": "주문 시간을 알려달라고 요청한다",
+    "covered": true
+   },
+   {
+    "step": "매장에 지연 사유와 예상 소요 시간을 확인해 다시 안내한다",
+    "covered": true
+   },
+   {
+    "step": "매장과 연락이 닿지 않으면 더 시간이 걸릴 수 있다고 안내한다",
+    "covered": true
+   }
+  ],
+  "coverage": 1.0
+ },
+ {
+  "id": "cs-010",
+  "query": "전화 주문할 때 직원이 짜증을 냈어요",
+  "gold_categories": [
+   "불친절 응대"
+  ],
+  "split": "dev",
+  "answer": "불쾌한 경험을 드려 죄송합니다. 주문 경로, 주문 매장, 주문 상품을 알려주시면 해당 매장을 관리하는 담당 부서에 전달해 친절한 응대가 이루어지도록 요청하겠습니다.",
+  "retrieved": [
+   "불친절 응대"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "주문 경로, 주문 매장, 주문 상품을 알려주시면 해당 매장을 관리하는 담당 부서에 전달하겠습니다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 고객 안내에 같은 내용이 직접 포함되어 있습니다."
+   },
+   {
+    "claim": "해당 매장을 관리하는 담당 부서에 친절한 응대가 이루어지도록 요청하겠습니다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 고객 안내에 '해당 매장을 관리하는 담당 부서에 전달해 친절한 응대가 이루어지도록 요청하겠습니다'라고 명시되어 있습니다."
+   }
+  ],
+  "claim_count": 2,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "주문 경로, 주문 매장, 주문 상품을 알려주시면 해당 매장을 관리하는 담당 부서에 전달하겠습니다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 주문 경로, 주문 매장, 주문 상품을 알려주면 해당 매장을 관리하는 담당 부서에 전달한다고 명시되어 있습니다."
+   },
+   {
+    "claim": "해당 매장을 관리하는 담당 부서에 친절한 응대가 이루어지도록 요청하겠습니다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 해당 매장을 관리하는 담당 부서에 친절한 응대가 이루어지도록 요청하겠다고 직접 적혀 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "불쾌한 경험에 대해 사과한다",
+    "covered": true
+   },
+   {
+    "step": "주문 경로를 알려달라고 요청한다",
+    "covered": true
+   },
+   {
+    "step": "주문 매장을 알려달라고 요청한다",
+    "covered": true
+   },
+   {
+    "step": "주문 상품을 알려달라고 요청한다",
+    "covered": true
+   },
+   {
+    "step": "해당 매장을 관리하는 담당 부서에 전달해 친절한 응대를 요청하겠다고 안내한다",
+    "covered": true
+   }
+  ],
+  "coverage": 1.0
+ },
+ {
+  "id": "cs-012",
+  "query": "홈페이지 주문 화면이 잘 안 돼요",
+  "gold_categories": [
+   "사용 불편",
+   "전산오류"
+  ],
+  "split": "dev",
+  "answer": "주문 시스템 이용에 불편을 드려 죄송합니다. 어떤 문제가 있었는지 말씀해 주시면 확인해 해결 방법을 안내드리겠습니다. 불편했던 내용을 알려주시면 감사하겠습니다.",
+  "retrieved": [
+   "사용 불편",
+   "서비스 불만"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "어떤 문제가 있었는지 말씀해 주시면 확인해 해결 방법을 안내드리겠습니다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]의 고객 안내에 동일한 의미의 문구인 '어떤 문제가 있었는지 말씀해 주시면 확인해 해결 방법을 안내드리고'가 포함되어 있습니다."
+   }
+  ],
+  "claim_count": 1,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "어떤 문제가 있었는지 말씀해 주시면 확인해 해결 방법을 안내드리겠습니다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서 [1]에 동일한 취지로 '어떤 문제가 있었는지 말씀해 주시면 확인해 해결 방법을 안내드리겠습니다'라고 명시되어 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "주문 시스템 이용에 불편을 드려 죄송하다는 사과",
+    "covered": true
+   },
+   {
+    "step": "어떤 문제가 있었는지 말씀해 달라는 요청",
+    "covered": true
+   },
+   {
+    "step": "확인 후 해결 방법을 안내하겠다는 안내",
+    "covered": true
+   },
+   {
+    "step": "건의 사항을 담당 부서에 전달해 개선 요청하겠다는 안내",
+    "covered": false
+   },
+   {
+    "step": "고객에게 불편했던 내용을 받아야 한다는 안내",
+    "covered": true
+   }
+  ],
+  "coverage": 0.8
+ },
+ {
+  "id": "cs-014",
+  "query": "문화상품권으로 결제가 안 된대요",
+  "gold_categories": [
+   "상품권 거부"
+  ],
+  "split": "dev",
+  "answer": "문화상품권 사용에 불편을 드려 죄송합니다. 문화상품권은 오프라인 전용이라 앱에서는 사용할 수 없으며, 일부 매장에서는 사용이 제한될 수 있습니다. 양해 부탁드립니다.",
+  "retrieved": [
+   "상품권 거부",
+   "상품권 거부",
+   "기프티콘 거부"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "문화상품권은 오프라인 전용이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 \"문화상품권 인경우 오프라인 전용\"이라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "문화상품권은 앱에서는 사용할 수 없다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 문화상품권은 오프라인 전용이라고 되어 있어 앱 사용 불가와 같은 뜻입니다."
+   },
+   {
+    "claim": "일부 매장에서는 문화상품권 사용이 제한될 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 \"일부 매장 사용 제한 있을 수 있음\"이라고 직접 적혀 있습니다."
+   }
+  ],
+  "claim_count": 3,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "문화상품권은 오프라인 전용이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 '문화상품권은 오프라인 전용이라 앱에서는 쓸 수 없고'라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "문화상품권은 앱에서는 사용할 수 없다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 '앱에서는 쓸 수 없고'라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "일부 매장에서는 문화상품권 사용이 제한될 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 '일부 매장은 사용이 제한될 수 있는 점'이라고 직접 명시되어 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "문화상품권은 오프라인 전용이라 앱에서는 사용할 수 없다",
+    "covered": true
+   },
+   {
+    "step": "일부 매장에서는 문화상품권 사용이 제한될 수 있다",
+    "covered": true
+   }
+  ],
+  "coverage": 1.0
+ },
+ {
+  "id": "cs-016",
+  "query": "본사 차량이 매장 앞을 막고 있었어요",
+  "gold_categories": [
+   "서비스 불만"
+  ],
+  "split": "dev",
+  "answer": "불편을 드려 죄송합니다. 말씀해 주신 내용은 담당 운영 부서에 전달해 개선되도록 요청하겠습니다. 불편했던 내용을 좀 더 자세히 말씀해 주시면 감사하겠습니다.",
+  "retrieved": [
+   "서비스 불만",
+   "사용 불편"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "말씀해 주신 내용은 담당 운영 부서에 전달하겠습니다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 고객 안내에 동일한 의미의 문구인 '말씀해 주신 내용은 담당 운영 부서에 전달해 개선되도록 요청하겠습니다.'가 있어 직접 뒷받침됩니다."
+   },
+   {
+    "claim": "담당 운영 부서에 개선되도록 요청하겠습니다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 고객 안내에 '담당 운영 부서에 전달해 개선되도록 요청하겠습니다'라고 명시되어 있어 직접 지원됩니다."
+   }
+  ],
+  "claim_count": 2,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "말씀해 주신 내용은 담당 운영 부서에 전달하겠습니다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서 [1]에 \"말씀해 주신 내용은 담당 운영 부서에 전달해\"라고 직접 제시되어 있습니다."
+   },
+   {
+    "claim": "담당 운영 부서에 개선되도록 요청하겠습니다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서 [1]에 \"개선되도록 요청하겠습니다\"라고 직접 제시되어 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "불편을 드려 죄송합니다. 말씀해 주신 내용은 담당 운영 부서에 전달해 개선되도록 요청하겠습니다.",
+    "covered": true
+   },
+   {
+    "step": "불편했던 내용",
+    "covered": false
+   }
+  ],
+  "coverage": 0.5
+ },
+ {
+  "id": "cs-017",
+  "query": "치킨에서 철사 같은 게 나왔어요",
+  "gold_categories": [
+   "이물질(본사)"
+  ],
+  "split": "dev",
+  "answer": "이물질이 나와 정말 죄송합니다. 주문 경로와 주문 매장을 알려주시고 제품 사진을 보내주세요. 환불과 재배달 중 원하시는 방법을 알려주시고, 고객님 정보를 매장에 전달하는 데 동의해 주세요. 확인되면 매장에서 제품을 회수해 교환 또는 환불이 진행되도록 요청하겠습니다.",
+  "retrieved": [
+   "이물질(본사)",
+   "이물질(패밀리)"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "주문 경로를 알려달라고 요청한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 고객 안내와 고객에게 받을 것에 '주문 경로' 확인이 포함되어 있다."
+   },
+   {
+    "claim": "주문 매장을 알려달라고 요청한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 고객 안내와 고객에게 받을 것에 '주문 매장' 확인이 포함되어 있다."
+   },
+   {
+    "claim": "제품 사진을 보내달라고 요청한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 '제품 사진을 보내주세요' 및 '제품 사진 요청'이 명시되어 있다."
+   },
+   {
+    "claim": "환불과 재배달 중 원하는 방법을 알려달라고 요청한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 '환불과 재배달 중 원하시는 방법을 알려주시고'라고 직접 적혀 있다."
+   },
+   {
+    "claim": "고객 정보의 매장 전달에 동의해 달라고 요청한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 '고객님 정보를 매장에 전달하는 데 동의해 주세요'라고 명시되어 있다."
+   },
+   {
+    "claim": "확인되면 매장에서 제품을 회수해 교환 또는 환불이 진행되도록 요청하겠다고 말한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 '확인되면 매장에서 제품을 회수해 교환 또는 환불이 진행되도록 요청하겠습니다'라고 그대로 포함되어 있다."
+   }
+  ],
+  "claim_count": 6,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "주문 경로를 알려달라고 요청한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1,
+     2
+    ],
+    "reason": "문서에 \"주문 경로와 주문 매장을 알려주시고\"라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "주문 매장을 알려달라고 요청한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1,
+     2
+    ],
+    "reason": "문서에 \"주문 경로와 주문 매장을 알려주시고\"라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "제품 사진을 보내달라고 요청한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1,
+     2
+    ],
+    "reason": "문서에 \"제품 사진을 보내주세요\"라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "환불과 재배달 중 원하는 방법을 알려달라고 요청한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1,
+     2
+    ],
+    "reason": "문서에 \"환불과 재배달 중 원하시는 방법을 알려주시고\"라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "고객 정보의 매장 전달에 동의해 달라고 요청한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1,
+     2
+    ],
+    "reason": "문서에 \"고객님 정보를 매장에 전달하는 데 동의해 주세요\"라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "확인되면 매장에서 제품을 회수해 교환 또는 환불이 진행되도록 요청하겠다고 말한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1,
+     2
+    ],
+    "reason": "문서에 \"확인되면 매장에서 제품을 회수해 교환 또는 환불이 진행되도록 요청하겠습니다\"라고 직접 명시되어 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "이물질이 나와 정말 죄송합니다.",
+    "covered": true
+   },
+   {
+    "step": "주문 경로와 주문 매장을 알려주시고 제품 사진을 보내주세요.",
+    "covered": true
+   },
+   {
+    "step": "환불과 재배달 중 원하시는 방법을 알려주시고, 고객님 정보를 매장에 전달하는 데 동의해 주세요.",
+    "covered": true
+   },
+   {
+    "step": "확인되면 매장에서 제품을 회수해 교환 또는 환불이 진행되도록 요청하겠습니다.",
+    "covered": true
+   },
+   {
+    "step": "제조·유통 과정의 문제일 수 있어 사진과 함께 제조사 관리 부서에도 전달해 개선을 요청하겠습니다.",
+    "covered": false
+   }
+  ],
+  "coverage": 0.8
+ },
+ {
+  "id": "cs-020",
+  "query": "음식에서 이물질이 나왔어요",
+  "gold_categories": [
+   "이물질(패밀리)",
+   "이물질(본사)"
+  ],
+  "split": "dev",
+  "answer": "이물질이 나와 정말 죄송합니다. 주문 경로와 주문 매장을 알려주시고, 제품 사진을 보내주세요. 환불과 재배달 중 원하시는 방법을 알려주시고, 고객님 정보를 매장에 전달하는 데 동의해 주세요. 확인되면 매장에서 제품을 회수해 교환 또는 환불이 진행되도록 요청하겠습니다.",
+  "retrieved": [
+   "이물질(패밀리)",
+   "이물질(본사)"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "주문 경로와 주문 매장을 알려주어야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1,
+     2
+    ],
+    "reason": "문서에 '주문 경로와 주문 매장을 알려주시고'라고 명시되어 있다."
+   },
+   {
+    "claim": "제품 사진을 보내야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1,
+     2
+    ],
+    "reason": "문서의 '제품 사진을 보내주세요'와 '제품 사진 요청'이 직접 일치한다."
+   },
+   {
+    "claim": "환불과 재배달 중 원하는 방법을 알려주어야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1,
+     2
+    ],
+    "reason": "문서에 '환불과 재배달 중 원하시는 방법을 알려주시고'라고 되어 있다."
+   },
+   {
+    "claim": "고객 정보가 매장에 전달되는 데 동의해야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1,
+     2
+    ],
+    "reason": "문서에 '고객님 정보를 매장에 전달하는 데 동의해 주세요'라고 명시되어 있다."
+   },
+   {
+    "claim": "확인되면 매장에서 제품을 회수해 교환 또는 환불이 진행되도록 요청하겠다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1,
+     2
+    ],
+    "reason": "문서에 '확인되면 매장에서 제품을 회수해 교환 또는 환불이 진행되도록 요청하겠습니다'라고 직접 적혀 있다."
+   }
+  ],
+  "claim_count": 5,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "주문 경로와 주문 매장을 알려주어야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1,
+     2
+    ],
+    "reason": "정답 문서에 \"주문 경로와 주문 매장을 알려주시고\"라고 직접 명시되어 있다."
+   },
+   {
+    "claim": "제품 사진을 보내야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1,
+     2
+    ],
+    "reason": "정답 문서에 \"제품 사진을 보내주세요\"라고 직접 명시되어 있다."
+   },
+   {
+    "claim": "환불과 재배달 중 원하는 방법을 알려주어야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1,
+     2
+    ],
+    "reason": "정답 문서에 \"환불과 재배달 중 원하시는 방법을 알려주시고\"라고 직접 명시되어 있다."
+   },
+   {
+    "claim": "고객 정보가 매장에 전달되는 데 동의해야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1,
+     2
+    ],
+    "reason": "정답 문서에 \"고객님 정보를 매장에 전달하는 데 동의해 주세요\"라고 직접 명시되어 있다."
+   },
+   {
+    "claim": "확인되면 매장에서 제품을 회수해 교환 또는 환불이 진행되도록 요청하겠다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1,
+     2
+    ],
+    "reason": "정답 문서에 \"확인되면 매장에서 제품을 회수해 교환 또는 환불이 진행되도록 요청하겠습니다\"라고 직접 명시되어 있다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "주문 경로와 주문 매장을 알려달라는 내용",
+    "covered": true
+   },
+   {
+    "step": "제품 사진을 보내달라는 내용",
+    "covered": true
+   },
+   {
+    "step": "환불과 재배달 중 원하는 방법을 알려달라는 내용",
+    "covered": true
+   },
+   {
+    "step": "고객님 정보를 매장에 전달하는 데 동의해 달라는 내용",
+    "covered": true
+   },
+   {
+    "step": "매장에서 제품 회수 후 교환 또는 환불이 진행된다는 내용",
+    "covered": true
+   },
+   {
+    "step": "해당 매장의 위생 점검과 개선을 담당 부서에 요청한다는 내용",
+    "covered": false
+   }
+  ],
+  "coverage": 0.8333333333333334
+ },
+ {
+  "id": "cs-022",
+  "query": "기프티콘 번호를 넣으니 오류가 나요",
+  "gold_categories": [
+   "전산오류"
+  ],
+  "split": "dev",
+  "answer": "기프티콘 오류로 불편을 드려 죄송합니다. 주문 경로, 주문 매장, 기프티콘 번호를 알려주시면 기프티콘 취소를 처리해 드리겠습니다.",
+  "retrieved": [
+   "전산오류",
+   "전산오류",
+   "전산오류"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "주문 경로, 주문 매장, 기프티콘 번호를 알려주면 기프티콘 취소를 처리할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 '기프티콘 취소 오류' 항목에 주문 경로, 주문 매장, 기프티콘 번호를 알려주면 기프티콘 취소를 처리해 드린다고 직접 명시되어 있다."
+   }
+  ],
+  "claim_count": 1,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "주문 경로, 주문 매장, 기프티콘 번호를 알려주면 기프티콘 취소를 처리할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 (기프티콘 취소 오류) 항목에 동일하게 '주문 경로, 주문 매장, 기프티콘 번호를 알려주시면 기프티콘 취소를 처리해 드립니다'라고 명시되어 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "기프티콘 오류로 불편을 드려 죄송합니다.",
+    "covered": true
+   },
+   {
+    "step": "주문 경로, 주문 매장, 기프티콘 번호를 알려주시면 기프티콘 취소를 처리해 드리겠습니다.",
+    "covered": true
+   }
+  ],
+  "coverage": 1.0
+ },
+ {
+  "id": "cs-024",
+  "query": "바사칸 뼈 색이 검은데 먹어도 되나요?",
+  "gold_categories": [
+   "흑골화(핫윙,바사칸)"
+  ],
+  "split": "dev",
+  "answer": "바사칸의 뼈가 검은색인 경우, 이는 냉동육에서 발생할 수 있는 흑골화 현상으로, 뼈의 혈색소가 굳으면서 생기는 자연스러운 현상입니다. 따라서 안심하고 드셔도 괜찮습니다. \n\n하지만 여전히 걱정되신다면, 사진을 보내주시면 확인 후 제조사 관리 부서에 전달하여 개선을 요청하겠습니다.",
+  "retrieved": [
+   "흑골화(핫윙,바사칸)",
+   "치킨 무",
+   "방혈 피고임"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "바사칸의 뼈가 검은색인 경우, 이는 냉동육에서 발생할 수 있는 흑골화 현상이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 냉동육의 특징으로 뼈와 주변 살이 검게 보이는 흑골화 현상이 발생할 수 있다고 되어 있어 주장과 일치합니다."
+   },
+   {
+    "claim": "흑골화 현상은 뼈의 혈색소가 굳으면서 생기는 자연스러운 현상이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 '뼈의 혈색소가 결정화 되어' 발생하는 자연스러운 현상이라고 명시되어 있습니다."
+   },
+   {
+    "claim": "흑골화 현상이 있어도 안심하고 먹어도 괜찮다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 자연스러운 현상이라 안심하고 드셔도 괜찮다고 안내되어 있습니다."
+   },
+   {
+    "claim": "사진을 보내주면 확인 후 제조사 관리 부서에 전달하여 개선을 요청할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 사진을 보내주면 확인 후 제조사 관리 부서에 전달해 개선을 요청하겠다고 되어 있습니다."
+   }
+  ],
+  "claim_count": 4,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "바사칸의 뼈가 검은색인 경우, 이는 냉동육에서 발생할 수 있는 흑골화 현상이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 냉동육은 뼈의 혈색소가 굳으면서 뼈와 주변 살이 검게 보이는 흑골화 현상이 생길 수 있다고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "흑골화 현상은 뼈의 혈색소가 굳으면서 생기는 자연스러운 현상이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 '뼈의 혈색소가 굳으면서' 생기는 '자연스러운 현상'이라고 직접 적혀 있습니다."
+   },
+   {
+    "claim": "흑골화 현상이 있어도 안심하고 먹어도 괜찮다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 '자연스러운 현상이라 안심하고 드셔도 괜찮습니다'라고 명시되어 있습니다."
+   },
+   {
+    "claim": "사진을 보내주면 확인 후 제조사 관리 부서에 전달하여 개선을 요청할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 '사진을 보내주세요. 확인 후 제조사 관리 부서에 전달해 개선을 요청하겠습니다'라고 직접 안내되어 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "냉동육에서는 뼈의 혈색소가 굳으면서 뼈와 주변 살이 검게 보이는 흑골화 현상이 생길 수 있다",
+    "covered": true
+   },
+   {
+    "step": "흑골화는 자연스러운 현상이라 안심하고 먹어도 된다",
+    "covered": true
+   },
+   {
+    "step": "걱정되면 사진을 보내달라",
+    "covered": true
+   },
+   {
+    "step": "사진 확인 후 제조사 관리 부서에 전달해 개선을 요청하겠다",
+    "covered": true
+   },
+   {
+    "step": "고객에게 받을 것은 사진이다",
+    "covered": true
+   }
+  ],
+  "coverage": 1.0
+ },
+ {
+  "id": "cs-026",
+  "query": "닭이 평소보다 훨씬 작은 걸 받았어요",
+  "gold_categories": [
+   "닭 크기"
+  ],
+  "split": "dev",
+  "answer": "BBQ는 원칙적으로 본사에서 10호 닭(951g~1,050g)을 공급하며, 매장에서 임의로 바꿀 수 없습니다. 닭이 8조각(또는 12조각)으로 잘려 있고, 겨울과 여름에는 닭의 성장이 느려 다소 작게 느껴질 수 있습니다. \n\n하지만 크기가 지나치게 작다고 느끼시면 사진을 보내주시면 확인 후 제조사 관리 부서에 전달해 개선을 요청하겠습니다.",
+  "retrieved": [
+   "닭 크기",
+   "핑킹 현상",
+   "배탈"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "BBQ는 원칙적으로 본사에서 10호 닭(951g~1,050g)을 공급한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 '원칙적으로 BBQ는 10호 닭(951g~1050g)을 본사에서 공급합니다'라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "매장에서 닭의 규격을 임의로 바꿀 수 없다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 '개별 매장에서 임의로 바꿀 수는 없습니다'라고 명시되어 있습니다."
+   },
+   {
+    "claim": "닭은 8조각 또는 12조각으로 잘려 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 '공급받는 닭고기가 8조각(12조각)으로 절단되어 있고'라고 적혀 있습니다."
+   },
+   {
+    "claim": "겨울과 여름에는 닭의 성장이 느려 다소 작게 느껴질 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 '동절기와 하절기에는 닭의 성장이 느려져 다소 작은 닭이 많게 느껴질 수 있습니다'라고 직접 설명합니다."
+   },
+   {
+    "claim": "크기가 지나치게 작다고 느껴지면 사진을 보내주면 확인할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 고객 안내에 '그래도 크기가 지나치게 작다고 느끼시면 사진을 보내주세요. 확인 후...'라고 되어 있습니다."
+   },
+   {
+    "claim": "사진 확인 후 제조사 관리 부서에 전달해 개선을 요청할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 '확인 후 제조사 관리 부서에 전달하여 개선 요청' 및 '담당 제조사관리부서로 전달 안내'라고 명시되어 있습니다."
+   }
+  ],
+  "claim_count": 6,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "BBQ는 원칙적으로 본사에서 10호 닭(951g~1,050g)을 공급한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서 [1]에 동일한 내용이 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "매장에서 닭의 규격을 임의로 바꿀 수 없다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서 [1]에 '매장에서 임의로 바꿀 수 없습니다'라고 직접 나와 있습니다."
+   },
+   {
+    "claim": "닭은 8조각 또는 12조각으로 잘려 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서 [1]에 '닭이 8조각(또는 12조각)으로 잘려 있고'라고 명시되어 있습니다."
+   },
+   {
+    "claim": "겨울과 여름에는 닭의 성장이 느려 다소 작게 느껴질 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서 [1]에 겨울과 여름에는 닭의 성장이 느려 다소 작게 느껴질 수 있다고 직접 적혀 있습니다."
+   },
+   {
+    "claim": "크기가 지나치게 작다고 느껴지면 사진을 보내주면 확인할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서 [1]에 '크기가 지나치게 작다고 느끼시면 사진을 보내주세요. 확인 후'라고 되어 있어 직접 뒷받침됩니다."
+   },
+   {
+    "claim": "사진 확인 후 제조사 관리 부서에 전달해 개선을 요청할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서 [1]에 '확인 후 제조사 관리 부서에 전달해 개선을 요청하겠습니다'라고 명시되어 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "본사 10호 닭을 공급하며 매장에서 임의로 바꿀 수 없다는 안내",
+    "covered": true
+   },
+   {
+    "step": "닭이 8조각/12조각으로 잘려 있고 계절에 따라 작게 느껴질 수 있다는 안내",
+    "covered": true
+   },
+   {
+    "step": "크기가 지나치게 작다고 느끼면 사진을 보내달라는 요청",
+    "covered": true
+   },
+   {
+    "step": "사진 확인 후 제조사 관리 부서에 전달해 개선 요청하겠다는 안내",
+    "covered": true
+   },
+   {
+    "step": "고객에게 받을 것: 사진",
+    "covered": true
+   }
+  ],
+  "coverage": 1.0
+ },
+ {
+  "id": "cs-028",
+  "query": "고기에 핏기가 보여요",
+  "gold_categories": [
+   "핑킹 현상",
+   "방혈 피고임"
+  ],
+  "split": "dev",
+  "answer": "고기에 핏기가 보이는 경우, 사진을 보내주시면 확인 후 안내드리겠습니다. 닭고기 근육의 미오글로빈 색소가 뭉쳐 있거나, 조리 중 열과 산소에 닿아 산화되면 덜 익은 것처럼 붉게 보일 수 있습니다. 추운 겨울에는 피를 빼는 과정에서 고기가 굳어 이런 현상이 더 자주 나타납니다. 다만 물컹한 식감이나 비린 냄새가 나면 덜 익었을 수 있으니 섭취에 주의해 주세요.",
+  "retrieved": [
+   "핑킹 현상",
+   "방혈 피고임",
+   "흑골화(핫윙,바사칸)"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "닭고기 근육의 미오글로빈 색소가 뭉쳐 있거나 조리 중 열과 산소에 닿아 산화되면 고기가 덜 익은 것처럼 붉게 보일 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서 [1]에 동일한 내용이 직접 제시되어 있습니다."
+   },
+   {
+    "claim": "추운 겨울에는 피를 빼는 과정에서 고기가 굳어 이런 현상이 더 자주 나타날 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서 [1]에 추운 동절기에는 방혈 과정에서 육류가 경직되어 핑킹 현상이 자주 나타날 수 있다고 명시되어 있습니다."
+   },
+   {
+    "claim": "물컹한 식감이나 비린 냄새가 나면 덜 익었을 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서 [1]에 물컹한 식감이나 비릿한 냄새가 나면 덜 익었을 수 있다고 직접 적혀 있습니다."
+   }
+  ],
+  "claim_count": 3,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "닭고기 근육의 미오글로빈 색소가 뭉쳐 있거나 조리 중 열과 산소에 닿아 산화되면 고기가 덜 익은 것처럼 붉게 보일 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 동일한 내용이 직접 서술되어 있습니다."
+   },
+   {
+    "claim": "추운 겨울에는 피를 빼는 과정에서 고기가 굳어 이런 현상이 더 자주 나타날 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 추운 겨울에는 피를 빼는 과정에서 고기가 굳어 이런 현상이 더 자주 나타난다고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "물컹한 식감이나 비린 냄새가 나면 덜 익었을 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 물컹한 식감이나 비린 냄새가 나면 덜 익었을 수 있다고 직접 적혀 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "사진을 보내주시면 확인 후 안내드리겠습니다.",
+    "covered": true
+   },
+   {
+    "step": "닭고기 근육의 미오글로빈 색소가 뭉쳐 있거나, 조리 중 열과 산소에 닿아 산화되면 덜 익은 것처럼 붉게 보일 수 있습니다.",
+    "covered": true
+   },
+   {
+    "step": "추운 겨울에는 피를 빼는 과정에서 고기가 굳어 이런 현상이 더 자주 나타납니다.",
+    "covered": true
+   },
+   {
+    "step": "다만 물컹한 식감이나 비린 냄새가 나면 덜 익었을 수 있으니 섭취에 주의해 주세요.",
+    "covered": true
+   }
+  ],
+  "coverage": 1.0
+ },
+ {
+  "id": "cs-030",
+  "query": "영업 중인데 배달 주문을 거절당했어요",
+  "gold_categories": [
+   "주문 거부"
+  ],
+  "split": "dev",
+  "answer": "주문이 거부되어 죄송합니다. 주문 경로와 매장 정보를 알려주시면 매장에 거부 사유를 확인해 안내드리겠습니다. 고객님께서 제공해 주실 정보는 주문 경로와 매장 정보입니다.",
+  "retrieved": [
+   "주문 거부"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "주문 경로와 매장 정보를 알려주면 매장에 거부 사유를 확인해 안내할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 고객 안내와 대응 방법에 '주문 경로와 매장 정보를 알려주시면 매장에 거부 사유를 확인해 안내드리고'라고 직접 명시되어 있다."
+   },
+   {
+    "claim": "고객이 제공해야 할 정보는 주문 경로와 매장 정보이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 '고객에게 받을 것: 주문 경로, 매장 정보'와 일치한다."
+   }
+  ],
+  "claim_count": 2,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "주문 경로와 매장 정보를 알려주면 매장에 거부 사유를 확인해 안내할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 '주문 경로와 매장 정보를 알려주시면 매장에 거부 사유를 확인해 안내드리고'라고 직접 명시되어 있다."
+   },
+   {
+    "claim": "고객이 제공해야 할 정보는 주문 경로와 매장 정보이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 '고객에게 받을 것: 주문 경로, 매장 정보'와 일치한다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "주문이 거부되어 죄송하다는 사과를 전한다.",
+    "covered": true
+   },
+   {
+    "step": "주문 경로와 매장 정보를 알려주면 거부 사유를 확인해 안내하겠다고 전한다.",
+    "covered": true
+   },
+   {
+    "step": "주문 취소 시 미리 안내하도록 담당 부서에 요청하겠다고 전한다.",
+    "covered": false
+   },
+   {
+    "step": "다른 매장을 이용하는 방법(전화 주문, 앱/홈페이지 주문)을 안내한다.",
+    "covered": false
+   },
+   {
+    "step": "고객에게 받을 정보는 주문 경로와 매장 정보라고 전한다.",
+    "covered": true
+   }
+  ],
+  "coverage": 0.6
+ },
+ {
+  "id": "cs-032",
+  "query": "기프티콘 쓰는데 추가금을 요구해요",
+  "gold_categories": [
+   "추가 금액 부여"
+  ],
+  "split": "dev",
+  "answer": "추가 금액이 붙어 불편을 드려 죄송합니다. 주문 경로, 매장 정보, 주문 상품, 결제 방식, 추가로 낸 금액을 알려주시면, 환불받으실 계좌번호와 고객 정보를 매장에 전달하는 데 동의해 주시면 매장에 추가금 환불을 요청하겠습니다. 매장이 추가금을 받지 않도록 담당 부서에도 전달하겠습니다. \n\n고객에게 받을 정보:\n- 주문 경로\n- 매장 정보\n- 주문 상품\n- 결제 방식\n- 추가금 금액\n- 환불받을 계좌번호\n- 매장 정보 전달 동의",
+  "retrieved": [
+   "추가 금액 부여"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "주문 경로를 알려주면 된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 고객 안내와 고객에게 받을 것에 주문 경로 확인이 포함되어 있다."
+   },
+   {
+    "claim": "매장 정보를 알려주면 된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 고객 안내와 고객에게 받을 것에 매장 정보 확인이 포함되어 있다."
+   },
+   {
+    "claim": "주문 상품을 알려주면 된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 고객 안내와 고객에게 받을 것에 주문 상품 확인이 포함되어 있다."
+   },
+   {
+    "claim": "결제 방식을 알려주면 된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 고객 안내와 고객에게 받을 것에 결제 방식 확인이 포함되어 있다."
+   },
+   {
+    "claim": "추가로 낸 금액을 알려주면 된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 고객 안내와 고객에게 받을 것에 추가금 금액 확인이 포함되어 있다."
+   },
+   {
+    "claim": "환불받을 계좌번호를 알려주면 된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 고객 안내와 고객에게 받을 것에 환불받을 계좌번호 확인이 포함되어 있다."
+   },
+   {
+    "claim": "고객 정보를 매장에 전달하는 데 동의가 필요하다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 고객 정보를 매장에 전달하는 데 동의 확인이 필요하다고 명시되어 있다."
+   },
+   {
+    "claim": "위 정보와 동의가 있으면 매장에 추가금 환불을 요청하겠다고 했다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 주문 경로, 매장 정보, 주문 상품, 결제 방식, 추가금 금액, 계좌번호, 동의 확인 후 매장에 추가금 환불을 요청한다고 되어 있다."
+   },
+   {
+    "claim": "매장이 추가금을 받지 않도록 담당 부서에도 전달하겠다고 했다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 추가금을 받지 않도록 매장 관리 운영부서로 전달하여 계도 진행 안내라고 되어 있다."
+   }
+  ],
+  "claim_count": 9,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "주문 경로를 알려주면 된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 고객에게 받을 것로 '주문 경로'가 명시되어 있다."
+   },
+   {
+    "claim": "매장 정보를 알려주면 된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 고객에게 받을 것로 '매장 정보'가 명시되어 있다."
+   },
+   {
+    "claim": "주문 상품을 알려주면 된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 고객에게 받을 것로 '주문 상품'이 명시되어 있다."
+   },
+   {
+    "claim": "결제 방식을 알려주면 된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 고객에게 받을 것로 '결제 방식'이 명시되어 있다."
+   },
+   {
+    "claim": "추가로 낸 금액을 알려주면 된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 고객에게 받을 것로 '추가금 금액'이 명시되어 있다."
+   },
+   {
+    "claim": "환불받을 계좌번호를 알려주면 된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 고객에게 받을 것로 '환불받을 계좌번호'가 명시되어 있다."
+   },
+   {
+    "claim": "고객 정보를 매장에 전달하는 데 동의가 필요하다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 '고객 정보를 매장에 전달하는 데 동의해 주시면'이라고 되어 있어 동의가 필요함을 직접 뒷받침한다."
+   },
+   {
+    "claim": "위 정보와 동의가 있으면 매장에 추가금 환불을 요청하겠다고 했다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 해당 정보와 동의가 있으면 '매장에 추가금 환불을 요청하겠습니다'라고 명시되어 있다."
+   },
+   {
+    "claim": "매장이 추가금을 받지 않도록 담당 부서에도 전달하겠다고 했다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 '매장이 추가금을 받지 않도록 담당 부서에도 전달하겠습니다'라고 명시되어 있다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "기프티콘 사용 시 추가금을 요구받은 문제에 대해 사과한다.",
+    "covered": true
+   },
+   {
+    "step": "주문 경로, 매장 정보, 주문 상품, 결제 방식, 추가금 금액을 알려달라고 요청한다.",
+    "covered": true
+   },
+   {
+    "step": "환불받을 계좌번호와 고객 정보를 매장에 전달하는 데 동의해 달라고 요청한다.",
+    "covered": true
+   },
+   {
+    "step": "매장에 추가금 환불을 요청하고, 추가금 징수 방지를 담당 부서에 전달한다.",
+    "covered": true
+   }
+  ],
+  "coverage": 1.0
+ },
+ {
+  "id": "cs-033",
+  "query": "치킨무가 안 왔어요",
+  "gold_categories": [
+   "필수 품목 미 제공",
+   "치킨 무"
+  ],
+  "split": "dev",
+  "answer": "치킨무가 누락된 점 사과드립니다. 주문 경로, 주문 매장, 주문 상품을 알려주시면 환불과 재배달 중 원하시는 방법을 안내해 드리겠습니다. 또한, 고객님 정보를 매장에 전달하는 데 동의해 주시면 확인 후 요청하겠습니다.",
+  "retrieved": [
+   "필수 품목 미 제공",
+   "치킨 무"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "치킨무가 누락되었다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 1에 필수 품목 미 제공 사례로 치킨 무가 명시되어 있습니다."
+   },
+   {
+    "claim": "주문 경로, 주문 매장, 주문 상품을 알려주면 환불과 재배달 중 원하는 방법을 안내할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 1의 고객 안내에 주문 경로, 주문 매장, 주문 상품을 알려달라고 하고, 환불과 재배달 중 원하는 방법을 알려달라고 되어 있습니다."
+   },
+   {
+    "claim": "고객 정보 전달에 동의하면 매장에 정보를 전달해 확인 후 요청하겠다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 1의 고객 안내에 고객님 정보를 매장에 전달하는 데 동의해 달라고 하고, 확인되면 매장에 요청하겠다고 되어 있습니다."
+   }
+  ],
+  "claim_count": 3,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "치킨무가 누락되었다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 '치킨무, 소스, 음료 등이 빠져 죄송합니다'라고 되어 있어 치킨무 누락이 직접 뒷받침됩니다."
+   },
+   {
+    "claim": "주문 경로, 주문 매장, 주문 상품을 알려주면 환불과 재배달 중 원하는 방법을 안내할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 주문 경로, 주문 매장, 주문 상품을 알려 달라고 하고, 환불과 재배달 중 원하는 방법을 알려 달라고 되어 있어 해당 내용이 직접 뒷받침됩니다."
+   },
+   {
+    "claim": "고객 정보 전달에 동의하면 매장에 정보를 전달해 확인 후 요청하겠다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 '고객님 정보를 매장에 전달하는 데 동의해 주세요. 확인되면 매장에 요청하겠습니다.'라고 명시되어 있어 일치합니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "치킨무 누락 사과",
+    "covered": true
+   },
+   {
+    "step": "주문 경로, 주문 매장, 주문 상품 확인 요청",
+    "covered": true
+   },
+   {
+    "step": "환불 또는 재배달 중 희망 방법 요청",
+    "covered": true
+   },
+   {
+    "step": "고객 정보의 매장 전달 동의 요청",
+    "covered": true
+   },
+   {
+    "step": "담당 부서에 매뉴얼 준수 전달",
+    "covered": false
+   }
+  ],
+  "coverage": 0.8
+ },
+ {
+  "id": "cs-036",
+  "query": "현금 결제했는데 영수증 발급을 거부당했어요",
+  "gold_categories": [
+   "현금영수증 거부"
+  ],
+  "split": "dev",
+  "answer": "현금영수증 발급을 거부당하셔서 죄송합니다. 현금영수증은 매장에서만 발급할 수 있습니다. \n\n주문 경로와 매장, 발급받으실 번호를 알려주시고 매장 전달에 동의해 주시면 저희가 매장에 연락해 발급을 요청하겠습니다. 쿠폰이나 상품권 사용 여부와 상관없이 현금영수증 발급은 법에 따라 진행해야 하는 사항입니다. 매장이 계속 거부하면 담당 부서를 통해 발급되도록 요청하겠습니다. \n\n고객님께서 제공해 주셔야 할 정보는 다음과 같습니다:\n- 주문 경로\n- 매장 정보\n- 현금영수증 발급 번호\n- 매장 정보 전달 동의",
+  "retrieved": [
+   "현금영수증 거부"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "현금영수증은 매장에서만 발급할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 고객 안내에 동일하게 명시되어 있습니다."
+   },
+   {
+    "claim": "주문 경로, 매장, 발급받을 번호를 알려주고 매장 전달에 동의하면, 화자는 매장에 연락해 발급을 요청하겠다고 말한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 고객 안내에 그대로 포함된 내용입니다."
+   },
+   {
+    "claim": "쿠폰이나 상품권 사용 여부와 상관없이 현금영수증 발급은 법에 따라 진행해야 하는 사항이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 고객 안내와 대응 방법에 동일한 취지로 적혀 있습니다."
+   },
+   {
+    "claim": "매장이 계속 거부하면 담당 부서를 통해 발급되도록 요청하겠다고 말한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 고객 안내와 조치 사항에 명시되어 있습니다."
+   },
+   {
+    "claim": "고객이 제공해야 할 정보는 주문 경로이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 '고객에게 받을 것'에 포함됩니다."
+   },
+   {
+    "claim": "고객이 제공해야 할 정보는 매장 정보이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 '고객에게 받을 것'에 포함됩니다."
+   },
+   {
+    "claim": "고객이 제공해야 할 정보는 현금영수증 발급 번호이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 '고객에게 받을 것'에 포함됩니다."
+   },
+   {
+    "claim": "고객이 제공해야 할 정보는 매장 정보 전달 동의이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 '고객에게 받을 것'에 포함됩니다."
+   }
+  ],
+  "claim_count": 8,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "현금영수증은 매장에서만 발급할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 동일한 내용으로 명시되어 있습니다."
+   },
+   {
+    "claim": "주문 경로, 매장, 발급받을 번호를 알려주고 매장 전달에 동의하면, 화자는 매장에 연락해 발급을 요청하겠다고 말한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 주문 경로, 매장, 번호와 전달 동의 후 매장에 연락해 발급 요청하겠다는 절차가 그대로 있습니다."
+   },
+   {
+    "claim": "쿠폰이나 상품권 사용 여부와 상관없이 현금영수증 발급은 법에 따라 진행해야 하는 사항이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 동일한 취지의 문장이 직접 포함되어 있습니다."
+   },
+   {
+    "claim": "매장이 계속 거부하면 담당 부서를 통해 발급되도록 요청하겠다고 말한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 매장이 계속 거부하면 담당 부서를 통해 발급되도록 요청하겠다고 명시되어 있습니다."
+   },
+   {
+    "claim": "고객이 제공해야 할 정보는 주문 경로이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 '고객에게 받을 것' 항목에 주문 경로가 포함되어 있습니다."
+   },
+   {
+    "claim": "고객이 제공해야 할 정보는 매장 정보이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 '고객에게 받을 것' 항목에 매장 정보가 포함되어 있습니다."
+   },
+   {
+    "claim": "고객이 제공해야 할 정보는 현금영수증 발급 번호이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 '고객에게 받을 것' 항목에 현금영수증 발급 번호가 포함되어 있습니다."
+   },
+   {
+    "claim": "고객이 제공해야 할 정보는 매장 정보 전달 동의이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 '고객에게 받을 것' 항목에 매장 정보 전달 동의가 포함되어 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "현금영수증 발급을 거부당해 죄송하며, 현금영수증은 매장에서만 발급 가능하다는 안내",
+    "covered": true
+   },
+   {
+    "step": "주문 경로와 매장 정보, 현금영수증 발급 번호를 알려주고 매장 전달에 동의하면 매장에 연락해 발급을 요청한다는 안내",
+    "covered": true
+   },
+   {
+    "step": "쿠폰이나 상품권 사용 여부와 상관없이 법에 따라 현금영수증 발급이 진행되어야 한다는 안내",
+    "covered": true
+   },
+   {
+    "step": "매장이 계속 거부하면 담당 부서를 통해 발급되도록 요청하겠다는 안내",
+    "covered": true
+   },
+   {
+    "step": "고객에게 받을 정보: 주문 경로, 매장 정보, 현금영수증 발급 번호, 매장 정보 전달 동의",
+    "covered": true
+   }
+  ],
+  "coverage": 1.0
+ },
+ {
+  "id": "cs-037",
+  "query": "치킨이 덜 익은 것 같아요",
+  "gold_categories": [
+   "방혈 피고임",
+   "핑킹 현상"
+  ],
+  "split": "dev",
+  "answer": "치킨이 덜 익은 것 같다면, 사진을 보내주시면 확인 후 안내드리겠습니다. 닭고기 근육의 미오글로빈 색소가 뭉쳐 있거나 조리 중 열과 산소에 닿아 산화되면 덜 익은 것처럼 붉게 보일 수 있습니다. 다만 물컹한 식감이나 비린 냄새가 나면 덜 익었을 수 있으니 섭취에 주의해 주세요.",
+  "retrieved": [
+   "핑킹 현상",
+   "치킨 무",
+   "치킨 무"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "닭고기 근육의 미오글로빈 색소가 뭉쳐 있거나 조리 중 열과 산소에 닿아 산화되면 덜 익은 것처럼 붉게 보일 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     2
+    ],
+    "reason": "문서 [2]에 동일한 설명이 직접 포함되어 있습니다."
+   },
+   {
+    "claim": "물컹한 식감이나 비린 냄새가 나면 덜 익었을 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     2
+    ],
+    "reason": "문서 [2]에 '물컹한 식감이나 비릿한 냄새가 난다면 덜 익은 닭고기 일수 있느니'라고 직접 적혀 있습니다."
+   }
+  ],
+  "claim_count": 2,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "닭고기 근육의 미오글로빈 색소가 뭉쳐 있거나 조리 중 열과 산소에 닿아 산화되면 덜 익은 것처럼 붉게 보일 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서 [1]에 동일한 내용이 직접 제시되어 있습니다."
+   },
+   {
+    "claim": "물컹한 식감이나 비린 냄새가 나면 덜 익었을 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서 [1]에 '물컹한 식감이나 비린 냄새가 나면 덜 익었을 수 있다'고 직접 명시되어 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "사진을 보내주시면 확인하겠습니다 / 사진을 보내주시면 확인 후 안내드리겠습니다",
+    "covered": true
+   },
+   {
+    "step": "높은 온도로 조리하면 뼈와 연골 주변의 혈색소와 남은 피 때문에 붉게 보일 수 있음",
+    "covered": false
+   },
+   {
+    "step": "추운 겨울에 더 자주 생기며 냉동육뿐 아니라 냉장육에서도 생길 수 있음",
+    "covered": false
+   },
+   {
+    "step": "납품처에 전달해 개선되도록 요청하겠습니다",
+    "covered": false
+   },
+   {
+    "step": "물컹한 식감이나 비린 냄새가 나면 덜 익었을 수 있으니 섭취에 주의해 주세요",
+    "covered": true
+   }
+  ],
+  "coverage": 0.4
+ },
+ {
+  "id": "cs-039",
+  "query": "순살치킨은 다리살이랑 가슴살 비율이 어떻게 돼요?",
+  "gold_categories": [
+   "순살 비율"
+  ],
+  "split": "dev",
+  "answer": "순살치킨은 가슴살과 정육살이 약 8:2 비율로 구성됩니다. 추가로 궁금한 점이 있으시면 말씀해 주세요.",
+  "retrieved": [
+   "순살 비율",
+   "치킨 조각 수",
+   "치킨 조각 수"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "순살치킨은 가슴살과 정육살이 약 8:2 비율로 구성된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 '순살은 가슴살과 정육살이 약 8:2 비율로 구성됩니다'라고 직접 명시되어 있습니다."
+   }
+  ],
+  "claim_count": 1,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "순살치킨은 가슴살과 정육살이 약 8:2 비율로 구성된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 ‘순살은 가슴살과 정육살이 약 8:2 비율로 구성됩니다.’라고 직접 명시되어 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "순살은 가슴살과 정육살이 약 8:2 비율로 구성됩니다.",
+    "covered": true
+   }
+  ],
+  "coverage": 1.0
+ },
+ {
+  "id": "cs-042",
+  "query": "조각 수가 너무 적게 온 것 같아요",
+  "gold_categories": [
+   "치킨 조각 수"
+  ],
+  "split": "dev",
+  "answer": "조각 수가 적게 온 경우, 콤보는 다리 5조각, 윙 5조각, 봉 5조각이 제공됩니다. 또한, 황금올리브치킨은 8조각과 16조각 매뉴얼이 있어 매장마다 조각 수가 다를 수 있습니다. 메뉴에 따라 조각 수가 아니라 중량 기준으로 제공되는 경우도 많습니다. \n\n더 궁금한 점이 있으시면 말씀해 주세요.",
+  "retrieved": [
+   "치킨 조각 수",
+   "치킨 조각 수",
+   "순살 비율"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "조각 수가 적게 온 경우 콤보는 다리 5조각, 윙 5조각, 봉 5조각이 제공된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 콤보는 다리 5조각, 윙 5조각, 봉 5조각으로 제공된다고 명시되어 있습니다."
+   },
+   {
+    "claim": "황금올리브치킨은 8조각과 16조각 매뉴얼이 있어 매장마다 조각 수가 다를 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 황금올리브치킨은 8조각 매뉴얼과 16조각 매뉴얼 두 가지가 있고 매장마다 사용하는 매뉴얼에 따라 조각 수가 상이할 수 있다고 되어 있습니다."
+   },
+   {
+    "claim": "메뉴에 따라 조각 수가 아니라 중량 기준으로 제공되는 경우도 많다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서의 조치 사항과 고객 안내에 메뉴에 따라 조각수 대신 중량으로 나가는 경우가 많다고 명시되어 있습니다."
+   }
+  ],
+  "claim_count": 3,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "조각 수가 적게 온 경우 콤보는 다리 5조각, 윙 5조각, 봉 5조각이 제공된다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 콤보는 다리 5조각, 윙 5조각, 봉 5조각이 제공된다고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "황금올리브치킨은 8조각과 16조각 매뉴얼이 있어 매장마다 조각 수가 다를 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 황금올리브치킨은 8조각 매뉴얼과 16조각 매뉴얼 두 가지가 있어 매장마다 조각 수가 다를 수 있다고 명시되어 있습니다."
+   },
+   {
+    "claim": "메뉴에 따라 조각 수가 아니라 중량 기준으로 제공되는 경우도 많다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 메뉴에 따라 조각 수가 아니라 중량 기준으로 나가는 경우도 많다고 직접 적혀 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "콤보는 다리 5조각, 윙 5조각, 봉 5조각이 제공된다.",
+    "covered": true
+   },
+   {
+    "step": "황금올리브치킨은 8조각/16조각 매뉴얼이 있어 매장마다 조각 수가 다를 수 있다.",
+    "covered": true
+   },
+   {
+    "step": "메뉴에 따라 조각 수가 아니라 중량 기준으로 제공되는 경우가 많다.",
+    "covered": true
+   }
+  ],
+  "coverage": 1.0
+ },
+ {
+  "id": "cs-044",
+  "query": "핫크리스피가 검게 탄 것 같아요",
+  "gold_categories": [
+   "핫 크리스피"
+  ],
+  "split": "dev",
+  "answer": "핫크리스피가 검게 탄 것 같다면, 사진을 보내주시면 확인 후 안내드리겠습니다. 핫크리스피는 매운맛을 내기 위해 붉은색 염장제를 사용하여 색이 어둡거나 붉고 수분이 적은 것이 특징입니다. 그러나 지나치게 탄 것 같다면 사진을 보내주시면 매장 담당 부서에 전달해 확인 요청을 하겠습니다.",
+  "retrieved": [
+   "핑킹 현상",
+   "흑골화(핫윙,바사칸)",
+   "핫 크리스피"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "핫크리스피는 매운맛을 내기 위해 붉은색 염장제를 사용한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 동일한 내용으로 명시되어 있습니다."
+   },
+   {
+    "claim": "핫크리스피는 색이 어둡거나 붉고 수분이 적은 것이 특징이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 \"색상이 어둡거나 붉은 빛을 띄는것이 특징이며 타 상품보다 수분기 또한 적습니다\"라고 직접 적혀 있습니다."
+   },
+   {
+    "claim": "핫크리스피가 지나치게 탄 것 같으면 매장 담당 부서에 전달해 확인 요청을 할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서에 \"사진과 함께 매장 담당 부서에 전달해 확인을 요청하겠습니다\"라고 되어 있어 직접 뒷받침됩니다."
+   }
+  ],
+  "claim_count": 3,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "핫크리스피는 매운맛을 내기 위해 붉은색 염장제를 사용한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     3
+    ],
+    "reason": "문서 [3]에 동일하게 명시되어 있습니다."
+   },
+   {
+    "claim": "핫크리스피는 색이 어둡거나 붉고 수분이 적은 것이 특징이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     3
+    ],
+    "reason": "문서 [3]에 ‘다른 제품보다 색이 어둡거나 붉고 수분이 적은 것이 특징’이라고 직접 적혀 있습니다."
+   },
+   {
+    "claim": "핫크리스피가 지나치게 탄 것 같으면 매장 담당 부서에 전달해 확인 요청을 할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     3
+    ],
+    "reason": "문서 [3]에 ‘지나치게 탄 것 같다면 사진을 보내주세요. 저희가 사진과 함께 매장 담당 부서에 전달해 확인을 요청하겠습니다’라고 되어 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "핫 크리스피는 매운맛을 위해 붉은색 염장제를 사용해 색이 어둡거나 붉고 수분이 적은 것이 특징이다",
+    "covered": true
+   },
+   {
+    "step": "지나치게 탄 것 같다면 사진을 보내달라고 안내한다",
+    "covered": true
+   },
+   {
+    "step": "사진을 받으면 매장 담당 부서에 전달해 확인을 요청한다",
+    "covered": true
+   }
+  ],
+  "coverage": 1.0
+ },
+ {
+  "id": "cs-045",
+  "query": "치킨무에서 이상한 게 나왔어요",
+  "gold_categories": [
+   "치킨 무",
+   "필수 품목 미 제공"
+  ],
+  "split": "dev",
+  "answer": "치킨무에서 이상한 것이 발견되셨다면, 검은 부분은 붕소 결핍 등으로 인해 무 조직이 검게 변하는 현상일 수 있습니다. 만약 이물질이라면 사진을 보내주시면 확인 후 식품안전팀과 제조사에 전달하여 개선을 요청하겠습니다. 사진을 보내주실 수 있으신가요?",
+  "retrieved": [
+   "치킨 무",
+   "치킨 무",
+   "치킨 무"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "치킨무에서 발견된 검은 부분은 붕소 결핍 등으로 인해 무 조직이 검게 변하는 현상일 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서 [1]에 '검은 부분은 붕소 결핍 등으로 무 조직이 검게 변하는 현상일 수 있습니다'라고 직접 기재되어 있습니다."
+   },
+   {
+    "claim": "검은 부분이 이물질이라면, 사진을 받으면 확인 후 식품안전팀과 제조사에 전달하여 개선을 요청할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서 [1]에 사진을 받은 뒤 확인하여 식품안전팀과 제조사에 전달해 개선을 요청한다고 명시되어 있습니다."
+   }
+  ],
+  "claim_count": 2,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "치킨무에서 발견된 검은 부분은 붕소 결핍 등으로 인해 무 조직이 검게 변하는 현상일 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 ‘검은 부분은 붕소 결핍 등으로 무 조직이 검게 변하는 현상일 수 있습니다’라고 직접 명시되어 있습니다."
+   },
+   {
+    "claim": "검은 부분이 이물질이라면, 사진을 받으면 확인 후 식품안전팀과 제조사에 전달하여 개선을 요청할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 검은 부분이 이물질인 경우 사진을 보내달라고 하고, 확인 후 식품안전팀과 제조사에 전달해 개선을 요청하겠다고 되어 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "검은 부분은 붕소 결핍 등으로 무 조직이 검게 변하는 현상일 수 있다",
+    "covered": true
+   },
+   {
+    "step": "이물질이라면 사진을 보내주면 확인 후 식품안전팀과 제조사에 전달해 개선을 요청하겠다",
+    "covered": true
+   },
+   {
+    "step": "고객에게 사진을 보내달라고 요청한다(위 사례가 아닌 이물질인 경우)",
+    "covered": true
+   }
+  ],
+  "coverage": 1.0
+ },
+ {
+  "id": "cs-047",
+  "query": "매장에서 먹으면 가격이 달라요?",
+  "gold_categories": [
+   "내점 식사 비용"
+  ],
+  "split": "dev",
+  "answer": "매장에서 드시는 가격은 포장·배달 가격과 1,000~2,000원 정도 차이가 날 수 있습니다. 특화 매장이나 제주도에서는 할증이 있을 수 있으며, 쿠폰을 사용하실 경우 추가 금액이 발생할 수 있습니다.",
+  "retrieved": [
+   "내점 식사 비용",
+   "내점 식사 비용"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "매장에서 드시는 가격은 포장·배달 가격과 1,000~2,000원 정도 차이가 날 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 고객 안내에 동일한 내용이 직접 제시되어 있습니다."
+   },
+   {
+    "claim": "특화 매장이나 제주도에서는 할증이 있을 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 '특화 매장이나 제주도는 할증이 있을 수 있고'라고 명시되어 있습니다."
+   },
+   {
+    "claim": "쿠폰을 사용하면 추가 금액이 발생할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 '쿠폰을 쓰시면 추가 금액이 생길 수 있습니다'라고 직접 적혀 있습니다."
+   }
+  ],
+  "claim_count": 3,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "매장에서 드시는 가격은 포장·배달 가격과 1,000~2,000원 정도 차이가 날 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 매장에서 드시는 가격은 포장·배달 가격과 1,000~2,000원 정도 차이가 날 수 있다고 직접 적혀 있습니다."
+   },
+   {
+    "claim": "특화 매장이나 제주도에서는 할증이 있을 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 특화 매장이나 제주도는 할증이 있을 수 있다고 직접 적혀 있습니다."
+   },
+   {
+    "claim": "쿠폰을 사용하면 추가 금액이 발생할 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 쿠폰을 쓰시면 추가 금액이 생길 수 있다고 직접 적혀 있습니다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "매장에서 드시는 가격은 포장·배달 가격과 1,000~2,000원 정도 차이가 날 수 있습니다.",
+    "covered": true
+   },
+   {
+    "step": "특화 매장이나 제주도에서는 할증이 있을 수 있습니다.",
+    "covered": true
+   },
+   {
+    "step": "쿠폰을 사용하실 경우 추가 금액이 발생할 수 있습니다.",
+    "covered": true
+   },
+   {
+    "step": "추가 금액이 지나치게 많았다면 주문하신 상품과 결제 내용을 알려주세요. 확인 후 과도한 경우 환불 요청을 진행하겠습니다.",
+    "covered": false
+   }
+  ],
+  "coverage": 0.75
+ },
+ {
+  "id": "cs-049",
+  "query": "치킨 먹고 배탈이 났어요",
+  "gold_categories": [
+   "배탈"
+  ],
+  "split": "dev",
+  "answer": "불편을 드려 정말 죄송합니다. 지금은 괜찮으신지요? 병원 치료를 받으셨다면 치킨이 원인으로 적힌 진료 소견서 또는 진단서와 진료 내역서를 보내주세요. 매장에 내용을 전달해 처리 방법을 확인한 뒤 안내드리겠습니다. 확인에 시간이 걸릴 수 있는 점 양해 부탁드립니다.\n\n고객에게 받을 것: 현재 상태, 치료 여부, (치료받은 경우) 진료 소견서 또는 진단서, 진료 내역서.",
+  "retrieved": [
+   "배탈",
+   "치킨 무",
+   "치킨 무"
+  ],
+  "leaked_terms": [],
+  "retrieval_hit": true,
+  "verdicts": [
+   {
+    "claim": "병원 치료를 받았다면 치킨이 원인으로 적힌 진료 소견서 또는 진단서를 보내야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 고객 안내와 고객에게 받을 것에 '병원 치료를 받으셨다면 치킨이 원인으로 적힌 진료 소견서 또는 진단서와 진료 내역서를 보내주세요'라고 명시되어 있다."
+   },
+   {
+    "claim": "병원 치료를 받았다면 진료 내역서를 보내야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 치료받은 경우 '진료 내역서'를 보내달라고 명시되어 있다."
+   },
+   {
+    "claim": "매장에 내용을 전달한 뒤 처리 방법을 확인하고 안내한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 고객 안내에 '매장에 내용을 전달해 처리 방법을 확인한 뒤 안내드리겠습니다'라고 되어 있다."
+   },
+   {
+    "claim": "확인에는 시간이 걸릴 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서에 '확인에 시간이 걸릴 수 있는 점 양해 부탁드립니다'라고 명시되어 있다."
+   },
+   {
+    "claim": "고객에게 요청하는 항목은 현재 상태이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 '고객에게 받을 것'에 현재 상태가 포함되어 있다."
+   },
+   {
+    "claim": "고객에게 요청하는 항목은 치료 여부이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 '고객에게 받을 것'에 치료 여부가 포함되어 있다."
+   },
+   {
+    "claim": "치료받은 경우 고객에게 요청하는 항목은 진료 소견서 또는 진단서이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 '고객에게 받을 것'과 고객 안내에 치료받은 경우 진료 소견서 또는 진단서를 요청한다고 되어 있다."
+   },
+   {
+    "claim": "치료받은 경우 고객에게 요청하는 항목은 진료 내역서이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "정답 문서의 '고객에게 받을 것'과 고객 안내에 치료받은 경우 진료 내역서를 요청한다고 되어 있다."
+   }
+  ],
+  "claim_count": 8,
+  "unsupported_count": 0,
+  "fully_grounded": true,
+  "faithfulness_verdicts": [
+   {
+    "claim": "병원 치료를 받았다면 치킨이 원인으로 적힌 진료 소견서 또는 진단서를 보내야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 '병원 치료를 받으셨다면 치킨이 원인으로 적힌 진료 소견서 또는 진단서를 보내주세요'라고 직접 명시되어 있다."
+   },
+   {
+    "claim": "병원 치료를 받았다면 진료 내역서를 보내야 한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 '병원 치료를 받으셨다면 ... 진료 내역서를 보내주세요'라고 직접 명시되어 있다."
+   },
+   {
+    "claim": "매장에 내용을 전달한 뒤 처리 방법을 확인하고 안내한다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]의 '매장에 내용을 전달해 처리 방법을 확인한 뒤 안내드리겠습니다'와 일치한다."
+   },
+   {
+    "claim": "확인에는 시간이 걸릴 수 있다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]에 '확인에 시간이 걸릴 수 있는 점 양해 부탁드립니다'라고 명시되어 있다."
+   },
+   {
+    "claim": "고객에게 요청하는 항목은 현재 상태이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]의 '지금은 괜찮으신지요?'와 하단의 '고객에게 받을 것: 현재 상태'가 이를 뒷받침한다."
+   },
+   {
+    "claim": "고객에게 요청하는 항목은 치료 여부이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]의 하단에 '고객에게 받을 것: ... 치료 여부 ...'라고 명시되어 있다."
+   },
+   {
+    "claim": "치료받은 경우 고객에게 요청하는 항목은 진료 소견서 또는 진단서이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]의 '병원 치료를 받으셨다면 치킨이 원인으로 적힌 진료 소견서 또는 진단서...' 및 '고객에게 받을 것: ... (치료받은 경우) 진료 소견서 또는 진단서 ...'가 일치한다."
+   },
+   {
+    "claim": "치료받은 경우 고객에게 요청하는 항목은 진료 내역서이다.",
+    "verdict": "supported",
+    "evidence_indexes": [
+     1
+    ],
+    "reason": "문서 [1]의 '병원 치료를 받으셨다면 ... 진료 내역서를 보내주세요' 및 '고객에게 받을 것: ... (치료받은 경우) ... 진료 내역서'가 일치한다."
+   }
+  ],
+  "faithful": true,
+  "coverage_steps": [
+   {
+    "step": "현재 상태를 확인한다",
+    "covered": true
+   },
+   {
+    "step": "병원 치료를 받았는지 확인한다",
+    "covered": true
+   },
+   {
+    "step": "치킨이 원인으로 적힌 진료 소견서 또는 진단서를 요청한다",
+    "covered": true
+   },
+   {
+    "step": "진료 내역서를 요청한다",
+    "covered": true
+   }
+  ],
+  "coverage": 1.0
+ }
+]
