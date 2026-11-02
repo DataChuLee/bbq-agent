@@ -58,7 +58,7 @@ def _metrics(row: dict) -> dict[str, float]:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--split", choices=("dev", "test", "dev2"), required=True)
+    parser.add_argument("--split", choices=("dev", "test", "dev2", "test2"), required=True)
     parser.add_argument("--systems", nargs="+", default=list(DEFAULT_SYSTEMS))
     args = parser.parse_args()
     systems, target = args.systems, args.systems[-1]
